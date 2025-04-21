@@ -1,30 +1,45 @@
+// app/layout.tsx
 import "@mantine/core/styles.css";
-import React from "react";
-import {
-  MantineProvider,
-  ColorSchemeScript,
-  mantineHtmlProps,
-} from "@mantine/core";
-import { theme } from "../theme";
+import "@mantine/notifications/styles.css";
+import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
+import { Playfair_Display, Inter } from "next/font/google";
+import { Metadata } from "next";
+import ClientProviders from "./ClientRootProvider";
 
-export const metadata = {
-  title: "Mantine Next.js template",
-  description: "I am using Mantine with Next.js!",
+export const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-playfair",
+  display: "swap",
+});
+
+export const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "Meu App",
+  description: "Dashboard com Mantine",
 };
 
-export default function RootLayout({ children }: { children: any }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" {...mantineHtmlProps}>
+    <html
+      lang="pt-br"
+      {...mantineHtmlProps}
+      className={`${inter.variable} ${playfair.variable}`}
+    >
       <head>
         <ColorSchemeScript />
-        <link rel="shortcut icon" href="/favicon.svg" />
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
-        />
       </head>
       <body>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   );
