@@ -1,34 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { UpdateSermon } from "../types/UpdateSermon";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export type UpdateSermon = {
-  id: string;
-  title?: string;
-  description?: string;
-  speaker?: string;
-  duration?: string;
-  date?: string;
-  time?: string;
-  eventType?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  published?: boolean;
-  references: {
-    id?: string;
-    reference?: string;
-    text?: string;
-    sermonId?: string;
-  }[];
-  contentSections: {
-    id?: string;
-    type?: string;
-    content?: string;
-    sermonId?: string;
-  }[];
-};
-
-export function useUpdateSermon() {
+export default function useUpdateSermon() {
   const queryClient = useQueryClient();
 
   return useMutation({

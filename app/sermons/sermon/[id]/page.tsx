@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Card,
-  Center,
   Container,
   Flex,
   Grid,
@@ -23,7 +22,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useSermon } from "../../../../lib/hooks/useSermon";
+import useSermon from "../../../../lib/hooks/useSermon";
 
 interface ContentSection {
   id: string;
@@ -45,7 +44,7 @@ interface SermonContentProps {
   contentSections: ContentSection[];
 }
 
-export const SermonContent = ({ contentSections }: SermonContentProps) => {
+const SermonContent = ({ contentSections }: SermonContentProps) => {
   const icon = <IconBible stroke={1.5} />;
   const contentMap: Record<
     string,

@@ -8,12 +8,10 @@ import {
   Container,
   Group,
   Text,
-  Tooltip,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { useMantineColorScheme } from "@mantine/core";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { IconHome, IconLogout } from "@tabler/icons-react";
 
 export default function DashboardLayout({

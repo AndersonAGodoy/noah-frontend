@@ -1,16 +1,6 @@
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Flex,
-  Stack,
-  Text,
-  Tooltip,
-} from "@mantine/core";
+import { Badge, Box, Button, Card, Flex, Stack, Text } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import {
-  IconCheck,
   IconChecks,
   IconClockHour4,
   IconEdit,

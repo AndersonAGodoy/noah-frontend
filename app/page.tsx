@@ -7,15 +7,12 @@ import {
   Stack,
   Title,
   Text,
-  Box,
   Flex,
-  TextInput,
   Select,
 } from "@mantine/core";
-import { useSermons } from "../lib/hooks/useSermons";
-import { SermonCard } from "../components/SermonCard";
+import useSermons from "../lib/hooks/useSermons";
+import SermonCard from "../components/SermonCard";
 import SermonCardSkeleton from "../components/SermonCardSkeleton";
-import { IconSearch } from "@tabler/icons-react";
 import { useState } from "react";
 
 export default function HomePage() {
@@ -32,10 +29,6 @@ export default function HomePage() {
     eventType: eventType,
   });
 
-  const handleSearch = (value: string) => {
-    setEventType(value);
-  };
-
   const sermons =
     data?.pages.flatMap((page) => page.items.filter((s) => s.published)) || [];
 
@@ -43,7 +36,7 @@ export default function HomePage() {
     <Container px="md" py="xl" size="xl">
       <Stack justify="center" mb="xl">
         <Title order={1} ta="center">
-          No'ah
+          {"No'ah"}
         </Title>
         <Title ta="center" order={2}>
           Seja Bem vindo(a) 🙌

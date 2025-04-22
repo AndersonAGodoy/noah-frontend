@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { Sermon } from "./useSermons";
+import { Sermon } from "../types/Sermon";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export function useSermon(id?: string | number) {
+export default function useSermon(id?: string | number) {
   return useQuery<Sermon>({
     queryKey: ["sermon", id],
     queryFn: async () => {

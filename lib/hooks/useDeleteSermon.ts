@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export function useDeleteSermon() {
+export default function useDeleteSermon() {
   const queryClient = useQueryClient();
 
   return useMutation({

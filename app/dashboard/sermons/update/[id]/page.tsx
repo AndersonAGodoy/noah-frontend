@@ -22,8 +22,8 @@ import {
   IconPencilCheck,
   IconSquareRoundedX,
 } from "@tabler/icons-react";
-import { useSermon } from "../../../../../lib/hooks/useSermon";
-import { useUpdateSermon } from "../../../../../lib/hooks/useUpdateSermon";
+import useSermon from "../../../../../lib/hooks/useSermon";
+import useUpdateSermon from "../../../../../lib/hooks/useUpdateSermon";
 
 export default function AddSermon() {
   const isMobile = useMediaQuery("(max-width: 768px)");

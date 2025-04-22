@@ -1,8 +1,9 @@
 import { Group, Paper, SimpleGrid, Text, Title } from "@mantine/core";
 import { useMemo } from "react";
-import { Sermon } from "../lib/hooks/useSermons";
+
 import classes from "./StatsGrid.module.css";
 import formatRelativeDate from "../lib/utils/formatDate";
+import { Sermon } from "../lib/types/Sermon";
 
 export default function StatsGrid({ sermons }: { sermons: Sermon[] }) {
   const sum = useMemo(() => sermons.length, [sermons]);
@@ -25,7 +26,9 @@ export default function StatsGrid({ sermons }: { sermons: Sermon[] }) {
         </Group>
 
         <Group align="flex-end" gap="xs" mt={25}>
-          <Text className={classes.value}>{sum}</Text>
+          <Text fw={"bold"} fz={30}>
+            {sum}
+          </Text>
         </Group>
 
         <Text fz="xs" c="dimmed" mt={7}>
@@ -40,7 +43,9 @@ export default function StatsGrid({ sermons }: { sermons: Sermon[] }) {
         </Group>
 
         <Group align="flex-end" gap="xs" mt={25} tt={"capitalize"}>
-          <Text className={classes.value}>{formattedDate}</Text>
+          <Text fw={"bold"} fz={30}>
+            {formattedDate}
+          </Text>
         </Group>
 
         <Text fz="xs" c="dimmed" mt={7}>

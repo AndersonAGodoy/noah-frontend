@@ -15,7 +15,7 @@ import {
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useState } from "react";
-import { useCreateSermon } from "../../../../lib/hooks/useCreateSermon";
+import useCreateSermon from "../../../../lib/hooks/useCreateSermon";
 import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
 import { IconCirclePlus, IconSquareRoundedX } from "@tabler/icons-react";

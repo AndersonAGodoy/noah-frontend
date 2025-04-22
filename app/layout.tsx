@@ -1,28 +1,8 @@
-// app/layout.tsx
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
-import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
-import { Playfair_Display, Inter } from "next/font/google";
-import { Metadata } from "next";
+import { ColorSchemeScript } from "@mantine/core";
 import ClientProviders from "./ClientRootProvider";
-
-export const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  variable: "--font-playfair",
-  display: "swap",
-});
-
-export const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-export const metadata: Metadata = {
-  title: "Meu App",
-  description: "Dashboard com Mantine",
-};
+import "./globals.css";
 
 export default function RootLayout({
   children,
@@ -30,13 +10,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="pt-br"
-      {...mantineHtmlProps}
-      className={`${inter.variable} ${playfair.variable}`}
-    >
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <ColorSchemeScript />
+        {/* Pré-carrega as fontes para evitar FOUC */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body>
         <ClientProviders>{children}</ClientProviders>

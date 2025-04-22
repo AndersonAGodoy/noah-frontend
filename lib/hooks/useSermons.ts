@@ -1,41 +1,11 @@
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { SermonPage } from "../types/Sermon";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export type Sermon = {
-  id: string;
-  title: string;
-  description: string;
-  speaker: string;
-  duration: string;
-  date: string;
-  time: string;
-  eventType: string;
-  createdAt: string;
-  updatedAt: string;
-  published: boolean;
-  references: {
-    id: string;
-    reference: string;
-    text: string;
-    sermonId: string;
-  }[];
-  contentSections: {
-    id: string;
-    type: string;
-    content: string;
-    sermonId: string;
-  }[];
-};
-
-type SermonPage = {
-  items: Sermon[];
-  nextCursor: string | null;
-};
-
-export function useSermons({
+export default function useSermons({
   limit = 10,
   eventType,
 }: { limit?: number; eventType?: string } = {}) {

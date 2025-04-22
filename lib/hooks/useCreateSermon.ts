@@ -1,15 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { CreateSermonInput } from "../types/CreateSermon";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-type CreateSermonInput = {
-  title: string;
-  description: string;
-  date: string;
-  speaker: string;
-};
-
-export function useCreateSermon() {
+export default function useCreateSermon() {
   const queryClient = useQueryClient();
 
   return useMutation({

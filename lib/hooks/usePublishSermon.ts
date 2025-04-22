@@ -14,7 +14,7 @@ const publishSermon = async (id: string) => {
   return response.json();
 };
 
-export const usePublishSermonMutation = () => {
+export default function usePublishSermonMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -27,4 +27,4 @@ export const usePublishSermonMutation = () => {
       console.error("Error publishing sermon:", error);
     },
   });
-};
+}
