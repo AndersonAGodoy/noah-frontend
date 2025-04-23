@@ -17,7 +17,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const { NEXT_PUBLIC_API_URL } = process.env;
 
   const icon = <IconInfoCircle size={16} />;
 
@@ -27,12 +26,15 @@ export default function Login() {
     setLoading(true);
     setError("");
 
-    const response = await fetch(`${NEXT_PUBLIC_API_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-      credentials: "include", // 🍪 Aceita cookies
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+        credentials: "include", // 🍪 Aceita cookies
+      }
+    );
     if (response.ok) {
       router.push("/dashboard");
     } else {
