@@ -1,5 +1,6 @@
 // app/api/login/route.ts ou pages/api/login.ts
 
+import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -20,7 +21,7 @@ export async function POST(request: Request) {
     const responseData = await data.json();
     console.log("responseData", responseData);
     response.cookies.set("token", responseData["access_token"]);
-    return NextResponse.json({ message: "Login successful" });
+    redirect("/dashboard");
   } else {
     return NextResponse.json({ message: "Login failed" }, { status: 401 });
   }
