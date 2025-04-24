@@ -26,17 +26,14 @@ export default function Login() {
     setLoading(true);
     setError("");
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/login`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      }
-    );
+    const response = await fetch(`api/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+      credentials: "include",
+    });
     if (response.ok) {
-      router.push("/dashboard");
+      console.log("response", response);
     } else {
       setError("Erro ao fazer login - verifique suas credenciais");
     }
