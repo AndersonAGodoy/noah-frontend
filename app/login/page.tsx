@@ -10,6 +10,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconInfoCircle } from "@tabler/icons-react";
+import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -26,14 +27,21 @@ export default function Login() {
     setLoading(true);
     setError("");
 
-    const response = await fetch(`/api/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      }
+    );
     if (response.ok) {
-      console.log("response", response);
+      const data = await response.json();
+      Cookies.set("token", data["access_token"], {
+        expires: 1,
+      });
+
+      router.push("/dashboard");
     } else {
       setError("Erro ao fazer login - verifique suas credenciais");
     }

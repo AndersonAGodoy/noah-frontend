@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     const responseData = await data.json();
     console.log("responseData", responseData);
     response.cookies.set("token", responseData["access_token"]);
-    redirect("/dashboard");
+    return redirect("/dashboard");
   } else {
     return NextResponse.json({ message: "Login failed" }, { status: 401 });
   }
