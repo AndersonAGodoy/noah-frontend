@@ -12,7 +12,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { IconHome, IconLogout } from "@tabler/icons-react";
+import { IconDashboard, IconHome, IconLogout } from "@tabler/icons-react";
 
 export default function DashboardLayout({
   children,
@@ -41,7 +41,14 @@ export default function DashboardLayout({
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
           <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-          <Text>Dashboard</Text>
+          <Button
+            component={Link}
+            href="/dashboard"
+            rightSection={<IconDashboard size={16} />}
+            variant="subtle"
+            color="dark"
+            onClick={() => route.push("/dashboard")}
+          ></Button>
           <Button
             component={Link}
             href="/"

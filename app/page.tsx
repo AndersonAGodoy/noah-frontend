@@ -43,14 +43,6 @@ export default function HomePage() {
         </Title>
       </Stack>
 
-      {isLoading && (
-        <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
-          {[...Array(6)].map((_, i) => (
-            <SermonCardSkeleton key={i} />
-          ))}
-        </SimpleGrid>
-      )}
-
       <Flex justify={"center"} gap={"md"} align="center">
         <Text mb={"xl"}> Filtre aqui o tipo de Evento </Text>
         <Select
@@ -65,6 +57,14 @@ export default function HomePage() {
           mb={"xl"}
         />
       </Flex>
+
+      {isLoading && (
+        <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
+          {[...Array(6)].map((_, i) => (
+            <SermonCardSkeleton key={i} />
+          ))}
+        </SimpleGrid>
+      )}
 
       {!isLoading && sermons.length === 0 && (
         <Text ta="center">Nenhum sermão publicado encontrado.</Text>
