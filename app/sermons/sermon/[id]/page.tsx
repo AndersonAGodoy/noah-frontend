@@ -109,7 +109,7 @@ export default function SermonPage() {
           <Image
             src={"/noah_logo.jpg"}
             alt={"Noah Logo"}
-            width={isMobile ? 400 : 640}
+            width={isMobile ? 340 : 640}
             height={isMobile ? 200 : 400}
             style={{
               objectFit: "cover",

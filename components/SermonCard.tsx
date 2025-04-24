@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Card, Stack, Text, Title, Flex, Badge } from "@mantine/core";
 import { IconUser, IconCalendar, IconClock } from "@tabler/icons-react";
 import { getColorForEventType } from "../lib/utils/badgeColor";
+import { useMediaQuery } from "@mantine/hooks";
 
 interface SermonCardProps {
   slug: string;
@@ -23,6 +24,7 @@ export default function SermonCard({
   date,
   duration,
 }: SermonCardProps) {
+  const isMobile = useMediaQuery("(max-width: 768px)");
   return (
     <Link
       href={`sermons/sermon/${slug}`}
@@ -30,8 +32,8 @@ export default function SermonCard({
       style={{ textDecoration: "none" }}
     >
       <Card
-        maw={400}
-        miw={400}
+        maw={isMobile ? 200 : 400}
+        miw={isMobile ? 340 : 400}
         mih={400}
         shadow="sm"
         radius="md"
@@ -56,7 +58,7 @@ export default function SermonCard({
           <Badge
             pos={"absolute"}
             top={180}
-            left={320}
+            left={isMobile ? 260 : 320}
             color={getColorForEventType(eventType)}
           >
             {eventType}
@@ -74,18 +76,18 @@ export default function SermonCard({
             {description}
           </Text>
 
-          <Flex gap="xs" justify="space-between">
+          <Flex gap={isMobile ? "lg" : "xs"} justify="space-between">
             <Flex gap={2} align="center">
               <IconUser size={16} stroke={1.5} />
-              <Text size="sm">{speaker}</Text>
+              <Text size={isMobile ? "xs" : "sm"}>{speaker}</Text>
             </Flex>
             <Flex gap={2} align="center">
               <IconCalendar size={16} stroke={1.5} />
-              <Text size="sm">{date}</Text>
+              <Text size={isMobile ? "xs" : "sm"}>{date}</Text>
             </Flex>
             <Flex gap={2} align="center">
               <IconClock size={16} stroke={1.5} />
-              <Text size="sm">{duration}</Text>
+              <Text size={isMobile ? "xs" : "sm"}>{duration}</Text>
             </Flex>
           </Flex>
         </Stack>
