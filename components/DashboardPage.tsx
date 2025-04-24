@@ -25,35 +25,35 @@ export default function DashboardPage() {
     return data?.pages.flatMap((page) => page.items) ?? [];
   }, [data]);
 
-  // const hasNotified = useRef(false);
+  const hasNotified = useRef(false);
 
-  // useEffect(() => {
-  //   if ((created || updated) && !hasNotified.current) {
-  //     showNotification({
-  //       title: "Sucesso",
-  //       message: "Sermão criado com sucesso!",
-  //       color: "green",
-  //     });
+  useEffect(() => {
+    if ((created || updated) && !hasNotified.current) {
+      showNotification({
+        title: "Sucesso",
+        message: "Sermão criado com sucesso!",
+        color: "green",
+      });
 
-  //     hasNotified.current = true;
+      hasNotified.current = true;
 
-  //     // Limpar a query da URL
-  //     window.history.replaceState({}, document.title, "/dashboard");
-  //   }
+      // Limpar a query da URL
+      window.history.replaceState({}, document.title, "/dashboard");
+    }
 
-  //   if (updated && !hasNotified.current) {
-  //     showNotification({
-  //       title: "Sucesso",
-  //       message: "Sermão atualizado com sucesso!",
-  //       color: "violet",
-  //     });
+    if (updated && !hasNotified.current) {
+      showNotification({
+        title: "Sucesso",
+        message: "Sermão atualizado com sucesso!",
+        color: "violet",
+      });
 
-  //     hasNotified.current = true;
+      hasNotified.current = true;
 
-  //     // Limpar a query da URL
-  //     window.history.replaceState({}, document.title, "/dashboard");
-  //   }
-  // }, [created, updated]);
+      // Limpar a query da URL
+      window.history.replaceState({}, document.title, "/dashboard");
+    }
+  }, [created, updated]);
 
   const openConfirmModal = (sermonId: string) => {
     modals.openConfirmModal({
