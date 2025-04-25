@@ -12,7 +12,6 @@ import {
 } from "@tanstack/react-query";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
-import { useServerInsertedHTML } from "next/navigation";
 
 function makeQueryClient() {
   return new QueryClient({

@@ -48,7 +48,9 @@ export default function DashboardLayout({
             variant="subtle"
             color="dark"
             onClick={() => route.push("/dashboard")}
-          ></Button>
+          >
+            Dashboard
+          </Button>
           <Button
             component={Link}
             href="/"

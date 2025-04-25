@@ -231,16 +231,15 @@ export default function AddSermon() {
             </Grid.Col>
           </Grid>
           <Select
-            label="Tipo de evento ou culto"
+            label="Tipo de conteúdo"
             value={eventType}
             onChange={(value) => setEventType(value || "")}
             variant="filled"
             mt="md"
-            placeholder="Selecione o tipo de evento"
+            placeholder="Selecione o tipo de conteúdo"
             data={[
               { value: "culto", label: "Culto" },
-              { value: "reuniao", label: "Reunião" },
-              { value: "evento", label: "Evento" },
+              { value: "devocional", label: "Devocional" },
             ]}
           />
         </Tabs.Panel>

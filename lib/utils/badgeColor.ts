@@ -1,7 +1,6 @@
 const eventTypeColors = new Map<string, string>([
-  ["culto", "blue"],
-  ["evento", "green"],
-  ["reuniao", "orange"],
+  ["culto", "violet"],
+  ["devocional", "orange"],
 ]);
 
 export const getColorForEventType = (eventType: string) => {
