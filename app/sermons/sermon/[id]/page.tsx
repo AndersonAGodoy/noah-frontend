@@ -40,49 +40,49 @@ interface Reference {
   sermonId: string;
 }
 
-interface SermonContentProps {
-  contentSections: ContentSection[];
-}
-
-const SermonContent = ({ contentSections }: SermonContentProps) => {
+const renderContentSection = (section: ContentSection) => {
   const icon = <IconBible stroke={1.5} />;
-  const contentMap: Record<
-    string,
-    (section: ContentSection) => React.ReactNode
-  > = {
-    parágrafo: (section) => (
-      <Text key={section.id} size="lg" mb="md" ta="justify">
-        {section.content}
-      </Text>
-    ),
-    header: (section) => (
-      <Title key={section.id} order={4} mb="md" c={"violet"}>
-        {section.content}
-      </Title>
-    ),
-    citação: (section) => (
-      <Blockquote
-        key={section.id}
-        fz={"lg"}
-        mb={"lg"}
-        mt={"lg"}
-        color="violet"
-        icon={icon}
-        ff={"Playfair Display, sans-serif"}
-        fs={"italic"}
-      >
-        {section.content}
-      </Blockquote>
-    ),
-  };
-  return (
-    <Stack gap="md">
-      {contentSections.map(
-        (section) => contentMap[section.type]?.(section) ?? null
-      )}
-    </Stack>
-  );
+  
+  switch(section.type.toLowerCase()) {
+    case 'parágrafo':
+      return (
+        <Text key={section.id} size="lg" mb="md" ta="justify">
+          {section.content}
+        </Text>
+      );
+    case 'header':
+    case 'subtítulo':
+    case 'titulo':
+      return (
+        <Title key={section.id} order={4} mb="md" c={"violet"}>
+          {section.content}
+        </Title>
+      );
+    case 'citação':
+    case 'citacao':
+      return (
+        <Blockquote
+          key={section.id}
+          fz={"lg"}
+          mb={"lg"}
+          mt={"lg"}
+          color="violet"
+          icon={icon}
+          ff={"Playfair Display, sans-serif"}
+          fs={"italic"}
+        >
+          {section.content}
+        </Blockquote>
+      );
+    default:
+      return (
+        <Text key={section.id} size="lg" mb="md">
+          {section.content}
+        </Text>
+      );
+  }
 };
+
 export default function SermonPage() {
   const params = useParams();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -136,25 +136,23 @@ export default function SermonPage() {
             </Flex>
           </Flex>
 
-          {data &&
-            data.contentSections.map((section: ContentSection) => (
-              <SermonContent key={section.id} contentSections={[section]} />
-            ))}
+          <Stack gap="md">
+            {data?.contentSections?.map(renderContentSection)}
+          </Stack>
         </Grid.Col>
         <Grid.Col span={isMobile ? 12 : 5}>
           <Card withBorder mb="md">
             <Title order={3} mb="md" c={"violet"}>
-              Refêrencias Bíblicas
+              Referências Bíblicas
             </Title>
-            {data &&
-              data.references.map((reference: Reference) => (
-                <Box key={reference.id}>
-                  <Title order={5}>{reference.reference}</Title>
-                  <Text c="dimmed" mb="md">
-                    {reference.text}
-                  </Text>
-                </Box>
-              ))}
+            {data?.references?.map((reference: Reference) => (
+              <Box key={reference.id}>
+                <Title order={5}>{reference.reference}</Title>
+                <Text c="dimmed" mb="md">
+                  {reference.text}
+                </Text>
+              </Box>
+            ))}
           </Card>
         </Grid.Col>
       </Grid>
