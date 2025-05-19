@@ -136,10 +136,7 @@ export default function SermonPage() {
             </Flex>
           </Flex>
 
-          {data &&
-            data.contentSections.map((section: ContentSection) => (
-              <SermonContent key={section.id} contentSections={[section]} />
-            ))}
+          {data && <SermonContent contentSections={data.contentSections} />}
         </Grid.Col>
         <Grid.Col span={isMobile ? 12 : 5}>
           <Card withBorder mb="md">

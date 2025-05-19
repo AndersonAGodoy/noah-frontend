@@ -1,5 +1,6 @@
 "use client";
 import {
+  Blockquote,
   Box,
   Button,
   Card,
@@ -18,7 +19,11 @@ import { useState } from "react";
 import useCreateSermon from "../../../../lib/hooks/useCreateSermon";
 import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
-import { IconCirclePlus, IconSquareRoundedX } from "@tabler/icons-react";
+import {
+  IconBible,
+  IconCirclePlus,
+  IconSquareRoundedX,
+} from "@tabler/icons-react";
 
 export default function AddSermon() {
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -318,6 +323,40 @@ export default function AddSermon() {
               )}
             </Card>
           ))}
+          <Title order={4} mt="xl" mb="md">
+            Pré-visualização
+          </Title>
+          <Card withBorder p="md">
+            {contentSections.map((section, index) => {
+              switch (section.type) {
+                case "parágrafo":
+                  return (
+                    <Text key={index} mb="md">
+                      {section.content || "(Parágrafo vazio)"}
+                    </Text>
+                  );
+                case "header":
+                  return (
+                    <Title key={index} order={4} c="violet" mb="md">
+                      {section.content || "(Título vazio)"}
+                    </Title>
+                  );
+                case "citação":
+                  return (
+                    <Blockquote
+                      key={index}
+                      c="violet"
+                      mb="md"
+                      icon={<IconBible size={18} />}
+                    >
+                      {section.content || "(Citação vazia)"}
+                    </Blockquote>
+                  );
+                default:
+                  return null;
+              }
+            })}
+          </Card>
         </Tabs.Panel>
         <Tabs.Panel value="reference">
           <Group
