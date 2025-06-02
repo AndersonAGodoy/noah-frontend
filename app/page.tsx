@@ -10,7 +10,13 @@ import {
   Flex,
   Select,
   Box,
+  Paper,
+  Group,
+  Divider,
+  Badge,
+  Anchor,
 } from "@mantine/core";
+import { IconFilter, IconBuildingChurch, IconMapPin, IconPhone, IconMail } from "@tabler/icons-react";
 import useSermons from "../lib/hooks/useSermons";
 import SermonCard from "../components/SermonCard";
 import SermonCardSkeleton from "../components/SermonCardSkeleton";
@@ -34,81 +40,276 @@ export default function HomePage() {
     data?.pages.flatMap((page) => page.items.filter((s) => s.published)) || [];
 
   return (
-    <>
-      <Box w={"100%"} bg={"dark"} p={"md"}>
-        <Container size={"xl"}>
-          <Title c={"white"} order={1}>
-            {"No'ah"}
-          </Title>
+    <Box bg="gray.0" mih="100vh">
+      {/* Header */}
+      <Box
+        w="100%"
+        bg="linear-gradient(135deg, var(--mantine-color-violet-8) 0%, var(--mantine-color-violet-6) 100%)"
+        py="lg"
+        mb={0}
+        style={{
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <Container size="xl">
+          <Group justify="space-between" align="center">
+            <Group gap="md">
+              <IconBuildingChurch size={36} color="white" />
+              <Title c="white" order={1} fw={800} size="h1" lh={1}>
+                No'ah
+              </Title>
+            </Group>
+          </Group>
         </Container>
       </Box>
-      <Container px="md" py="xl" size="xl">
-        <Stack justify="center" mb="xl">
-          <Title ta="center" order={2}>
-            Seja Bem vindo(a) 🙌
-          </Title>
-        </Stack>
 
-        <Flex justify={"center"} gap={"md"} align="center">
-          <Text mb={"xl"}> Filtre aqui o tipo de Conteúdo </Text>
-          <Select
-            data={[
-              { value: "", label: "Todos" },
-              { value: "culto", label: "Culto" },
-              { value: "devocional", label: "Devocional" },
-            ]}
-            value={eventType}
-            onChange={(value) => setEventType(value || "")}
-            mb={"xl"}
-          />
-        </Flex>
+      {/* Hero Section */}
+      <Box
+        bg="linear-gradient(180deg, white 0%, var(--mantine-color-gray-0) 100%)"
+        py="4rem"
+      >
+        <Container size="xl">
+          <Stack align="center" gap="xl" py="2rem">
+            <Title
+              ta="center"
+              order={1}
+              size="3rem"
+              fw={800}
+              c="dark"
+              maw={700}
+              lh={1.1}
+            >
+              Seja Bem-vindo(a) ao{" "}
+              <Text span c="violet.6" inherit>
+                No'ah
+              </Text>{" "}
+              🙌
+            </Title>
+            <Text
+              ta="center"
+              size="xl"
+              c="gray.6"
+              maw={600}
+              lh={1.7}
+              fw={400}
+            >
+              Explore nossos sermões, devocionais e conteúdos que edificam a fé e transformam vidas através da palavra de Deus.
+            </Text>
+            <Badge
+              size="lg"
+              variant="gradient"
+              gradient={{ from: "violet", to: "violet.6" }}
+              radius="xl"
+              px="lg"
+              py="sm"
+              maw="95%"
+              style={{
+                textAlign: "center",
+                whiteSpace: "nowrap",
+                overflow: "visible",
+                lineHeight: 1.3,
+              }}
+              styles={{
+                root: {
+                  fontSize: "var(--mantine-font-size-sm)",
+                  "@media (maxWidth: 768px)": {
+                    fontSize: "var(--mantine-font-size-xs)",
+                    paddingLeft: "var(--mantine-spacing-sm)",
+                    paddingRight: "var(--mantine-spacing-sm)",
+                    paddingTop: "var(--mantine-spacing-xs)",
+                    paddingBottom: "var(--mantine-spacing-xs)",
+                    whiteSpace: "normal",
+                    wordBreak: "keep-all",
+                    overflowWrap: "normal",
+                    hyphens: "none",
+                  },
+                },
+              }}
+            >
+              ✨ Conteúdos atualizados semanalmente
+            </Badge>
+          </Stack>
+        </Container>
+      </Box>
 
-        {isLoading && (
-          <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
-            {[...Array(6)].map((_, i) => (
-              <SermonCardSkeleton key={i} />
-            ))}
-          </SimpleGrid>
-        )}
+      <Container px="md" py="2rem" size="xl">
+        {/* Filtro */}
+        <Paper
+          shadow="lg"
+          p="xl"
+          radius="xl"
+          mb="2rem"
+          bg="white"
+          style={{
+            border: "1px solid var(--mantine-color-gray-2)",
+          }}
+        >
+          <Group justify="center" align="center" gap="xl">
+            <Group gap="sm">
+              <IconFilter size={22} color="var(--mantine-color-violet-6)" />
+              <Text fw={600} c="dark" size="lg">
+                Filtrar conteúdo:
+              </Text>
+            </Group>
+            <Select
+              data={[
+                { value: "", label: "Todos os conteúdos" },
+                { value: "culto", label: "Cultos" },
+                { value: "devocional", label: "Devocionais" },
+              ]}
+              value={eventType}
+              onChange={(value) => setEventType(value || "")}
+              size="lg"
+              radius="xl"
+              w={240}
+              styles={{
+                input: {
+                  borderColor: "var(--mantine-color-violet-3)",
+                  borderWidth: 2,
+                  "&:focus": {
+                    borderColor: "var(--mantine-color-violet-6)",
+                    boxShadow: "0 0 0 3px var(--mantine-color-violet-1)",
+                  },
+                },
+              }}
+            />
+          </Group>
+        </Paper>
 
-        {!isLoading && sermons.length === 0 && (
-          <Text ta="center">Nenhum conteúdo publicado encontrado.</Text>
-        )}
-        {!isLoading && sermons.length > 0 && (
-          <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
-            {sermons.map((sermon) => (
-              <SermonCard
-                key={sermon.id}
-                slug={sermon.id}
-                description={sermon.description}
-                eventType={sermon.eventType}
-                title={sermon.title}
-                speaker={sermon.speaker}
-                date={sermon.date}
-                duration={sermon.duration}
-              />
-            ))}
-          </SimpleGrid>
-        )}
+        {/* Conteúdo */}
+        <Box>
+          {!isLoading && sermons.length > 0 && (
+            <Group justify="space-between" align="center" mb="2rem">
+              <Text c="gray.6" size="lg" fw={500}>
+                {sermons.length} {sermons.length === 1 ? "conteúdo encontrado" : "conteúdos encontrados"}
+              </Text>
+              <Divider style={{ flex: 1 }} ml="lg" color="gray.3" />
+            </Group>
+          )}
 
-        {isError && (
-          <Text c="red" ta="center" mt="lg">
-            Ocorreu um erro ao carregar os sermões.
-          </Text>
-        )}
+          {isLoading && (
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="2rem">
+              {[...Array(6)].map((_, i) => (
+                <SermonCardSkeleton key={i} />
+              ))}
+            </SimpleGrid>
+          )}
 
-        {hasNextPage && (
-          <Button
-            fullWidth
-            variant="outline"
-            mt="xl"
-            loading={isFetchingNextPage}
-            onClick={() => fetchNextPage()}
-          >
-            Carregar mais
-          </Button>
-        )}
+          {!isLoading && sermons.length === 0 && (
+            <Paper p="3rem" radius="xl" bg="gray.50" ta="center" shadow="sm">
+              <Stack align="center" gap="lg">
+                <IconBuildingChurch size={64} color="var(--mantine-color-gray-4)" />
+                <Title order={2} c="gray.6" fw={600}>
+                  Nenhum conteúdo encontrado
+                </Title>
+                <Text c="gray.5" size="lg" maw={400}>
+                  Não há conteúdos publicados no momento. Volte em breve para conferir novos sermões e devocionais!
+                </Text>
+              </Stack>
+            </Paper>
+          )}
+
+          {!isLoading && sermons.length > 0 && (
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="2rem">
+              {sermons.map((sermon) => (
+                <SermonCard
+                  key={sermon.id}
+                  slug={sermon.id}
+                  description={sermon.description}
+                  eventType={sermon.eventType}
+                  title={sermon.title}
+                  speaker={sermon.speaker}
+                  date={sermon.date}
+                  duration={sermon.duration}
+                />
+              ))}
+            </SimpleGrid>
+          )}
+
+          {isError && (
+            <Paper p="3rem" radius="xl" bg="red.0" ta="center" shadow="sm">
+              <Stack align="center" gap="lg">
+                <Title order={2} c="red.6" fw={600}>
+                  Erro ao carregar conteúdos
+                </Title>
+                <Text c="red.7" size="lg" maw={400}>
+                  Ocorreu um erro ao carregar os sermões. Tente novamente mais tarde.
+                </Text>
+              </Stack>
+            </Paper>
+          )}
+
+          {hasNextPage && (
+            <Group justify="center" mt="3rem">
+              <Button
+                size="xl"
+                variant="gradient"
+                gradient={{ from: "violet.6", to: "violet.8" }}
+                loading={isFetchingNextPage}
+                onClick={() => fetchNextPage()}
+                radius="xl"
+                px="2rem"
+                py="sm"
+                fw={600}
+                styles={{
+                  root: {
+                    boxShadow: "0 4px 12px rgba(139, 92, 246, 0.3)",
+                    "&:hover": {
+                      transform: "translateY(-2px)",
+                      boxShadow: "0 6px 20px rgba(139, 92, 246, 0.4)",
+                    },
+                  },
+                }}
+              >
+                Carregar mais conteúdos
+              </Button>
+            </Group>
+          )}
+        </Box>
       </Container>
-    </>
+
+      {/* Rodapé */}
+      <Box
+        component="footer"
+        bg="linear-gradient(135deg, var(--mantine-color-violet-9) 0%, var(--mantine-color-violet-8) 100%)"
+        py="2rem"
+        mt="3rem"
+      >
+        <Container size="xl">
+          <Stack align="center" gap="md">
+            <Group gap="lg" wrap="wrap" justify="center">
+              <Group gap="xs" wrap="wrap" justify="center">
+                <IconMapPin size={18} color="white" />
+                <Text
+                  c="white"
+                  size="sm"
+                  fw={500}
+                  ta="center"
+                  style={{
+                    maxWidth: "100%",
+                    wordBreak: "break-word",
+                    lineHeight: 1.4,
+                  }}
+                  styles={{
+                    root: {
+                      "@media (max-width: 768px)": {
+                        fontSize: "var(--mantine-font-size-xs)",
+                        lineHeight: 1.3,
+                      },
+                    },
+                  }}
+                >
+                  R. Cícero de Campos Póvoa, 42 - Guapituba, Mauá - SP
+                </Text>
+              </Group>
+            </Group>
+            <Divider w="100%" color="violet.7" />
+            <Text c="violet.2" ta="center" size="xs">
+              © 2025 Igreja No'ah. Todos os direitos reservados.
+            </Text>
+          </Stack>
+        </Container>
+      </Box>
+    </Box>
   );
 }

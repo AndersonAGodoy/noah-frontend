@@ -76,18 +76,29 @@ export default function SermonCard({
             {description}
           </Text>
 
-          <Flex gap={isMobile ? "lg" : "xs"} justify="space-between">
-            <Flex gap={2} align="center">
-              <IconUser size={16} stroke={1.5} />
-              <Text size={isMobile ? "xs" : "sm"}>{speaker}</Text>
-            </Flex>
-            <Flex gap={2} align="center">
-              <IconCalendar size={16} stroke={1.5} />
-              <Text size={isMobile ? "xs" : "sm"}>{date}</Text>
-            </Flex>
-            <Flex gap={2} align="center">
-              <IconClock size={16} stroke={1.5} />
-              <Text size={isMobile ? "xs" : "sm"}>{duration}</Text>
+          {/* Rodapé aprimorado */}
+          <Flex direction="column" mt="sm" gap={8}>
+            <Flex
+              gap="md"
+              align="center"
+              justify="flex-start"
+              style={{
+                borderTop: "1px solid #eee",
+                paddingTop: 8,
+              }}
+            >
+              <Flex gap={4} align="center" c="dimmed">
+                <IconUser size={14} stroke={1.2} />
+                <Text size="xs">{speaker}</Text>
+              </Flex>
+              <Flex gap={4} align="center" c="dimmed">
+                <IconCalendar size={14} stroke={1.2} />
+                <Text size="xs">{date}</Text>
+              </Flex>
+              <Flex gap={4} align="center" c="dimmed">
+                <IconClock size={14} stroke={1.2} />
+                <Text size="xs">{duration}</Text>
+              </Flex>
             </Flex>
           </Flex>
         </Stack>

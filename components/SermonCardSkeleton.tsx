@@ -7,9 +7,9 @@ export default function SermonCardSkeleton() {
       padding="lg"
       radius="md"
       withBorder
-      w={400}
-      h={400}
-      miw={400}
+      w="100%"
+      h="auto"
+      miw={0}
     >
       <Stack>
         <Skeleton height={200} width="100%" radius="sm" />
