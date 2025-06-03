@@ -15,11 +15,16 @@ export default function useSermons({
       // await new Promise((resolve) => setTimeout(resolve, 10000)); // Simulate a delay
       const cursor = typeof pageParam === "string" ? pageParam : null;
 
-      const params = new URLSearchParams({
-        limit: String(limit),
-        ...(eventType && { eventType }),
-        ...(cursor && { cursor }),
-      });
+      const params = new URLSearchParams();
+      params.append("limit", String(limit));
+
+      if (eventType && eventType.trim() !== "") {
+        params.append("eventType", eventType);
+      }
+
+      if (cursor) {
+        params.append("cursor", cursor);
+      }
 
       const response = await fetch(`${API_URL}/sermons?${params.toString()}`);
       if (!response.ok) {

@@ -6,19 +6,15 @@ import {
   SimpleGrid,
   Stack,
   Title,
-  Text,
-  Flex,
-  Select,
+  Text, Select,
   Box,
   Paper,
   Group,
   Divider,
   Badge,
-  Anchor,
-  Image,
-  Grid,
+  Anchor, Grid
 } from "@mantine/core";
-import { IconFilter, IconBuildingChurch, IconMapPin, IconPhone, IconMail, IconBrandInstagram, IconBrandSpotify, IconBrandYoutube, IconBrandWhatsapp } from "@tabler/icons-react";
+import { IconFilter, IconBuildingChurch, IconMapPin, IconBrandInstagram, IconBrandSpotify, IconBrandYoutube, IconBrandWhatsapp } from "@tabler/icons-react";
 import useSermons from "../lib/hooks/useSermons";
 import SermonCard from "../components/SermonCard";
 import SermonCardSkeleton from "../components/SermonCardSkeleton";
@@ -136,47 +132,38 @@ export default function HomePage() {
 
       <Container px="md" py="2rem" size="xl">
         {/* Filtro */}
-        <Paper
-          shadow="lg"
-          p="xl"
-          radius="xl"
-          mb="2rem"
-          bg="white"
-          style={{
-            border: "1px solid var(--mantine-color-gray-2)",
-          }}
-        >
-          <Group justify="center" align="center" gap="xl">
-            <Group gap="sm">
-              <IconFilter size={22} color="var(--mantine-color-violet-6)" />
-              <Text fw={600} c="dark" size="lg">
-                Filtrar conteúdo:
-              </Text>
-            </Group>
-            <Select
-              data={[
-                { value: "", label: "Todos os conteúdos" },
-                { value: "culto", label: "Cultos" },
-                { value: "devocional", label: "Devocionais" },
-              ]}
-              value={eventType}
-              onChange={(value) => setEventType(value || "")}
-              size="lg"
-              radius="xl"
-              w={240}
-              styles={{
-                input: {
-                  borderColor: "var(--mantine-color-violet-3)",
-                  borderWidth: 2,
-                  "&:focus": {
-                    borderColor: "var(--mantine-color-violet-6)",
-                    boxShadow: "0 0 0 3px var(--mantine-color-violet-1)",
-                  },
-                },
-              }}
-            />
+
+        <Stack align="center" gap="sm" style={{ "@media (maxWidth: 768px)": { gap: "md" }, marginBottom: "2rem" }}>
+          <Group gap="sm" wrap="wrap" justify="center">
+            <IconFilter size={22} color="var(--mantine-color-violet-6)" />
+            <Text fw={600} c="dark" size="lg" ta="center">
+              Filtrar conteúdo:
+            </Text>
           </Group>
-        </Paper>
+          <Select
+            data={[
+              { value: "", label: "Todos os conteúdos" },
+              { value: "culto", label: "Cultos" },
+              { value: "devocional", label: "Devocionais" },
+            ]}
+            value={eventType}
+            onChange={(value) => setEventType(value || "")}
+            size="lg"
+            radius="xl"
+            w={{ base: "100%", sm: 240 }}
+            maw={300}
+            styles={{
+              input: {
+                borderColor: "var(--mantine-color-violet-3)",
+                borderWidth: 2,
+                "&:focus": {
+                  borderColor: "var(--mantine-color-violet-6)",
+                  boxShadow: "0 0 0 3px var(--mantine-color-violet-1)",
+                },
+              },
+            }}
+          />
+        </Stack>
 
         {/* Conteúdo */}
         <Box>
@@ -198,14 +185,26 @@ export default function HomePage() {
           )}
 
           {!isLoading && sermons.length === 0 && (
-            <Paper p="3rem" radius="xl" bg="gray.50" ta="center" shadow="sm">
+            <Paper
+              shadow="md"
+              p="3rem"
+              radius="xl"
+              mb="2rem"
+              bg="white"
+              style={{
+                border: "1px solid var(--mantine-color-gray-2)",
+              }}
+            >
               <Stack align="center" gap="lg">
                 <IconBuildingChurch size={64} color="var(--mantine-color-gray-4)" />
-                <Title order={2} c="gray.6" fw={600}>
+                <Title order={2} c="gray.6" fw={600} ta="center">
                   Nenhum conteúdo encontrado
                 </Title>
-                <Text c="gray.5" size="lg" maw={400}>
-                  Não há conteúdos publicados no momento. Volte em breve para conferir novos sermões e devocionais!
+                <Text c="gray.5" size="lg" maw={400} ta="center" lh={1.6}>
+                  {eventType
+                    ? `Não há conteúdos de "${eventType}" publicados no momento.`
+                    : "Não há conteúdos publicados no momento."
+                  } Volte em breve para conferir novos sermões e devocionais!
                 </Text>
               </Stack>
             </Paper>
