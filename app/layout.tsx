@@ -2,7 +2,10 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import { ColorSchemeScript } from "@mantine/core";
 import ClientProviders from "./ClientRootProvider";
+import { GoogleAnalytics } from '@next/third-parties/google';
 import "./globals.css";
+
+const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
 export default function RootLayout({
   children,
@@ -21,6 +24,7 @@ export default function RootLayout({
       </head>
       <body>
         <ClientProviders>{children}</ClientProviders>
+        {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>
     </html>
   );
