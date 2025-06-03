@@ -15,8 +15,10 @@ import {
   Divider,
   Badge,
   Anchor,
+  Image,
+  Grid,
 } from "@mantine/core";
-import { IconFilter, IconBuildingChurch, IconMapPin, IconPhone, IconMail } from "@tabler/icons-react";
+import { IconFilter, IconBuildingChurch, IconMapPin, IconPhone, IconMail, IconBrandInstagram, IconBrandSpotify, IconBrandYoutube, IconBrandWhatsapp } from "@tabler/icons-react";
 import useSermons from "../lib/hooks/useSermons";
 import SermonCard from "../components/SermonCard";
 import SermonCardSkeleton from "../components/SermonCardSkeleton";
@@ -272,38 +274,124 @@ export default function HomePage() {
       <Box
         component="footer"
         bg="linear-gradient(135deg, var(--mantine-color-violet-9) 0%, var(--mantine-color-violet-8) 100%)"
-        py="2rem"
+        py="3rem"
         mt="3rem"
       >
         <Container size="xl">
+          <Grid>
+            {/* Redes Sociais */}
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Stack gap="lg">
+                <Title order={4} c="white" fw={600}>
+                  Acompanhe nossas redes sociais:
+                </Title>
+
+                <Stack gap="md">
+                  <Group gap="sm">
+                    <IconBrandInstagram size={20} color="white" />
+                    <Anchor
+                      href="https://instagram.com/igrejanoah.guapituba"
+                      target="_blank"
+                      c="white"
+                      size="sm"
+                      fw={500}
+                    >
+                      igrejanoah.guapituba
+                    </Anchor>
+                  </Group>
+
+                  <Group gap="sm">
+                    <IconBrandSpotify size={20} color="white" />
+                    <Text c="white" size="sm" fw={500}>
+                      Igreja No'ah
+                    </Text>
+                  </Group>
+
+                  <Group gap="sm">
+                    <IconBrandYoutube size={20} color="white" />
+                    <Text c="white" size="sm" fw={500}>
+                      No'ah Guapituba
+                    </Text>
+                  </Group>
+
+                  <Group gap="sm">
+                    <IconBrandWhatsapp size={20} color="white" />
+                    <Anchor
+                      href="https://wa.me/5511917307638"
+                      target="_blank"
+                      c="white"
+                      size="sm"
+                      fw={500}
+                    >
+                      (11) 91730-7638
+                    </Anchor>
+                  </Group>
+
+                  <Group gap="sm">
+                    <IconBrandInstagram size={20} color="white" />
+                    <Anchor
+                      href="https://instagram.com/brunosimoes02"
+                      target="_blank"
+                      c="white"
+                      size="sm"
+                      fw={500}
+                    >
+                      brunosimoes02
+                    </Anchor>
+                  </Group>
+                </Stack>
+              </Stack>
+            </Grid.Col>
+
+            {/* Contribuições */}
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Stack gap="lg">
+                <Title order={4} c="white" fw={600}>
+                  Contribua com essa obra:
+                </Title>
+
+                <Stack gap="md">
+                  <Text c="violet.2" size="sm" fw={500}>
+                    utilizando a chave PIX:
+                  </Text>
+
+                  <Paper bg="violet.6" p="sm" radius="md">
+                    <Text c="white" ta="center" fw={600} ff="monospace">
+                      (11) 91730-7638
+                    </Text>
+                  </Paper>
+                </Stack>
+              </Stack>
+            </Grid.Col>
+          </Grid>
+
+          <Divider my="xl" color="violet.7" />
+
           <Stack align="center" gap="md">
-            <Group gap="lg" wrap="wrap" justify="center">
-              <Group gap="xs" wrap="wrap" justify="center">
-                <IconMapPin size={18} color="white" />
-                <Text
-                  c="white"
-                  size="sm"
-                  fw={500}
-                  ta="center"
-                  style={{
-                    maxWidth: "100%",
-                    wordBreak: "break-word",
-                    lineHeight: 1.4,
-                  }}
-                  styles={{
-                    root: {
-                      "@media (max-width: 768px)": {
-                        fontSize: "var(--mantine-font-size-xs)",
-                        lineHeight: 1.3,
-                      },
+            <Group gap="xs" wrap="wrap" justify="center">
+              <IconMapPin size={18} color="white" />
+              <Text
+                c="white"
+                size="sm"
+                fw={500}
+                ta="center"
+                style={{
+                  maxWidth: "100%",
+                  wordBreak: "break-word",
+                  lineHeight: 1.4,
+                }}
+                styles={{
+                  root: {
+                    "@media (maxWidth: 768px)": {
+                      fontSize: "var(--mantine-font-size-xs)",
+                      lineHeight: 1.3,
                     },
-                  }}
-                >
-                  R. Cícero de Campos Póvoa, 42 - Guapituba, Mauá - SP
-                </Text>
-              </Group>
+                  },
+                }}
+              >
+                R. Cícero de Campos Póvoa, 42 - Guapituba, Mauá - SP
+              </Text>
             </Group>
-            <Divider w="100%" color="violet.7" />
             <Text c="violet.2" ta="center" size="xs">
               © 2025 Igreja No'ah. Todos os direitos reservados.
             </Text>
