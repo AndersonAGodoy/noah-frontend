@@ -1,7 +1,7 @@
 // app/client-providers.tsx
 "use client";
 
-import { MantineProvider } from "@mantine/core";
+import { MantineProvider, createTheme } from "@mantine/core";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
@@ -12,6 +12,17 @@ import {
 } from "@tanstack/react-query";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
+
+const theme = createTheme({
+  fontFamily: "var(--font-inter)",
+  headings: {
+    fontFamily: "var(--font-playfair)",
+    fontWeight: "700",
+  },
+  colors: {
+    // Cores personalizadas podem ser adicionadas aqui se necessário
+  },
+});
 
 function makeQueryClient() {
   return new QueryClient({
@@ -55,16 +66,7 @@ export default function ClientProviders({
   const queryClient = getQueryClient();
   return (
     <QueryClientProvider client={queryClient}>
-      <MantineProvider
-        theme={{
-          fontFamily: "var(--font-inter)",
-          headings: {
-            fontFamily: "var(--font-playfair)",
-            fontWeight: "700",
-          },
-        }}
-        defaultColorScheme="light"
-      >
+      <MantineProvider theme={theme}>
         <ModalsProvider>{children}</ModalsProvider>
         <Notifications />
         <ReactQueryDevtools initialIsOpen={false} />

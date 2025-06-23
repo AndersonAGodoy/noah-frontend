@@ -6,22 +6,40 @@ import {
   SimpleGrid,
   Stack,
   Title,
-  Text, Select,
+  Text,
+  Select,
   Box,
   Paper,
   Group,
   Divider,
   Badge,
-  Anchor, Grid
+  Anchor,
+  Grid,
+  UnstyledButton,
 } from "@mantine/core";
-import { IconFilter, IconBuildingChurch, IconMapPin, IconBrandInstagram, IconBrandSpotify, IconBrandYoutube, IconBrandWhatsapp } from "@tabler/icons-react";
+import {
+  IconFilter,
+  IconBuildingChurch,
+  IconMapPin,
+  IconBrandInstagram,
+  IconBrandSpotify,
+  IconBrandYoutube,
+  IconClipboardTextFilled,
+  IconBrandWhatsapp,
+} from "@tabler/icons-react";
 import useSermons from "../lib/hooks/useSermons";
 import SermonCard from "../components/SermonCard";
 import SermonCardSkeleton from "../components/SermonCardSkeleton";
-import { useState } from "react";
+import EncontroComDeusModal from "../components/EncontroComDeusModal";
+import ThemeToggle from "../components/ThemeToggle";
+import { useState, useEffect } from "react";
+import { useClientColorScheme } from "../lib/hooks/useClientColorScheme";
 
 export default function HomePage() {
   const [eventType, setEventType] = useState<string>("");
+  const [modalOpened, setModalOpened] = useState(false);
+  const { isDark, mounted } = useClientColorScheme();
+
   const {
     data,
     isLoading,
@@ -36,9 +54,8 @@ export default function HomePage() {
 
   const sermons =
     data?.pages.flatMap((page) => page.items.filter((s) => s.published)) || [];
-
   return (
-    <Box bg="gray.0" mih="100vh">
+    <Box bg={isDark ? "dark.8" : "gray.0"} mih="100vh">
       {/* Header */}
       <Box
         w="100%"
@@ -57,13 +74,48 @@ export default function HomePage() {
                 No'ah
               </Title>
             </Group>
+            <Group gap="md" wrap="nowrap">
+              <ThemeToggle color="white" />
+              <UnstyledButton
+                style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
+                onClick={() => setModalOpened(true)}
+              >
+                <IconClipboardTextFilled size={26} color="white" />
+                <Text
+                  c="white"
+                  size="md"
+                  fw={600}
+                  style={{ whiteSpace: "nowrap" }}
+                  visibleFrom="sm"
+                >
+                  Inscrição encontro com Deus
+                </Text>
+              </UnstyledButton>
+              <Button
+                component="a"
+                href="/dashboard"
+                variant="gradient"
+                gradient={{ from: "violet.5", to: "violet.8" }}
+                radius="xl"
+                c={"white"}
+                size="md"
+                px="2rem"
+                py="sm"
+                fw={600}
+              >
+                Login
+              </Button>
+            </Group>
           </Group>
         </Container>
-      </Box>
-
+      </Box>{" "}
       {/* Hero Section */}
       <Box
-        bg="linear-gradient(180deg, white 0%, var(--mantine-color-gray-0) 100%)"
+        bg={
+          isDark
+            ? "linear-gradient(180deg, var(--mantine-color-dark-7) 0%, var(--mantine-color-dark-8) 100%)"
+            : "linear-gradient(180deg, white 0%, var(--mantine-color-gray-0) 100%)"
+        }
         py="4rem"
       >
         <Container size="xl">
@@ -73,7 +125,7 @@ export default function HomePage() {
               order={1}
               size="3rem"
               fw={800}
-              c="dark"
+              c={isDark ? "white" : "dark"}
               maw={700}
               lh={1.1}
             >
@@ -86,12 +138,13 @@ export default function HomePage() {
             <Text
               ta="center"
               size="xl"
-              c="gray.6"
+              c={isDark ? "gray.4" : "gray.6"}
               maw={600}
               lh={1.7}
               fw={400}
             >
-              Explore nossos sermões, devocionais e conteúdos que edificam a fé e transformam vidas através da palavra de Deus.
+              Explore nossos sermões, devocionais e conteúdos que edificam a fé
+              e transformam vidas através da palavra de Deus.
             </Text>
             <Badge
               size="lg"
@@ -129,14 +182,21 @@ export default function HomePage() {
           </Stack>
         </Container>
       </Box>
-
       <Container px="md" py="2rem" size="xl">
         {/* Filtro */}
 
-        <Stack align="center" gap="sm" style={{ "@media (maxWidth: 768px)": { gap: "md" }, marginBottom: "2rem" }}>
+        <Stack
+          align="center"
+          gap="sm"
+          style={{
+            "@media (maxWidth: 768px)": { gap: "md" },
+            marginBottom: "2rem",
+          }}
+        >
+          {" "}
           <Group gap="sm" wrap="wrap" justify="center">
             <IconFilter size={22} color="var(--mantine-color-violet-6)" />
-            <Text fw={600} c="dark" size="lg" ta="center">
+            <Text fw={600} c={isDark ? "white" : "dark"} size="lg" ta="center">
               Filtrar conteúdo:
             </Text>
           </Group>
@@ -167,15 +227,22 @@ export default function HomePage() {
 
         {/* Conteúdo */}
         <Box>
+          {" "}
           {!isLoading && sermons.length > 0 && (
             <Group justify="space-between" align="center" mb="2rem">
-              <Text c="gray.6" size="lg" fw={500}>
-                {sermons.length} {sermons.length === 1 ? "conteúdo encontrado" : "conteúdos encontrados"}
+              <Text c={isDark ? "gray.4" : "gray.6"} size="lg" fw={500}>
+                {sermons.length}{" "}
+                {sermons.length === 1
+                  ? "conteúdo encontrado"
+                  : "conteúdos encontrados"}
               </Text>
-              <Divider style={{ flex: 1 }} ml="lg" color="gray.3" />
+              <Divider
+                style={{ flex: 1 }}
+                ml="lg"
+                color={isDark ? "dark.4" : "gray.3"}
+              />
             </Group>
           )}
-
           {isLoading && (
             <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="2rem">
               {[...Array(6)].map((_, i) => (
@@ -183,33 +250,53 @@ export default function HomePage() {
               ))}
             </SimpleGrid>
           )}
-
           {!isLoading && sermons.length === 0 && (
             <Paper
               shadow="md"
               p="3rem"
               radius="xl"
               mb="2rem"
-              bg="white"
+              bg={isDark ? "dark.6" : "white"}
               style={{
-                border: "1px solid var(--mantine-color-gray-2)",
+                border: `1px solid ${
+                  isDark
+                    ? "var(--mantine-color-dark-4)"
+                    : "var(--mantine-color-gray-2)"
+                }`,
               }}
             >
               <Stack align="center" gap="lg">
-                <IconBuildingChurch size={64} color="var(--mantine-color-gray-4)" />
-                <Title order={2} c="gray.6" fw={600} ta="center">
+                <IconBuildingChurch
+                  size={64}
+                  color={
+                    isDark
+                      ? "var(--mantine-color-gray-6)"
+                      : "var(--mantine-color-gray-4)"
+                  }
+                />
+                <Title
+                  order={2}
+                  c={isDark ? "gray.3" : "gray.6"}
+                  fw={600}
+                  ta="center"
+                >
                   Nenhum conteúdo encontrado
                 </Title>
-                <Text c="gray.5" size="lg" maw={400} ta="center" lh={1.6}>
+                <Text
+                  c={isDark ? "gray.5" : "gray.5"}
+                  size="lg"
+                  maw={400}
+                  ta="center"
+                  lh={1.6}
+                >
                   {eventType
                     ? `Não há conteúdos de "${eventType}" publicados no momento.`
-                    : "Não há conteúdos publicados no momento."
-                  } Volte em breve para conferir novos sermões e devocionais!
+                    : "Não há conteúdos publicados no momento."}{" "}
+                  Volte em breve para conferir novos sermões e devocionais!
                 </Text>
               </Stack>
             </Paper>
           )}
-
           {!isLoading && sermons.length > 0 && (
             <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="2rem">
               {sermons.map((sermon) => (
@@ -225,21 +312,26 @@ export default function HomePage() {
                 />
               ))}
             </SimpleGrid>
-          )}
-
+          )}{" "}
           {isError && (
-            <Paper p="3rem" radius="xl" bg="red.0" ta="center" shadow="sm">
+            <Paper
+              p="3rem"
+              radius="xl"
+              bg={isDark ? "red.9" : "red.0"}
+              ta="center"
+              shadow="sm"
+            >
               <Stack align="center" gap="lg">
                 <Title order={2} c="red.6" fw={600}>
                   Erro ao carregar conteúdos
                 </Title>
-                <Text c="red.7" size="lg" maw={400}>
-                  Ocorreu um erro ao carregar os sermões. Tente novamente mais tarde.
+                <Text c={isDark ? "red.4" : "red.7"} size="lg" maw={400}>
+                  Ocorreu um erro ao carregar os sermões. Tente novamente mais
+                  tarde.
                 </Text>
               </Stack>
             </Paper>
           )}
-
           {hasNextPage && (
             <Group justify="center" mt="3rem">
               <Button
@@ -268,7 +360,6 @@ export default function HomePage() {
           )}
         </Box>
       </Container>
-
       {/* Rodapé */}
       <Box
         component="footer"
@@ -393,10 +484,15 @@ export default function HomePage() {
             </Group>
             <Text c="violet.2" ta="center" size="xs">
               © 2025 Igreja No'ah. Todos os direitos reservados.
-            </Text>
+            </Text>{" "}
           </Stack>
         </Container>
       </Box>
+      {/* Modal do Encontro com Deus */}
+      <EncontroComDeusModal
+        opened={modalOpened}
+        onClose={() => setModalOpened(false)}
+      />
     </Box>
   );
 }

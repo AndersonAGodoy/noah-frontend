@@ -1,0 +1,50 @@
+/* Estilos globais para melhor suporte ao dark mode */
+
+/* Garantir transições suaves quando alternar temas */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Estilos específicos para imagens em dark mode */
+[data-mantine-color-scheme="dark"] img {
+  opacity: 0.9;
+}
+
+/* Garantir que scrollbars funcionem bem em ambos os temas */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--mantine-color-gray-1);
+}
+
+[data-mantine-color-scheme="dark"] ::-webkit-scrollbar-track {
+  background: var(--mantine-color-dark-6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--mantine-color-gray-4);
+  border-radius: 4px;
+}
+
+[data-mantine-color-scheme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--mantine-color-dark-3);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--mantine-color-gray-5);
+}
+
+[data-mantine-color-scheme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--mantine-color-dark-2);
+}
+
+/* Garantir boa legibilidade em links */
+[data-mantine-color-scheme="dark"] a {
+  color: var(--mantine-color-violet-4);
+}
+
+[data-mantine-color-scheme="light"] a {
+  color: var(--mantine-color-violet-6);
+}

@@ -5,7 +5,15 @@ import classes from "./StatsGrid.module.css";
 import formatRelativeDate from "../lib/utils/formatDate";
 import { Sermon } from "../lib/types/Sermon";
 
-export default function StatsGrid({ sermons }: { sermons: Sermon[] }) {
+interface StatsGridProps {
+  sermons: Sermon[];
+  encontroInscricoes?: number; // Novo prop para inscrições
+}
+
+export default function StatsGrid({
+  sermons,
+  encontroInscricoes = 0,
+}: StatsGridProps) {
   const sum = useMemo(() => sermons.length, [sermons]);
   const lastupdate = sermons[0]?.createdAt;
   const lastSermon = sermons[0]?.date;
@@ -14,7 +22,6 @@ export default function StatsGrid({ sermons }: { sermons: Sermon[] }) {
     () => formatRelativeDate(lastupdate),
     [lastupdate]
   );
-
   const formattedDate = parsedData ? parsedData : "Sem data disponível";
   return (
     <SimpleGrid cols={{ base: 1, xs: 1, md: 3 }}>
@@ -35,6 +42,25 @@ export default function StatsGrid({ sermons }: { sermons: Sermon[] }) {
           Publicados na biblioteca
         </Text>
       </Paper>
+
+      <Paper withBorder p="md" radius="md">
+        <Group justify="space-between">
+          <Title order={2} c={"violet"}>
+            Inscrições Encontro
+          </Title>
+        </Group>
+
+        <Group align="flex-end" gap="xs" mt={25}>
+          <Text fw={"bold"} fz={30}>
+            {encontroInscricoes}
+          </Text>
+        </Group>
+
+        <Text fz="xs" c="dimmed" mt={7}>
+          Pessoas interessadas
+        </Text>
+      </Paper>
+
       <Paper withBorder p="md" radius="md">
         <Group justify="space-between">
           <Title order={2} c={"violet"}>

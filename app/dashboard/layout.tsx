@@ -13,6 +13,8 @@ import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { IconDashboard, IconHome, IconLogout } from "@tabler/icons-react";
+import { useClientColorScheme } from "../../lib/hooks/useClientColorScheme";
+import ThemeToggle from "../../components/ThemeToggle";
 
 export default function DashboardLayout({
   children,
@@ -21,6 +23,7 @@ export default function DashboardLayout({
 }) {
   const [opened, { toggle }] = useDisclosure();
   const route = useRouter();
+  const { isDark } = useClientColorScheme();
 
   const links = [
     { label: "Início", icon: <IconHome size={18} />, href: "/dashboard" },
@@ -35,7 +38,6 @@ export default function DashboardLayout({
     });
     route.replace("/login");
   };
-
   return (
     <AppShell header={{ height: 60 }} padding="md">
       <AppShell.Header>
@@ -46,21 +48,24 @@ export default function DashboardLayout({
             href="/dashboard"
             rightSection={<IconDashboard size={16} />}
             variant="subtle"
-            color="dark"
+            color={isDark ? "gray" : "dark"}
             onClick={() => route.push("/dashboard")}
           >
             Dashboard
           </Button>
-          <Button
-            component={Link}
-            href="/"
-            leftSection={<IconLogout size={16} />}
-            variant="subtle"
-            color="dark"
-            onClick={handleLogout}
-          >
-            Sair
-          </Button>
+          <Group gap="sm">
+            <ThemeToggle />
+            <Button
+              component={Link}
+              href="/"
+              leftSection={<IconLogout size={16} />}
+              variant="subtle"
+              color={isDark ? "gray" : "dark"}
+              onClick={handleLogout}
+            >
+              Sair
+            </Button>
+          </Group>
         </Group>
       </AppShell.Header>
       <Container size={"lg"} px="md">

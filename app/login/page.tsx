@@ -13,11 +13,13 @@ import { IconInfoCircle } from "@tabler/icons-react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useClientColorScheme } from "../../lib/hooks/useClientColorScheme";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const { isDark } = useClientColorScheme();
 
   const icon = <IconInfoCircle size={16} />;
 
@@ -59,10 +61,24 @@ export default function Login() {
       password: (value) => (value.length < 6 ? "Mínimo 6 caracteres" : null),
     },
   });
-
   return (
-    <Flex justify={"center"} align="center" style={{ height: "100vh" }}>
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
+    <Flex
+      justify={"center"}
+      align="center"
+      style={{
+        height: "100vh",
+        backgroundColor: isDark
+          ? "var(--mantine-color-dark-8)"
+          : "var(--mantine-color-gray-0)",
+      }}
+    >
+      <Card
+        shadow="sm"
+        padding="lg"
+        radius="md"
+        withBorder
+        bg={isDark ? "dark.6" : "white"}
+      >
         <Title order={2} mb="md" ta="center">
           Bem vindo de volta!👋
         </Title>

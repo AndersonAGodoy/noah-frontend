@@ -33,6 +33,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import useSermon from "../../../../lib/hooks/useSermon";
+import { useClientColorScheme } from "../../../../lib/hooks/useClientColorScheme";
 
 interface ContentSection {
   id: string;
@@ -52,16 +53,24 @@ interface Reference {
 
 interface SermonContentProps {
   contentSections: ContentSection[];
+  isDark?: boolean;
 }
 
-const SermonContent = ({ contentSections }: SermonContentProps) => {
+const SermonContent = ({ contentSections, isDark }: SermonContentProps) => {
   const icon = <IconBible stroke={1.5} />;
   const contentMap: Record<
     string,
     (section: ContentSection) => React.ReactNode
   > = {
     parágrafo: (section) => (
-      <Text key={section.id} size="lg" mb="lg" ta="justify" lh={1.8} c="dark.7">
+      <Text
+        key={section.id}
+        size="lg"
+        mb="lg"
+        ta="justify"
+        lh={1.8}
+        c={isDark ? "gray.3" : "dark.7"}
+      >
         {section.content}
       </Text>
     ),
@@ -81,7 +90,7 @@ const SermonContent = ({ contentSections }: SermonContentProps) => {
         icon={icon}
         ff="Playfair Display, serif"
         fs="italic"
-        bg="violet.0"
+        bg={isDark ? "violet.9" : "violet.0"}
         styles={{
           root: {
             borderLeftWidth: 4,
@@ -104,21 +113,23 @@ const SermonContent = ({ contentSections }: SermonContentProps) => {
 
 const SermonPageSkeleton = () => {
   const isMobile = useMediaQuery("(maxWidth: 768px)");
+  const { isDark } = useClientColorScheme();
 
   return (
-    <Box bg="gray.0" mih="100vh">
+    <Box bg={isDark ? "dark.8" : "gray.0"} mih="100vh">
       <Container px="md" py="xl" size="lg">
         <Skeleton height={40} width={200} radius="md" mb="xl" />
 
-        <Paper shadow="md" p={isMobile ? "lg" : "xl"} radius="lg" bg="white">
+        <Paper
+          shadow="md"
+          p={isMobile ? "lg" : "xl"}
+          radius="lg"
+          bg={isDark ? "dark.6" : "white"}
+        >
           <Grid>
             <Grid.Col span={isMobile ? 12 : 7}>
               <Box mb="xl">
-                <Skeleton
-                  height={isMobile ? 220 : 400}
-                  radius="lg"
-                  mb="md"
-                />
+                <Skeleton height={isMobile ? 220 : 400} radius="lg" mb="md" />
               </Box>
 
               <Skeleton height={40} mb="md" />
@@ -141,19 +152,22 @@ const SermonPageSkeleton = () => {
             </Grid.Col>
 
             <Grid.Col span={isMobile ? 12 : 5}>
+              {" "}
               <Card
                 withBorder
                 shadow="sm"
                 radius="md"
                 p="lg"
-                bg="violet.0"
+                bg={isDark ? "violet.9" : "violet.0"}
                 style={{
                   position: isMobile ? "static" : "sticky",
                   top: "2rem",
                 }}
                 styles={{
                   root: {
-                    borderColor: "var(--mantine-color-violet-2)",
+                    borderColor: isDark
+                      ? "var(--mantine-color-violet-7)"
+                      : "var(--mantine-color-violet-2)",
                   },
                 }}
               >
@@ -181,11 +195,12 @@ export default function SermonPage() {
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const { data, isLoading } = useSermon(id);
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const { isDark } = useClientColorScheme();
 
   if (isLoading) return <SermonPageSkeleton />;
 
   return (
-    <Box bg="gray.0" mih="100vh">
+    <Box bg={isDark ? "dark.8" : "gray.0"} mih="100vh">
       <Container px="md" py="xl" size="lg">
         <Button
           component={Link}
@@ -204,7 +219,12 @@ export default function SermonPage() {
           Voltar para os sermões
         </Button>
 
-        <Paper shadow="md" p={isMobile ? "lg" : "xl"} radius="lg" bg="white">
+        <Paper
+          shadow="md"
+          p={isMobile ? "lg" : "xl"}
+          radius="lg"
+          bg={isDark ? "dark.6" : "white"}
+        >
           <Grid>
             <Grid.Col span={isMobile ? 12 : 7}>
               <Box mb="xl">
@@ -228,19 +248,20 @@ export default function SermonPage() {
               </Title>
 
               <Flex gap="lg" mb="xl" wrap="wrap">
-                <Flex gap={6} align="center" c="gray.6">
+                {" "}
+                <Flex gap={6} align="center" c={isDark ? "gray.4" : "gray.6"}>
                   <IconUser size={18} stroke={1.5} />
                   <Text size="md" fw={500}>
                     {data?.speaker}
                   </Text>
                 </Flex>
-                <Flex gap={6} align="center" c="gray.6">
+                <Flex gap={6} align="center" c={isDark ? "gray.4" : "gray.6"}>
                   <IconCalendar size={18} stroke={1.5} />
                   <Text size="md" fw={500}>
                     {data?.date}
                   </Text>
                 </Flex>
-                <Flex gap={6} align="center" c="gray.6">
+                <Flex gap={6} align="center" c={isDark ? "gray.4" : "gray.6"}>
                   <IconClock size={18} stroke={1.5} />
                   <Text size="md" fw={500}>
                     {data?.duration}
@@ -248,16 +269,22 @@ export default function SermonPage() {
                 </Flex>
               </Flex>
 
-              {data && <SermonContent contentSections={data.contentSections} />}
+              {data && (
+                <SermonContent
+                  contentSections={data.contentSections}
+                  isDark={isDark}
+                />
+              )}
             </Grid.Col>
 
             <Grid.Col span={isMobile ? 12 : 5}>
+              {" "}
               <Card
                 withBorder
                 shadow="sm"
                 radius="md"
                 p="lg"
-                bg="violet.0"
+                bg={isDark ? "violet.9" : "violet.0"}
                 style={{
                   position: isMobile ? "static" : "sticky",
                   top: "2rem",
@@ -266,21 +293,37 @@ export default function SermonPage() {
                 }}
                 styles={{
                   root: {
-                    borderColor: "var(--mantine-color-violet-2)",
+                    borderColor: isDark
+                      ? "var(--mantine-color-violet-7)"
+                      : "var(--mantine-color-violet-2)",
                   },
                 }}
               >
-                <Title order={3} mb="lg" c="violet.7" fw={600}>
+                <Title
+                  order={3}
+                  mb="lg"
+                  c={isDark ? "violet.2" : "violet.7"}
+                  fw={600}
+                >
                   Referências Bíblicas
                 </Title>
                 <Stack gap="lg">
                   {data &&
                     data.references.map((reference: Reference) => (
                       <Box key={reference.id}>
-                        <Title order={5} c="violet.6" mb="xs" fw={600}>
+                        <Title
+                          order={5}
+                          c={isDark ? "violet.2" : "violet.7"}
+                          mb="xs"
+                          fw={600}
+                        >
                           {reference.reference}
                         </Title>
-                        <Text c="gray.7" size="sm" lh={1.6}>
+                        <Text
+                          c={isDark ? "gray.2" : "gray.7"}
+                          size="sm"
+                          lh={1.6}
+                        >
                           {reference.text}
                         </Text>
                       </Box>
@@ -373,7 +416,6 @@ export default function SermonPage() {
                 </Title>
 
                 <Stack gap="md">
-
                   <Text c="violet.2" size="sm" fw={500}>
                     Utilizando a chave PIX:
                   </Text>

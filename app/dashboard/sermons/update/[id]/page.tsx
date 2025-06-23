@@ -24,9 +24,11 @@ import {
 } from "@tabler/icons-react";
 import useSermon from "../../../../../lib/hooks/useSermon";
 import useUpdateSermon from "../../../../../lib/hooks/useUpdateSermon";
+import { useClientColorScheme } from "../../../../../lib/hooks/useClientColorScheme";
 
 export default function AddSermon() {
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const { isDark } = useClientColorScheme();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [speaker, setSpeaker] = useState("");

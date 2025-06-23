@@ -2,8 +2,9 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import { ColorSchemeScript } from "@mantine/core";
 import ClientProviders from "./ClientRootProvider";
-import { GoogleAnalytics } from '@next/third-parties/google';
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
+import "./dark-mode.css";
 
 const gaId = process.env.NEXT_PUBLIC_GA_ID;
 

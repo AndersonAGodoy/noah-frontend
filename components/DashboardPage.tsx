@@ -1,5 +1,13 @@
 "use client";
-import { Title, Text, Box, Button, Notification } from "@mantine/core";
+import {
+  Title,
+  Text,
+  Box,
+  Button,
+  Notification,
+  Stack,
+  Group,
+} from "@mantine/core";
 
 import Link from "next/link";
 import useSermons from "../lib/hooks/useSermons";
@@ -10,9 +18,10 @@ import { modals } from "@mantine/modals";
 import { notifications, showNotification } from "@mantine/notifications";
 import LastSermons from "./LastSermons";
 import usePublishSermonMutation from "../lib/hooks/usePublishSermon";
-import { IconCirclePlus } from "@tabler/icons-react";
+import { IconCirclePlus, IconUsers } from "@tabler/icons-react";
 import { useSearchParams } from "next/navigation";
 import { Sermon } from "../lib/types/Sermon";
+import { useClientColorScheme } from "../lib/hooks/useClientColorScheme";
 
 export default function DashboardPage() {
   const { data, isLoading } = useSermons();
@@ -21,6 +30,11 @@ export default function DashboardPage() {
   const updated = searchParams.get("updated");
   const publishSermon = usePublishSermonMutation();
   const deleteSermon = useDeleteSermon();
+  const { isDark } = useClientColorScheme();
+
+  // Mock de inscrições do Encontro com Deus
+  const encontroInscricoes = 15; // Número mockado de inscrições
+
   const allSermons = useMemo(() => {
     return data?.pages.flatMap((page) => page.items) ?? [];
   }, [data]);
@@ -117,30 +131,61 @@ export default function DashboardPage() {
 
   return (
     <>
+      {" "}
       <Title order={1} mb={"md"} c={"violet"}>
         {"No'ah"}
       </Title>
-      <Box
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Text mb="md">Bem-vindo(a) de volta! Aqui está seu resumo.</Text>
-        <Button
-          color="violet"
-          component={Link}
-          href={"/dashboard/sermons/add"}
-          leftSection={<IconCirclePlus />}
-        >
-          Novo Sermão
-        </Button>
-      </Box>
+      <Stack gap="md" mb="md">
+        <Text c={isDark ? "gray.3" : "dark"}>
+          Bem-vindo(a) de volta! Aqui está seu resumo.
+        </Text>
 
+        <Group gap="xs" justify="flex-end" wrap="wrap">
+          <Button
+            color="gray"
+            variant="light"
+            size="sm"
+            radius="md"
+            component={Link}
+            href={"/dashboard/interessados-encontro"}
+            leftSection={<IconUsers size={16} />}
+            visibleFrom="sm"
+          >
+            Inscritos no Encontro
+          </Button>
+
+          <Button
+            color="gray"
+            variant="light"
+            size="sm"
+            radius="md"
+            component={Link}
+            href={"/dashboard/interessados-encontro"}
+            leftSection={<IconUsers size={16} />}
+            hiddenFrom="sm"
+          >
+            Inscritos
+          </Button>
+
+          <Button
+            color="gray"
+            variant="light"
+            size="sm"
+            radius="md"
+            component={Link}
+            href={"/dashboard/sermons/add"}
+            leftSection={<IconCirclePlus size={16} />}
+          >
+            Novo Sermão
+          </Button>
+        </Group>
+      </Stack>
       {!isLoading && (
         <>
-          <StatsGrid sermons={allSermons} />
+          <StatsGrid
+            sermons={allSermons}
+            encontroInscricoes={encontroInscricoes}
+          />
           <Title mt={"md"} order={1} c={"violet"}>
             Últimos Sermões
           </Title>
