@@ -15,6 +15,10 @@ import { useRouter } from "next/navigation";
 import { IconDashboard, IconHome, IconLogout } from "@tabler/icons-react";
 import { useClientColorScheme } from "../../lib/hooks/useClientColorScheme";
 import ThemeToggle from "../../components/ThemeToggle";
+import { authService } from "../../lib/firebase/services/authService";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../lib/firebase/config";
 
 export default function DashboardLayout({
   children,
@@ -24,6 +28,23 @@ export default function DashboardLayout({
   const [opened, { toggle }] = useDisclosure();
   const route = useRouter();
   const { isDark } = useClientColorScheme();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Verificar autenticação
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+        route.replace("/login");
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [route]);
 
   const links = [
     { label: "Início", icon: <IconHome size={18} />, href: "/dashboard" },
@@ -31,13 +52,25 @@ export default function DashboardLayout({
     // Adicione mais aqui
   ];
 
-  // Exemplo: botão de logout
+  // Logout usando Firebase Auth
   const handleLogout = async () => {
-    await fetch("/api/logout", {
-      method: "POST",
-    });
-    route.replace("/login");
+    try {
+      await authService.logout();
+      route.replace("/login");
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    }
   };
+
+  // Mostrar loading enquanto verifica autenticação
+  if (loading) {
+    return <div>Carregando...</div>;
+  }
+
+  // Se não estiver autenticado, o useEffect já redirecionou
+  if (!isAuthenticated) {
+    return null;
+  }
   return (
     <AppShell header={{ height: 60 }} padding="md">
       <AppShell.Header>

@@ -10,10 +10,12 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconInfoCircle } from "@tabler/icons-react";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useClientColorScheme } from "../../lib/hooks/useClientColorScheme";
+import { loginSchema, type LoginFormData } from "../../lib/schemas";
+import { zodResolver } from "../../lib/utils/zodResolver";
+import { authService } from "../../lib/firebase/services/authService";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
@@ -23,43 +25,38 @@ export default function Login() {
 
   const icon = <IconInfoCircle size={16} />;
 
-  const handleSubmit = async (values: typeof form.values) => {
+  const handleSubmit = async (values: LoginFormData) => {
     const { email, password } = values;
 
     setLoading(true);
     setError("");
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+    try {
+      const userCredential = await authService.login(email, password);
+
+      // Aguardar um pouco para garantir que o estado de auth foi atualizado
+      if (userCredential.user) {
+        // Usar replace em vez de push para evitar voltar para login
+        router.replace("/dashboard");
       }
-    );
-    if (response.ok) {
-      const data = await response.json();
-      Cookies.set("token", data["access_token"], {
-        expires: 1,
-      });
-
-      router.push("/dashboard");
-    } else {
-      setError("Erro ao fazer login - verifique suas credenciais");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Erro ao fazer login - verifique suas credenciais";
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
-  const form = useForm({
+  const form = useForm<LoginFormData>({
+    mode: "uncontrolled",
     initialValues: {
       email: "",
       password: "",
     },
-    validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "E-mail inválido"),
-      password: (value) => (value.length < 6 ? "Mínimo 6 caracteres" : null),
-    },
+    validate: zodResolver(loginSchema),
   });
   return (
     <Flex

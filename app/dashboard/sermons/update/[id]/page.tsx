@@ -12,6 +12,7 @@ import {
   Textarea,
   TextInput,
   Title,
+  Alert,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useEffect, useState } from "react";
@@ -21,10 +22,17 @@ import {
   IconCirclePlus,
   IconPencilCheck,
   IconSquareRoundedX,
+  IconMarkdown,
+  IconInfoCircle,
 } from "@tabler/icons-react";
-import useSermon from "../../../../../lib/hooks/useSermon";
-import useUpdateSermon from "../../../../../lib/hooks/useUpdateSermon";
+import {
+  useGetSermonFirebase,
+  useGetSermonsFirebase,
+} from "../../../../../lib/hooks/useGetSermonsFirebase";
+import useUpdateSermonFirebase from "../../../../../lib/hooks/useUpdateSermonFirebase";
 import { useClientColorScheme } from "../../../../../lib/hooks/useClientColorScheme";
+import MarkdownEditor from "../../../../../components/MarkdownEditor";
+import MarkdownViewer from "../../../../../components/MarkdownViewer";
 
 export default function AddSermon() {
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -36,11 +44,13 @@ export default function AddSermon() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [eventType, setEventType] = useState("Culto");
-  const updateSermon = useUpdateSermon();
+  const [markdownContent, setMarkdownContent] = useState("");
+  const updateSermonMutation = useUpdateSermonFirebase();
   const params = useParams();
-  const id = Array.isArray(params.id) ? params.id[0] : params.id;
-  const { data, isLoading } = useSermon(id);
+  const id = Array.isArray(params?.id) ? params.id[0] : params?.id ?? null;
+  const { data, isLoading } = useGetSermonFirebase(id as string | null);
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (data) {
@@ -51,6 +61,7 @@ export default function AddSermon() {
       setDate(data.date || "");
       setTime(data.time || "");
       setEventType(data.eventType || "Culto");
+      setMarkdownContent(data.markdownContent || "");
       setReferences(data.references || [{ reference: "", text: "" }]);
       setContentSections(
         data.contentSections?.length
@@ -111,7 +122,8 @@ export default function AddSermon() {
     setContentSections(newSections);
   };
 
-  const handleUpdateSermon = (id: string) => {
+  const handleUpdateSermon = async (id: string) => {
+    setIsSubmitting(true);
     try {
       const sermonData = {
         title,
@@ -120,13 +132,27 @@ export default function AddSermon() {
         duration,
         date,
         time,
-        eventType,
-        contentSections,
+        eventType: eventType as
+          | "Culto"
+          | "Estudo Bíblico"
+          | "Retiro"
+          | "Conferência"
+          | "Outro",
+        contentSections: contentSections.map((s) => ({
+          ...s,
+          type: s.type as "parágrafo" | "título" | "lista" | "citacao",
+        })),
         references,
+        markdownContent,
       };
-      updateSermon.mutateAsync({
+      await updateSermonMutation.mutateAsync({
         id,
-        ...sermonData,
+        data: sermonData,
+      });
+      notifications.show({
+        title: "Sucesso!",
+        message: "Sermão atualizado com sucesso.",
+        color: "green",
       });
       setTitle("");
       setDescription("");
@@ -135,16 +161,20 @@ export default function AddSermon() {
       setDate("");
       setTime("");
       setEventType("Culto");
+      setMarkdownContent("");
       setReferences([{ reference: "", text: "" }]);
       setContentSections([{ type: "parágrafo", content: "" }]);
       router.push("/dashboard?updated=true");
     } catch (error) {
-      console.log(error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Falha ao atualizar o sermão.";
       notifications.show({
         title: "Erro",
-        message: "Falha ao Atualizar o sermão.",
+        message: errorMessage,
         color: "red",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -247,114 +277,34 @@ export default function AddSermon() {
         </Tabs.Panel>
 
         <Tabs.Panel value="content">
-          <Group
-            mt={"md"}
-            justify="space-between"
-            align={isMobile ? "flex-start" : "center"}
-            style={{
-              flexDirection: isMobile ? "column" : "row",
-              width: "100%",
-            }}
-          >
-            <Title order={3}>Sessões</Title>
-            <Flex
-              justify="space-between"
-              align="center"
-              gap={"xs"}
-              style={{
-                flexDirection: isMobile ? "column" : "row",
-                width: isMobile ? "100%" : "auto",
-              }}
-            >
-              <Button
-                color="violet"
-                fullWidth={isMobile}
-                onClick={() => addContentSession("parágrafo")}
-                leftSection={<IconCirclePlus />}
-              >
-                Adicionar parágrafo
-              </Button>
-              <Button
-                color="violet"
-                fullWidth={isMobile}
-                onClick={() => addContentSession("header")}
-                leftSection={<IconCirclePlus />}
-              >
-                Adicionar subtítulo
-              </Button>
-              <Button
-                color="violet"
-                fullWidth={isMobile}
-                onClick={() => addContentSession("citação")}
-                leftSection={<IconCirclePlus />}
-              >
-                Adicionar citação
-              </Button>
-            </Flex>
-          </Group>
-          {contentSections.map((section, index) => (
-            <Card
-              key={index}
-              shadow="sm"
-              mt="md"
-              padding="lg"
-              radius="md"
-              withBorder
-            >
-              <Group justify="space-between">
-                <Text fw={500} tt={"capitalize"}>
-                  {section.type}
-                </Text>
-                <Button
-                  variant="subtle"
-                  color="red"
-                  onClick={() => removeContentSection(index)}
-                  disabled={contentSections.length === 1}
-                >
-                  Remover
-                </Button>
-              </Group>
-              {section.type === "parágrafo" && (
-                <>
-                  <Textarea
-                    label="Adicione aqui o conteúdo do parágrafo"
-                    value={section.content}
-                    onChange={(e) =>
-                      updateContentSection(index, "content", e.target.value)
-                    }
-                    placeholder="Conteúdo do parágrafo"
-                    variant="filled"
-                    resize="vertical"
-                    mt="md"
-                  />
-                </>
-              )}
-              {section.type === "header" && (
-                <TextInput
-                  label="Header"
-                  value={section.content}
-                  onChange={(e) =>
-                    updateContentSection(index, "content", e.target.value)
-                  }
-                  placeholder="Título do header"
-                  variant="filled"
-                  mt="md"
-                />
-              )}
-              {section.type === "citação" && (
-                <TextInput
-                  label="Citação"
-                  value={section.content}
-                  onChange={(e) =>
-                    updateContentSection(index, "content", e.target.value)
-                  }
-                  placeholder="Adicione aqui a citação"
-                  variant="filled"
-                  mt="md"
-                />
-              )}
-            </Card>
-          ))}
+          <Title order={3} mt="md">
+            Conteúdo do Sermão
+          </Title>
+          <Text size="sm" c="dimmed" mt="xs" mb="md">
+            Use o editor de markdown para criar e formatar o conteúdo do seu
+            sermão. Você pode usar formatação, listas, citações e muito mais.
+          </Text>
+
+          <Tabs defaultValue="editor" mt="md">
+            <Tabs.List>
+              <Tabs.Tab value="editor">Editor</Tabs.Tab>
+              <Tabs.Tab value="preview">Visualização</Tabs.Tab>
+            </Tabs.List>
+
+            <Tabs.Panel value="editor" pt="md">
+              <MarkdownEditor
+                value={markdownContent}
+                onChange={setMarkdownContent}
+                height={650}
+              />
+            </Tabs.Panel>
+
+            <Tabs.Panel value="preview" pt="md">
+              <MarkdownViewer
+                content={markdownContent || "Nenhum conteúdo ainda..."}
+              />
+            </Tabs.Panel>
+          </Tabs>
         </Tabs.Panel>
         <Tabs.Panel value="reference">
           <Group
@@ -425,6 +375,8 @@ export default function AddSermon() {
               color="violet"
               onClick={() => id && handleUpdateSermon(id)}
               leftSection={<IconPencilCheck />}
+              loading={isSubmitting}
+              disabled={isSubmitting}
             >
               Atualizar Sermão
             </Button>

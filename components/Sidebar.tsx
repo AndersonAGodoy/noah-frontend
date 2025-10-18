@@ -1,7 +1,11 @@
 "use client";
 
 import { Box, Stack, Anchor, Text } from "@mantine/core";
-import { IconHome2, IconSettings } from "@tabler/icons-react";
+import {
+  IconHome2,
+  IconSettings,
+  IconCalendarEvent,
+} from "@tabler/icons-react";
 import Link from "next/link";
 
 function NavItem({
@@ -47,6 +51,11 @@ export default function Sidebar() {
     >
       <Stack gap="sm">
         <NavItem href="/dashboard" icon={IconHome2} label="Início" />
+        <NavItem
+          href="/dashboard/encontros"
+          icon={IconCalendarEvent}
+          label="Encontros"
+        />
         <NavItem
           href="/dashboard/settings"
           icon={IconSettings}

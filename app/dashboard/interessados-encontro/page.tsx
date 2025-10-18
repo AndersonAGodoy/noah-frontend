@@ -32,90 +32,15 @@ import {
 import Link from "next/link";
 import { useClientColorScheme } from "../../../lib/hooks/useClientColorScheme";
 import { useState, useMemo } from "react";
-
-// Dados mockados para demonstração
-const mockInscricoes = [
-  {
-    id: 1,
-    nome: "Maria Silva",
-    email: "maria.silva@email.com",
-    telefone: "(11) 99999-1234",
-    idade: 28,
-    endereco: "São Paulo, SP",
-    tipoParticipacao: "primeira-vez",
-    observacoes: "Primeira vez participando, muito animada!",
-    dataInscricao: "2025-06-20",
-    dataEncontro: "2025-07-15",
-  },
-  {
-    id: 2,
-    nome: "João Santos",
-    email: "joao.santos@email.com",
-    telefone: "(11) 98888-5678",
-    idade: 35,
-    endereco: "Mauá, SP",
-    tipoParticipacao: "ja-participei",
-    observacoes: "Já participei duas vezes, amo o encontro!",
-    dataInscricao: "2025-06-21",
-    dataEncontro: "2025-07-15",
-  },
-  {
-    id: 3,
-    nome: "Ana Carolina",
-    email: "ana.carolina@email.com",
-    telefone: "(11) 97777-9012",
-    idade: 42,
-    endereco: "Santo André, SP",
-    tipoParticipacao: "lideranca",
-    observacoes: "Gostaria de ajudar na organização",
-    dataInscricao: "2025-06-22",
-    dataEncontro: "2025-08-20",
-  },
-  {
-    id: 4,
-    nome: "Pedro Oliveira",
-    email: "pedro.oliveira@email.com",
-    telefone: "(11) 96666-3456",
-    idade: 31,
-    endereco: "São Bernardo, SP",
-    tipoParticipacao: "primeira-vez",
-    observacoes: "",
-    dataInscricao: "2025-06-23",
-    dataEncontro: "2025-08-20",
-  },
-  {
-    id: 5,
-    nome: "Fernanda Costa",
-    email: "fernanda.costa@email.com",
-    telefone: "(11) 95555-7890",
-    idade: 26,
-    endereco: "Diadema, SP",
-    tipoParticipacao: "primeira-vez",
-    observacoes: "Muito empolgada para participar!",
-    dataInscricao: "2025-06-23",
-    dataEncontro: "2025-09-10",
-  },
-  {
-    id: 6,
-    nome: "Carlos Mendes",
-    email: "carlos.mendes@email.com",
-    telefone: "(11) 94444-1122",
-    idade: 38,
-    endereco: "São Caetano, SP",
-    tipoParticipacao: "lideranca",
-    observacoes: "Disponível para liderar grupo",
-    dataInscricao: "2025-06-23",
-    dataEncontro: "2025-09-10",
-  },
-];
+import useGetAllParticipantsFirebase from "../../../lib/hooks/useGetAllParticipantsFirebase";
 
 const getTipoParticipacaoColor = (tipo: string) => {
   switch (tipo) {
-    case "primeira-vez":
+    case "firstTime":
       return "blue";
-    case "ja-participei":
+    case "returning":
       return "green";
-    case "lideranca":
+    case "leadership":
       return "violet";
     default:
       return "gray";
@@ -124,11 +49,11 @@ const getTipoParticipacaoColor = (tipo: string) => {
 
 const getTipoParticipacaoLabel = (tipo: string) => {
   switch (tipo) {
-    case "primeira-vez":
+    case "firstTime":
       return "Primeira vez";
-    case "ja-participei":
+    case "returning":
       return "Já participei";
-    case "lideranca":
+    case "leadership":
       return "Liderança";
     default:
       return tipo;
@@ -141,26 +66,54 @@ export default function InteressadosEncontroPage() {
   const [modalOpened, setModalOpened] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<any>(null);
 
+  // Buscar todos os participantes do Firebase
+  const { data: participantsData, isLoading } = useGetAllParticipantsFirebase({
+    limit: 100,
+    page: 1,
+  });
+
+  const participants = participantsData?.data || [];
+
   // Extrair datas únicas dos encontros
   const datasEncontros = useMemo(() => {
+    if (!participants.length) return [];
+
+    // Baseado na data de criação dos participantes
     const datas = Array.from(
-      new Set(mockInscricoes.map((i) => i.dataEncontro))
+      new Set(
+        participants.map((p) => {
+          // Usar a data de criação formatada como data do encontro
+          const date =
+            p.createdAt instanceof Date
+              ? p.createdAt
+              : p.createdAt?.toDate?.() || new Date();
+          return date.toISOString().split("T")[0];
+        })
+      )
     );
+
     return datas.map((data) => ({
       value: data,
-      label: new Date(data).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      }),
+      label: new Date(data).toLocaleDateString("pt-BR"),
     }));
-  }, []);
+  }, [participants]);
 
   // Filtrar inscrições baseado na data selecionada
   const inscricoesFiltradas = useMemo(() => {
-    if (!selectedEncontro) return mockInscricoes;
-    return mockInscricoes.filter((i) => i.dataEncontro === selectedEncontro);
-  }, [selectedEncontro]);
+    if (!selectedEncontro) {
+      return participants;
+    }
+    
+    const filtrados = participants.filter((p) => {
+      const date =
+        p.createdAt instanceof Date
+          ? p.createdAt
+          : p.createdAt?.toDate?.() || new Date();
+      return date.toISOString().split("T")[0] === selectedEncontro;
+    });
+    
+    return filtrados;
+  }, [selectedEncontro, participants]);
 
   const handleVerDetalhes = (person: any) => {
     setSelectedPerson(person);
@@ -272,7 +225,7 @@ export default function InteressadosEncontroPage() {
       <Table.Td>
         <Stack gap={4}>
           <Text fw={600} size="sm">
-            {inscricao.nome}
+            {inscricao.name}
           </Text>
           <Group gap={4}>
             <IconMail size={12} color="gray" />
@@ -285,30 +238,36 @@ export default function InteressadosEncontroPage() {
       <Table.Td visibleFrom="sm">
         <Group gap={4}>
           <IconPhone size={12} color="gray" />
-          <Text size="sm">{inscricao.telefone}</Text>
+          <Text size="sm">{inscricao.phoneNumber}</Text>
         </Group>
       </Table.Td>
       <Table.Td visibleFrom="md">
-        <Text size="sm">{inscricao.idade} anos</Text>
+        <Text size="sm">{inscricao.age} anos</Text>
       </Table.Td>
       <Table.Td visibleFrom="md">
         <Group gap={4}>
           <IconMapPin size={12} color="gray" />
-          <Text size="sm">{inscricao.endereco}</Text>
+          <Text size="sm">{inscricao.address}</Text>
         </Group>
       </Table.Td>
       <Table.Td>
         <Badge
-          color={getTipoParticipacaoColor(inscricao.tipoParticipacao)}
+          color={getTipoParticipacaoColor(inscricao.typeOfParticipation)}
           variant="light"
           size="sm"
         >
-          {getTipoParticipacaoLabel(inscricao.tipoParticipacao)}
+          {getTipoParticipacaoLabel(inscricao.typeOfParticipation)}
         </Badge>
       </Table.Td>
       <Table.Td visibleFrom="sm">
         <Text size="sm" c="dimmed">
-          {new Date(inscricao.dataInscricao).toLocaleDateString("pt-BR")}
+          {(() => {
+            const date =
+              inscricao.createdAt instanceof Date
+                ? inscricao.createdAt
+                : inscricao.createdAt?.toDate?.() || new Date();
+            return date.toLocaleDateString("pt-BR");
+          })()}
         </Text>
       </Table.Td>
       <Table.Td>
@@ -362,6 +321,16 @@ export default function InteressadosEncontroPage() {
 
         {/* Filtro por Data do Encontro */}
         <Paper withBorder p="md" bg={isDark ? "dark.6" : "white"}>
+          <Group justify="space-between" mb="sm">
+            <Text size="sm" fw={500}>
+              Filtros
+            </Text>
+            {selectedEncontro && (
+              <Badge color="blue" variant="light" size="sm">
+                Filtro ativo
+              </Badge>
+            )}
+          </Group>
           <Group align="end" gap="md">
             <Select
               label="Filtrar por Data do Encontro"
@@ -374,13 +343,21 @@ export default function InteressadosEncontroPage() {
             />
             {selectedEncontro && (
               <Text size="sm" c="dimmed">
-                Exibindo {inscricoesFiltradas.length} inscrição
-                {inscricoesFiltradas.length !== 1 ? "ões" : ""}
+                Exibindo {inscricoesFiltradas.length} inscriç
+                {inscricoesFiltradas.length !== 1 ? "ões" : "ão"}
                 {selectedEncontro &&
                   ` para ${
                     datasEncontros.find((d) => d.value === selectedEncontro)
                       ?.label
                   }`}
+                <Text span c="blue.6" fw={500}>
+                  (de {participants.length} total)
+                </Text>
+              </Text>
+            )}
+            {!selectedEncontro && participants.length > 0 && (
+              <Text size="sm" c="dimmed">
+                Mostrando todas as {participants.length} inscrições
               </Text>
             )}
           </Group>
@@ -408,7 +385,7 @@ export default function InteressadosEncontroPage() {
             <Text size="lg" fw={700} c="blue.6">
               {
                 inscricoesFiltradas.filter(
-                  (i) => i.tipoParticipacao === "primeira-vez"
+                  (i) => i.typeOfParticipation === "firstTime"
                 ).length
               }
             </Text>
@@ -423,7 +400,7 @@ export default function InteressadosEncontroPage() {
             <Text size="lg" fw={700} c="green.6">
               {
                 inscricoesFiltradas.filter(
-                  (i) => i.tipoParticipacao === "ja-participei"
+                  (i) => i.typeOfParticipation === "returning"
                 ).length
               }
             </Text>
@@ -438,7 +415,7 @@ export default function InteressadosEncontroPage() {
             <Text size="lg" fw={700} c="violet.6">
               {
                 inscricoesFiltradas.filter(
-                  (i) => i.tipoParticipacao === "lideranca"
+                  (i) => i.typeOfParticipation === "leadership"
                 ).length
               }
             </Text>
@@ -498,23 +475,23 @@ export default function InteressadosEncontroPage() {
                 <Group justify="space-between" align="start">
                   <Box>
                     <Text size="xl" fw={700} c={isDark ? "white" : "dark"}>
-                      {selectedPerson.nome}
+                      {selectedPerson.name}
                     </Text>
                     <Badge
                       color={getTipoParticipacaoColor(
-                        selectedPerson.tipoParticipacao
+                        selectedPerson.typeOfParticipation
                       )}
                       variant="light"
                       size="md"
                       mt="xs"
                     >
                       {getTipoParticipacaoLabel(
-                        selectedPerson.tipoParticipacao
+                        selectedPerson.typeOfParticipation
                       )}
                     </Badge>
                   </Box>
                   <Text size="sm" c="dimmed">
-                    {selectedPerson.idade} anos
+                    {selectedPerson.age} anos
                   </Text>
                 </Group>
               </Stack>
@@ -539,7 +516,7 @@ export default function InteressadosEncontroPage() {
                   <Text size="sm" c="dimmed" fw={500}>
                     Telefone
                   </Text>
-                  <Text size="sm">{selectedPerson.telefone}</Text>
+                  <Text size="sm">{selectedPerson.phoneNumber}</Text>
                 </Box>
               </Group>
 
@@ -549,7 +526,7 @@ export default function InteressadosEncontroPage() {
                   <Text size="sm" c="dimmed" fw={500}>
                     Endereço
                   </Text>
-                  <Text size="sm">{selectedPerson.endereco}</Text>
+                  <Text size="sm">{selectedPerson.address}</Text>
                 </Box>
               </Group>
 
@@ -557,17 +534,20 @@ export default function InteressadosEncontroPage() {
                 <IconCalendar size={18} color="gray" />
                 <Box>
                   <Text size="sm" c="dimmed" fw={500}>
-                    Data do Encontro
+                    Data de Inscrição
                   </Text>
                   <Text size="sm">
-                    {new Date(selectedPerson.dataEncontro).toLocaleDateString(
-                      "pt-BR",
-                      {
+                    {(() => {
+                      const date =
+                        selectedPerson.createdAt instanceof Date
+                          ? selectedPerson.createdAt
+                          : selectedPerson.createdAt?.toDate?.() || new Date();
+                      return date.toLocaleDateString("pt-BR", {
                         day: "2-digit",
                         month: "long",
                         year: "numeric",
-                      }
-                    )}
+                      });
+                    })()}
                   </Text>
                 </Box>
               </Group>
@@ -579,14 +559,18 @@ export default function InteressadosEncontroPage() {
                     Data da Inscrição
                   </Text>
                   <Text size="sm">
-                    {new Date(selectedPerson.dataInscricao).toLocaleDateString(
-                      "pt-BR"
-                    )}
+                    {(() => {
+                      const date =
+                        selectedPerson.createdAt instanceof Date
+                          ? selectedPerson.createdAt
+                          : selectedPerson.createdAt?.toDate?.() || new Date();
+                      return date.toLocaleDateString("pt-BR");
+                    })()}
                   </Text>
                 </Box>
               </Group>
 
-              {selectedPerson.observacoes && (
+              {selectedPerson.observations && (
                 <>
                   <Divider />
                   <Group gap="sm" align="start">
@@ -595,7 +579,7 @@ export default function InteressadosEncontroPage() {
                       <Text size="sm" c="dimmed" fw={500}>
                         Observações
                       </Text>
-                      <Text size="sm">{selectedPerson.observacoes}</Text>
+                      <Text size="sm">{selectedPerson.observations}</Text>
                     </Box>
                   </Group>
                 </>

@@ -13,42 +13,57 @@ import {
   Textarea,
   TextInput,
   Title,
+  Alert,
 } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { useMediaQuery } from "@mantine/hooks";
 import { useState } from "react";
-import useCreateSermon from "../../../../lib/hooks/useCreateSermon";
+import useCreateSermonFirebase from "../../../../lib/hooks/useCreateSermonFirebase";
 import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
 import {
   IconBible,
   IconCirclePlus,
   IconSquareRoundedX,
+  IconMarkdown,
+  IconInfoCircle,
 } from "@tabler/icons-react";
 import { useClientColorScheme } from "../../../../lib/hooks/useClientColorScheme";
+import { sermonSchema, type SermonFormData } from "../../../../lib/schemas";
+import { zodResolver } from "../../../../lib/utils/zodResolver";
+import MarkdownEditor from "../../../../components/MarkdownEditor";
+import MarkdownViewer from "../../../../components/MarkdownViewer";
 
 export default function AddSermon() {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const { isDark } = useClientColorScheme();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [speaker, setSpeaker] = useState("");
-  const [duration, setDuration] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [eventType, setEventType] = useState("Culto");
-  const { mutate: createSermon } = useCreateSermon();
+  const { mutateAsync: createSermon } = useCreateSermonFirebase();
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  //Referencia biblica
-  const [references, setReferences] = useState([{ reference: "", text: "" }]);
-
-  //sessões
-  const [contentSections, setContentSections] = useState([
-    { type: "parágrafo", content: "" },
-  ]);
+  const form = useForm<SermonFormData>({
+    mode: "controlled",
+    initialValues: {
+      title: "",
+      description: "",
+      speaker: "",
+      duration: "",
+      date: "",
+      time: "",
+      eventType: "Culto" as const,
+      references: [{ reference: "", text: "" }],
+      contentSections: [],
+      markdownContent: "", // Novo campo para markdown
+    },
+    validate: zodResolver(sermonSchema),
+  });
 
   const addScriptureReference = () => {
-    setReferences([...references, { reference: "", text: "" }]);
+    const currentReferences = form.values.references;
+    form.setFieldValue("references", [
+      ...currentReferences,
+      { reference: "", text: "" },
+    ]);
   };
 
   const updateReference = (
@@ -56,393 +71,291 @@ export default function AddSermon() {
     field: "reference" | "text",
     value: string
   ) => {
-    const updatedReferences = [...references];
-    updatedReferences[index][field] = value;
-    setReferences(updatedReferences);
+    form.setFieldValue(`references.${index}.${field}`, value);
   };
 
-  const addContentSession = (type: string) => {
-    setContentSections([...contentSections, { type, content: "" }]);
+  const removeReference = (index: number) => {
+    const currentReferences = form.values.references;
+    if (currentReferences.length > 1) {
+      const newReferences = currentReferences.filter((_, i) => i !== index);
+      form.setFieldValue("references", newReferences);
+    }
   };
 
-  const updateContentSection = (
-    index: number,
-    field: string,
-    value: string
-  ) => {
-    const newSections = [...contentSections];
-    // @ts-ignore - We know these fields exist on the objects
-    newSections[index][field] = value;
-    setContentSections(newSections);
-  };
+  const handleCreateSermon = async (values: SermonFormData) => {
+    console.log("🚀 handleCreateSermon called with values:", values);
+    console.log("🔍 Markdown content length:", values.markdownContent?.length);
+    console.log("📝 Form validation errors:", form.errors);
 
-  const removeContentSection = (index: number) => {
-    const newSections = [...contentSections];
-    newSections.splice(index, 1);
-    setContentSections(newSections);
-  };
-
-  const handleCreateSermon = () => {
+    setIsSubmitting(true);
     try {
-      const sermonData = {
-        title,
-        description,
-        speaker,
-        duration,
-        date,
-        time,
-        eventType,
-        references,
-        contentSections,
-      };
-      createSermon(sermonData);
-      setTitle("");
-      setDescription("");
-      setSpeaker("");
-      setDuration("");
-      setDate("");
-      setTime("");
-      setEventType("Culto");
-      setReferences([{ reference: "", text: "" }]);
-      setContentSections([{ type: "parágrafo", content: "" }]);
-
-      // Redirect to dashboard or another page
+      await createSermon(values);
+      notifications.show({
+        title: "Sucesso!",
+        message: "Sermão criado com sucesso.",
+        color: "green",
+      });
+      form.reset();
       router.push("/dashboard?created=true");
     } catch (error) {
+      console.error("❌ Error creating sermon:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Falha ao criar o sermão.";
       notifications.show({
         title: "Erro",
-        message: "Falha ao criar o sermão.",
+        message: errorMessage,
         color: "red",
       });
+    } finally {
+      setIsSubmitting(false);
     }
-    // Reset form fields
   };
 
   return (
     <Box flex={1}>
       <Title order={1}>Criar um novo Sermão</Title>
 
-      <Tabs defaultValue="information" mt="md">
-        <Tabs.List grow>
-          <Tabs.Tab color="violet" value="information">
-            Informações básicas
-          </Tabs.Tab>
-          <Tabs.Tab color="violet" value="data">
-            Data e hora
-          </Tabs.Tab>
-          <Tabs.Tab color="violet" value="content">
-            Conteúdo do Sermão
-          </Tabs.Tab>
-          <Tabs.Tab color="violet" value="reference">
-            Referências bíblicas
-          </Tabs.Tab>
-        </Tabs.List>
-
-        <Tabs.Panel value="information">
-          <Box mt="md">
-            <TextInput
-              label="Título do Sermão"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Título do Sermão"
-              variant="filled"
-            />
-            <Textarea
-              label="Breve descrição"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Breve descrição do Sermão"
-              variant="filled"
-              resize="vertical"
-              mt="md"
-            />
-            <Flex gap="md" justify={"space-between"}>
-              <TextInput
-                label="Palestrante"
-                value={speaker}
-                onChange={(e) => setSpeaker(e.target.value)}
-                placeholder="Ex: Pastor Bruno"
-                variant="filled"
-                mt="md"
-                flex={1}
-              />
-              <TextInput
-                label="Duração"
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-                placeholder="Ex: 45 minutos"
-                variant="filled"
-                mt="md"
-                flex={1}
-              />
-            </Flex>
-          </Box>
-        </Tabs.Panel>
-
-        <Tabs.Panel value="data">
-          <Grid>
-            <Grid.Col span={isMobile ? 12 : 6}>
-              <TextInput
-                label="Data"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                placeholder="Ex: 14 de Outubro"
-                variant="filled"
-                mt="md"
-              />
-            </Grid.Col>
-            <Grid.Col span={isMobile ? 12 : 6}>
-              <TextInput
-                label="Hora"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                mt="md"
-                placeholder="Ex: 19:00"
-                variant="filled"
-              />
-            </Grid.Col>
-          </Grid>
-          <Select
-            label="Tipo de conteúdo"
-            value={eventType}
-            onChange={(value) => setEventType(value || "")}
-            variant="filled"
-            mt="md"
-            placeholder="Selecione o tipo de conteúdo"
-            data={[
-              { value: "culto", label: "Culto" },
-              { value: "devocional", label: "Devocional" },
-            ]}
-          />
-        </Tabs.Panel>
-
-        <Tabs.Panel value="content">
-          <Group
-            mt={"md"}
-            justify="space-between"
-            align={isMobile ? "flex-start" : "center"}
-            style={{
-              flexDirection: isMobile ? "column" : "row",
-              width: "100%",
-            }}
-          >
-            <Title order={3}>Sessões</Title>
-            <Flex
-              justify="space-between"
-              align="center"
-              gap={"xs"}
-              style={{
-                flexDirection: isMobile ? "column" : "row",
-                width: isMobile ? "100%" : "auto",
-              }}
-            >
-              <Button
-                color="violet"
-                fullWidth={isMobile}
-                onClick={() => addContentSession("parágrafo")}
-                leftSection={<IconCirclePlus />}
-              >
-                Adicionar parágrafo
-              </Button>
-              <Button
-                color="violet"
-                fullWidth={isMobile}
-                onClick={() => addContentSession("header")}
-                leftSection={<IconCirclePlus />}
-              >
-                Adicionar subtítulo
-              </Button>
-              <Button
-                color="violet"
-                fullWidth={isMobile}
-                onClick={() => addContentSession("citação")}
-                leftSection={<IconCirclePlus />}
-              >
-                Adicionar citação
-              </Button>
-            </Flex>
-          </Group>
-          {contentSections.map((section, index) => (
-            <Card
-              key={index}
-              shadow="sm"
-              mt="md"
-              padding="lg"
-              radius="md"
-              withBorder
-            >
-              <Group justify="space-between">
-                <Text fw={500} tt={"capitalize"}>
-                  {section.type}
-                </Text>
-                <Button
-                  variant="subtle"
-                  color="red"
-                  onClick={() => removeContentSection(index)}
-                  disabled={contentSections.length === 1}
-                >
-                  Remover
-                </Button>
+      <form onSubmit={form.onSubmit(handleCreateSermon)}>
+        <Tabs defaultValue="information" mt="md">
+          <Tabs.List grow>
+            <Tabs.Tab color="violet" value="information">
+              Informações básicas
+            </Tabs.Tab>
+            <Tabs.Tab color="violet" value="data">
+              Data e hora
+            </Tabs.Tab>
+            <Tabs.Tab color="violet" value="content">
+              <Group gap="xs">
+                <IconMarkdown size={16} />
+                Conteúdo (Markdown)
               </Group>
-              {section.type === "parágrafo" && (
-                <>
-                  <Textarea
-                    label="Adicione aqui o conteúdo do parágrafo"
-                    value={section.content}
-                    onChange={(e) =>
-                      updateContentSection(index, "content", e.target.value)
-                    }
-                    placeholder="Conteúdo do parágrafo"
-                    variant="filled"
-                    resize="vertical"
-                    mt="md"
-                  />
-                </>
-              )}
-              {section.type === "header" && (
-                <TextInput
-                  label="Header"
-                  value={section.content}
-                  onChange={(e) =>
-                    updateContentSection(index, "content", e.target.value)
-                  }
-                  placeholder="Título do header"
-                  variant="filled"
-                  mt="md"
-                />
-              )}
-              {section.type === "citação" && (
-                <TextInput
-                  label="Citação"
-                  value={section.content}
-                  onChange={(e) =>
-                    updateContentSection(index, "content", e.target.value)
-                  }
-                  placeholder="Adicione aqui a citação"
-                  variant="filled"
-                  mt="md"
-                />
-              )}
-            </Card>
-          ))}
-          <Title order={4} mt="xl" mb="md">
-            Pré-visualização
-          </Title>
-          <Card withBorder p="md">
-            {contentSections.map((section, index) => {
-              switch (section.type) {
-                case "parágrafo":
-                  return (
-                    <Text key={index} mb="md">
-                      {section.content || "(Parágrafo vazio)"}
-                    </Text>
-                  );
-                case "header":
-                  return (
-                    <Title key={index} order={4} c="violet" mb="md">
-                      {section.content || "(Título vazio)"}
-                    </Title>
-                  );
-                case "citação":
-                  return (
-                    <Blockquote
-                      key={index}
-                      c="violet"
-                      mb="md"
-                      icon={<IconBible size={18} />}
-                    >
-                      {section.content || "(Citação vazia)"}
-                    </Blockquote>
-                  );
-                default:
-                  return null;
-              }
-            })}
-          </Card>
-        </Tabs.Panel>
-        <Tabs.Panel value="reference">
-          <Group
-            mt={"md"}
-            justify="space-between"
-            align={isMobile ? "flex-start" : "center"}
-            style={{
-              flexDirection: isMobile ? "column" : "row",
-              width: "100%",
-            }}
-          >
-            <Title order={3}>Referências bíblicas</Title>
-            <Button
-              color="violet"
-              onClick={addScriptureReference}
-              leftSection={<IconCirclePlus />}
-            >
-              Adicionar referência
-            </Button>
-          </Group>
-          {references.map((reference, index) => (
-            <Card
-              key={index}
-              shadow="sm"
-              mt="md"
-              padding="lg"
-              radius="md"
-              withBorder
-            >
-              <Group justify="space-between">
-                <Text fw={500}>Referência {index + 1}</Text>
-                <Button
-                  variant="subtle"
-                  color="red"
-                  onClick={() => {
-                    const newReferences = [...references];
-                    newReferences.splice(index, 1);
-                    setReferences(newReferences);
-                  }}
-                  disabled={references.length === 1}
-                >
-                  Remover
-                </Button>
-              </Group>
+            </Tabs.Tab>
+            <Tabs.Tab color="violet" value="reference">
+              Referências bíblicas
+            </Tabs.Tab>
+          </Tabs.List>
+
+          <Tabs.Panel value="information">
+            <Box mt="md">
               <TextInput
-                label="Referência"
-                placeholder="Ex: João 3:16"
+                label="Título do Sermão"
+                {...form.getInputProps("title")}
+                placeholder="Título do Sermão"
                 variant="filled"
-                mt="md"
-                value={reference.reference}
-                onChange={(e) =>
-                  updateReference(index, "reference", e.target.value)
-                }
               />
               <Textarea
-                label="Texto da referência"
-                placeholder="Texto da referência bíblica"
+                label="Breve descrição"
+                {...form.getInputProps("description")}
+                placeholder="Breve descrição do Sermão"
                 variant="filled"
                 resize="vertical"
                 mt="md"
-                value={reference.text}
-                onChange={(e) => updateReference(index, "text", e.target.value)}
               />
-            </Card>
-          ))}
-          <Flex justify={"flex-end"} mt="md" gap="xs">
-            <Button
-              color="violet"
-              onClick={handleCreateSermon}
-              leftSection={<IconCirclePlus />}
+              <Flex gap="md" justify={"space-between"}>
+                <TextInput
+                  label="Palestrante"
+                  {...form.getInputProps("speaker")}
+                  placeholder="Ex: Pastor Bruno"
+                  variant="filled"
+                  mt="md"
+                  flex={1}
+                />
+                <TextInput
+                  label="Duração"
+                  {...form.getInputProps("duration")}
+                  placeholder="Ex: 45:30"
+                  variant="filled"
+                  mt="md"
+                  flex={1}
+                />
+              </Flex>
+            </Box>
+          </Tabs.Panel>
+
+          <Tabs.Panel value="data">
+            <Grid>
+              <Grid.Col span={isMobile ? 12 : 6}>
+                <TextInput
+                  label="Data"
+                  {...form.getInputProps("date")}
+                  placeholder="Ex: 2025-12-25"
+                  variant="filled"
+                  mt="md"
+                  type="date"
+                />
+              </Grid.Col>
+              <Grid.Col span={isMobile ? 12 : 6}>
+                <TextInput
+                  label="Hora"
+                  {...form.getInputProps("time")}
+                  mt="md"
+                  placeholder="Ex: 19:00"
+                  variant="filled"
+                  type="time"
+                />
+              </Grid.Col>
+            </Grid>
+            <Select
+              label="Tipo de conteúdo"
+              {...form.getInputProps("eventType")}
+              variant="filled"
+              mt="md"
+              placeholder="Selecione o tipo de conteúdo"
+              data={[
+                { value: "Culto", label: "Culto" },
+                { value: "Estudo Bíblico", label: "Estudo Bíblico" },
+                { value: "Retiro", label: "Retiro" },
+                { value: "Conferência", label: "Conferência" },
+                { value: "Outro", label: "Outro" },
+              ]}
+            />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="content">
+            <Alert
+              icon={<IconInfoCircle size={16} />}
+              title="Editor de Markdown"
+              color="blue"
+              variant="light"
+              mb="md"
             >
-              Criar Sermão
-            </Button>
-            <Button
-              variant="subtle"
-              color="red"
-              onClick={() => router.back()}
-              leftSection={<IconSquareRoundedX />}
+              <Text size="sm">
+                Use Markdown para formatar o conteúdo do seu sermão. Você pode
+                usar títulos, listas, citações, texto em negrito, itálico e
+                muito mais. O preview é atualizado em tempo real.
+              </Text>
+            </Alert>
+
+            <MarkdownEditor
+              value={form.values.markdownContent || ""}
+              onChange={(value) => form.setFieldValue("markdownContent", value)}
+              height={650}
+              placeholder="Digite o conteúdo do seu sermão em Markdown...
+
+# Título Principal
+
+## Introdução
+Escreva aqui a introdução do seu sermão...
+
+## Desenvolvimento
+### Primeiro Ponto
+Desenvolvimento do primeiro ponto...
+
+### Segundo Ponto
+Desenvolvimento do segundo ponto...
+
+## Conclusão
+Conclua seu sermão aqui...
+
+> **Versículo chave:** 'Porque Deus amou o mundo de tal maneira...' - João 3:16"
+            />
+
+            {form.values.markdownContent && (
+              <>
+                <Title order={4} mt="xl" mb="md">
+                  Pré-visualização
+                </Title>
+                <Card withBorder p="md">
+                  <MarkdownViewer content={form.values.markdownContent || ""} />
+                </Card>
+              </>
+            )}
+          </Tabs.Panel>
+          <Tabs.Panel value="reference">
+            <Group
+              mt={"md"}
+              justify="space-between"
+              align={isMobile ? "flex-start" : "center"}
+              style={{
+                flexDirection: isMobile ? "column" : "row",
+                width: "100%",
+              }}
             >
-              Cancelar
-            </Button>
-          </Flex>
-        </Tabs.Panel>
-      </Tabs>
+              <Title order={3}>Referências bíblicas</Title>
+              <Button
+                color="violet"
+                onClick={addScriptureReference}
+                leftSection={<IconCirclePlus />}
+                type="button"
+              >
+                Adicionar referência
+              </Button>
+            </Group>
+            {form.values.references.map((reference, index) => (
+              <Card
+                key={index}
+                shadow="sm"
+                mt="md"
+                padding="lg"
+                radius="md"
+                withBorder
+              >
+                <Group justify="space-between">
+                  <Text fw={500}>Referência {index + 1}</Text>
+                  <Button
+                    variant="subtle"
+                    color="red"
+                    onClick={() => removeReference(index)}
+                    disabled={form.values.references.length === 1}
+                    type="button"
+                  >
+                    Remover
+                  </Button>
+                </Group>
+                <TextInput
+                  label="Referência"
+                  placeholder="Ex: João 3:16"
+                  variant="filled"
+                  mt="md"
+                  value={reference.reference}
+                  onChange={(e) =>
+                    updateReference(index, "reference", e.target.value)
+                  }
+                  error={form.errors[`references.${index}.reference`]}
+                />
+                <Textarea
+                  label="Texto da referência"
+                  placeholder="Texto da referência bíblica"
+                  variant="filled"
+                  resize="vertical"
+                  mt="md"
+                  value={reference.text}
+                  onChange={(e) =>
+                    updateReference(index, "text", e.target.value)
+                  }
+                  error={form.errors[`references.${index}.text`]}
+                />
+              </Card>
+            ))}
+            <Flex justify={"flex-end"} mt="md" gap="xs">
+              <Button
+                color="violet"
+                type="submit"
+                leftSection={<IconCirclePlus />}
+                loading={isSubmitting}
+                disabled={isSubmitting}
+                onClick={() => {
+                  console.log("🖱️ Create button clicked!");
+                  console.log("📋 Current form values:", form.values);
+                  console.log("❌ Current form errors:", form.errors);
+                }}
+              >
+                Criar Sermão
+              </Button>
+              <Button
+                variant="subtle"
+                color="red"
+                onClick={() => router.back()}
+                disabled={isSubmitting}
+                leftSection={<IconSquareRoundedX />}
+                type="button"
+              >
+                Cancelar
+              </Button>
+            </Flex>
+          </Tabs.Panel>
+        </Tabs>
+      </form>
     </Box>
   );
 }

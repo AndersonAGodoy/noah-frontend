@@ -1,0 +1,205 @@
+/* ByteMD Styles */
+
+/* Custom styles for better integration */
+.bytemd {
+  border: 2px solid #dee2e6;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+}
+
+.bytemd .bytemd-editor {
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  padding: 16px;
+}
+
+.bytemd .bytemd-preview {
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  padding: 20px;
+  background: #fafbfc;
+}
+
+.bytemd .bytemd-toolbar {
+  background: #ffffff;
+  border-bottom: 2px solid #e1e5e9;
+  padding: 12px 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.bytemd .bytemd-toolbar button {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 6px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  min-width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bytemd .bytemd-toolbar button:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bytemd .bytemd-toolbar button.bytemd-toolbar-active {
+  background: #6f42c1;
+  color: white;
+  border-color: #6f42c1;
+  box-shadow: 0 2px 4px rgba(111, 66, 193, 0.3);
+}
+
+/* Melhor espaçamento entre grupos de botões */
+.bytemd .bytemd-toolbar button[title*="Bold"] {
+  margin-left: 0;
+}
+
+.bytemd .bytemd-toolbar button[title*="Heading"] {
+  margin-left: 12px;
+}
+
+.bytemd .bytemd-toolbar button[title*="Code"] {
+  margin-left: 12px;
+}
+
+.bytemd .bytemd-toolbar button[title*="Undo"] {
+  margin-left: 12px;
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .bytemd {
+    border-color: #4a5568;
+    background: #2d3748;
+  }
+  
+  .bytemd .bytemd-toolbar {
+    background: #6f42c1;
+    border-bottom-color: #6f42c1;
+  }
+  
+  .bytemd .bytemd-toolbar button {
+    background: #6f42c1;
+    color: #e2e8f0;
+    border-color: #4a5568;
+  }
+  
+  .bytemd .bytemd-toolbar button:hover {
+    background: #6f42c1;
+    border-color: #6f42c1;
+  }
+  
+  .bytemd .bytemd-toolbar button.bytemd-toolbar-active {
+    background: #6f42c1;
+    color: white;
+    border-color: #6f42c1;
+  }
+  
+  .bytemd .bytemd-editor {
+    background: #1a202c;
+    color: #e2e8f0;
+  }
+  
+  .bytemd .bytemd-preview {
+    background: #1a202c;
+    color: #e2e8f0;
+  }
+}
+
+/* Melhoria dos separadores na toolbar */
+.bytemd .bytemd-toolbar .bytemd-toolbar-item + .bytemd-toolbar-item {
+  margin-left: 4px;
+}
+
+/* Estilo para separadores */
+.bytemd .bytemd-toolbar hr {
+  margin: 0 8px;
+  border: none;
+  border-left: 1px solid #dee2e6;
+  height: 20px;
+}
+
+/* Dark theme para separadores */
+@media (prefers-color-scheme: dark) {
+  .bytemd .bytemd-toolbar hr {
+    border-left-color: #4a5568;
+  }
+}
+
+/* Viewer only styles */
+.bytemd-viewer {
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 16px;
+}
+
+.bytemd-viewer h1,
+.bytemd-viewer h2,
+.bytemd-viewer h3,
+.bytemd-viewer h4,
+.bytemd-viewer h5,
+.bytemd-viewer h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.bytemd-viewer h1 {
+  font-size: 2em;
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 0.3em;
+}
+
+.bytemd-viewer h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 0.3em;
+}
+
+.bytemd-viewer blockquote {
+  border-left: 4px solid #6f42c1;
+  padding-left: 16px;
+  margin: 16px 0;
+  color: #6a737d;
+  font-style: italic;
+}
+
+.bytemd-viewer code {
+  background: #f6f8fa;
+  border-radius: 3px;
+  padding: 2px 4px;
+  font-size: 85%;
+}
+
+.bytemd-viewer pre {
+  background: #f6f8fa;
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.bytemd-viewer ul,
+.bytemd-viewer ol {
+  margin: 16px 0;
+  padding-left: 24px;
+}
+
+.bytemd-viewer li {
+  margin: 4px 0;
+}

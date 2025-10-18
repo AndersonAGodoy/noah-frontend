@@ -18,3 +18,17 @@ export default function formatRelativeDate(dateStr: string): string {
   const rtf = new Intl.RelativeTimeFormat("pt-BR", { numeric: "auto" });
   return rtf.format(-diffDays, "day");
 }
+
+export function formatDate(dateStr: string): string {
+  const date = new Date(dateStr);
+
+  if (isNaN(date.getTime())) {
+    return "Data inválida";
+  }
+
+  return date.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}

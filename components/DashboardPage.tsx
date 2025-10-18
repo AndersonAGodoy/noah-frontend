@@ -10,34 +10,61 @@ import {
 } from "@mantine/core";
 
 import Link from "next/link";
-import useSermons from "../lib/hooks/useSermons";
+import { useGetSermonsFirebase } from "../lib/hooks/useGetSermonsFirebase";
+import useGetAllParticipantsFirebase from "../lib/hooks/useGetAllParticipantsFirebase";
 import { useEffect, useMemo, useRef } from "react";
 import StatsGrid from "./StatsGrid";
-import useDeleteSermon from "../lib/hooks/useDeleteSermon";
+import useDeleteSermonFirebase, {
+  usePublishSermonFirebase,
+} from "../lib/hooks/useDeleteSermonFirebase";
 import { modals } from "@mantine/modals";
 import { notifications, showNotification } from "@mantine/notifications";
 import LastSermons from "./LastSermons";
-import usePublishSermonMutation from "../lib/hooks/usePublishSermon";
-import { IconCirclePlus, IconUsers } from "@tabler/icons-react";
+import useUpdateSermonFirebase from "../lib/hooks/useUpdateSermonFirebase";
+import {
+  IconCirclePlus,
+  IconUsers,
+  IconCalendarEvent,
+} from "@tabler/icons-react";
 import { useSearchParams } from "next/navigation";
 import { Sermon } from "../lib/types/Sermon";
 import { useClientColorScheme } from "../lib/hooks/useClientColorScheme";
+import { useGetActiveEncounter } from "../lib/hooks/useGetActiveEncounter";
 
 export default function DashboardPage() {
-  const { data, isLoading } = useSermons();
+  const {
+    data: sermonsData,
+    isLoading,
+    error,
+  } = useGetSermonsFirebase({
+    limit: 100,
+  });
+
+  // Buscar participantes reais do Firebase
+  const { data: participantsData } = useGetAllParticipantsFirebase({
+    limit: 100,
+    page: 1,
+  });
+
+  // Buscar encontro ativo
+  const { data: activeEncounter } = useGetActiveEncounter();
+
   const searchParams = useSearchParams();
-  const created = searchParams.get("created");
-  const updated = searchParams.get("updated");
-  const publishSermon = usePublishSermonMutation();
-  const deleteSermon = useDeleteSermon();
+  const created = searchParams?.get("created");
+  const updated = searchParams?.get("updated");
+  const deleteSermonMutation = useDeleteSermonFirebase();
+  const publishSermonMutation = usePublishSermonFirebase();
   const { isDark } = useClientColorScheme();
 
-  // Mock de inscrições do Encontro com Deus
-  const encontroInscricoes = 15; // Número mockado de inscrições
+  // Número real de inscrições no Encontro com Deus
+  const encontroInscricoes = participantsData?.data?.length || 0;
 
   const allSermons = useMemo(() => {
-    return data?.pages.flatMap((page) => page.items) ?? [];
-  }, [data]);
+    if (Array.isArray(sermonsData)) {
+      return sermonsData;
+    }
+    return sermonsData?.data || [];
+  }, [sermonsData]);
 
   const hasNotified = useRef(false);
 
@@ -82,7 +109,7 @@ export default function DashboardPage() {
       confirmProps: { color: "red" },
       onConfirm: async () => {
         try {
-          await deleteSermon.mutateAsync(sermonId);
+          await deleteSermonMutation.mutateAsync(sermonId);
           notifications.show({
             title: "Sermão deletado",
             message: "O sermão foi removido com sucesso.",
@@ -112,7 +139,7 @@ export default function DashboardPage() {
       confirmProps: { color: "violet" },
       onConfirm: async () => {
         try {
-          await publishSermon.mutateAsync(sermonId);
+          await publishSermonMutation.mutateAsync(sermonId);
           notifications.show({
             title: "Sermão publicado",
             message: "O sermão foi publicado com sucesso.",
@@ -141,6 +168,32 @@ export default function DashboardPage() {
         </Text>
 
         <Group gap="xs" justify="flex-end" wrap="wrap">
+          <Button
+            color="violet"
+            variant="light"
+            size="sm"
+            radius="md"
+            component={Link}
+            href={"/dashboard/encontros"}
+            leftSection={<IconCalendarEvent size={16} />}
+            visibleFrom="sm"
+          >
+            Gerenciar Encontros
+          </Button>
+
+          <Button
+            color="violet"
+            variant="light"
+            size="sm"
+            radius="md"
+            component={Link}
+            href={"/dashboard/encontros"}
+            leftSection={<IconCalendarEvent size={16} />}
+            hiddenFrom="sm"
+          >
+            Encontros
+          </Button>
+
           <Button
             color="gray"
             variant="light"
@@ -180,11 +233,34 @@ export default function DashboardPage() {
           </Button>
         </Group>
       </Stack>
-      {!isLoading && (
+      {/* Mostrar erro se houver */}
+      {error && (
+        <>
+          <Title mt={"md"} order={1} c={"violet"}>
+            Últimos Sermões
+          </Title>
+          <Notification
+            withCloseButton={false}
+            title="Erro ao carregar sermões"
+            color="red"
+          >
+            Não foi possível carregar os sermões. Verifique sua conexão com a
+            internet.
+            <br />
+            <Text size="xs" c="red.7" mt="xs">
+              Erro:{" "}
+              {error instanceof Error ? error.message : "Erro desconhecido"}
+            </Text>
+          </Notification>
+        </>
+      )}
+      {/* Mostrar sermões se não há erro e não está carregando */}
+      {!isLoading && !error && (
         <>
           <StatsGrid
             sermons={allSermons}
             encontroInscricoes={encontroInscricoes}
+            activeEncounter={activeEncounter}
           />
           <Title mt={"md"} order={1} c={"violet"}>
             Últimos Sermões
@@ -202,8 +278,8 @@ export default function DashboardPage() {
                 onpublish={() => {
                   handlePublish(sermon.id);
                 }}
-                isPublished={sermon.published}
-                isPending={publishSermon.isPending}
+                isPublished={!!sermon.publishedAt}
+                isPending={publishSermonMutation.isPending}
               />
             ))
           ) : (

@@ -1,30 +1,41 @@
+export type ScriptureReference = {
+  id?: string;
+  reference: string;
+  text: string;
+};
+
+export type ContentSection = {
+  id?: string;
+  type: "parágrafo" | "título" | "lista" | "citacao";
+  content: string;
+};
+
 export type Sermon = {
   id: string;
   title: string;
   description: string;
   speaker: string;
-  duration: string;
+  duration?: string;
   date: string;
-  time: string;
-  eventType: string;
-  createdAt: string;
-  updatedAt: string;
-  published: boolean;
-  references: {
-    id: string;
-    reference: string;
-    text: string;
-    sermonId: string;
-  }[];
-  contentSections: {
-    id: string;
-    type: string;
-    content: string;
-    sermonId: string;
-  }[];
+  time?: string;
+  eventType: "Culto" | "Estudo Bíblico" | "Retiro" | "Conferência" | "Outro";
+  isPublished: boolean;
+  references: ScriptureReference[];
+  contentSections: ContentSection[];
+  markdownContent?: string; // Novo campo para conteúdo em markdown
+  createdAt?: string | Date | { toDate(): Date }; // Aceita string (SSG) ou Date/Timestamp (runtime)
+  updatedAt?: string | Date | { toDate(): Date }; // Aceita string (SSG) ou Date/Timestamp (runtime)
+  publishedAt?: string | Date | { toDate(): Date }; // Aceita string (SSG) ou Date/Timestamp (runtime)
 };
 
 export type SermonPage = {
-  items: Sermon[];
-  nextCursor: string | null;
+  data: Sermon[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
 };

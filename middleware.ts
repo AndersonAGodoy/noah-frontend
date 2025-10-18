@@ -3,11 +3,13 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
-  const token = req.cookies.get("token");
+  // Temporariamente desabilitado para Firebase Auth
+  // O Firebase Auth gerencia a autenticação no lado do cliente
+  // e pode não ter cookies disponíveis imediatamente no servidor
 
-  if (!token && req.nextUrl.pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
+  // Para uma verificação mais robusta, você pode:
+  // 1. Usar Firebase Admin SDK no middleware
+  // 2. Ou fazer a verificação no lado do cliente
 
   return NextResponse.next();
 }
