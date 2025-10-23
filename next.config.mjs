@@ -22,11 +22,20 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/(.*)",
+        source: "/sermons/sermon/:id*",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, s-maxage=604800, stale-while-revalidate=86400", // 1 semana + 1 dia
+            value: "public, s-maxage=604800, stale-while-revalidate=604800", // 7 dias cache + 7 dias revalidação em background
+          },
+        ],
+      },
+      {
+        source: "/((?!sermons/sermon).*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=3600, stale-while-revalidate=86400", // 1 hora + 1 dia para outras páginas
           },
         ],
       },
