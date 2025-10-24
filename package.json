@@ -16,7 +16,7 @@
     "@bytemd/plugin-highlight": "^1.22.0",
     "@bytemd/react": "^1.22.0",
     "@mantine/core": "7.17.4",
-    "@mantine/form": "^8.2.4",
+    "@mantine/form": "7.17.4",
     "@mantine/hooks": "7.17.4",
     "@mantine/modals": "^7.17.4",
     "@mantine/next": "^6.0.22",
