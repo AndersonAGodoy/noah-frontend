@@ -2,23 +2,19 @@
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { useMantineColorScheme } from '@mantine/core';
+import { Box, useMantineColorScheme } from '@mantine/core';
 
-interface MarkdownViewerProps {
+interface MDXViewerProps {
   content: string;
-  className?: string;
 }
 
-export default function MarkdownViewer({
-  content,
-  className,
-}: MarkdownViewerProps) {
+export default function MDXViewer({ content }: MDXViewerProps) {
   const { colorScheme } = useMantineColorScheme();
   const isDark = colorScheme === 'dark';
 
   return (
-    <div 
-      className={className}
+    <Box 
+      className="markdown-content"
       style={{
         color: isDark ? '#C1C2C5' : '#212529',
         lineHeight: '1.7',
@@ -119,8 +115,8 @@ export default function MarkdownViewer({
           ),
         }}
       >
-        {content || '*Nenhum conteúdo ainda... Digite algo no editor à esquerda para ver a prévia aqui.*'}
+        {content || '*Nenhum conteúdo ainda...*'}
       </ReactMarkdown>
-    </div>
+    </Box>
   );
 }

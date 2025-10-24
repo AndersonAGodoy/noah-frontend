@@ -6,11 +6,11 @@ import { Sermon } from "../../../../lib/types/Sermon";
 import { notFound } from "next/navigation";
 import ClientSermonPage from "./ClientSermonPage";
 
-// Configuração de cache para ISR
+// Configuração de cache para SSG com ISR
 export const revalidate = 604800; // 7 dias em segundos (604800 segundos = 7 dias)
-export const dynamicParams = true; // Permite gerar páginas para novos sermões sob demanda
-export const dynamic = "force-static"; // Força geração estática
-export const fetchCache = "force-cache"; // Força uso de cache no fetch
+export const dynamicParams = false; // Apenas páginas geradas no build - SSG puro
+// Removido: dynamic = "force-static" - conflita com generateStaticParams
+// Removido: fetchCache - não necessário com SSG puro
 
 // Gerar parâmetros estáticos para todos os sermões publicados
 export async function generateStaticParams() {
@@ -34,12 +34,15 @@ interface SermonPageProps {
   }>;
 }
 
+// Timestamp fixo gerado no build - prova que é SSG
+const BUILD_TIMESTAMP = new Date().toISOString();
+
 async function getSermon(
   id: string
 ): Promise<{ sermon: Sermon | null; lastUpdated: string; buildTime: string }> {
   try {
-    const buildTime = new Date().toISOString();
-    console.log(`🏗️ SSG: Building sermon page for ID: ${id} at ${buildTime}`);
+    // Usa timestamp fixo do build, não do request
+    console.log(`🏗️ SSG: Building sermon page for ID: ${id} at ${BUILD_TIMESTAMP}`);
     console.log(`⏰ Revalidation configured for: 7 days (604800 seconds)`);
 
     const sermon = await getSermonByIdSSG(id);
@@ -47,24 +50,24 @@ async function getSermon(
     if (!sermon || !sermon.isPublished) {
       return {
         sermon: null,
-        lastUpdated: buildTime,
-        buildTime,
+        lastUpdated: BUILD_TIMESTAMP,
+        buildTime: BUILD_TIMESTAMP,
       };
     }
 
     console.log(`✅ SSG: Successfully built sermon page for ID: ${id}`);
     return {
       sermon,
-      lastUpdated: buildTime,
-      buildTime,
+      lastUpdated: BUILD_TIMESTAMP,
+      buildTime: BUILD_TIMESTAMP,
     };
   } catch (error) {
     console.error(`❌ SSG: Error building sermon page for ${id}:`, error);
 
     return {
       sermon: null,
-      lastUpdated: new Date().toISOString(),
-      buildTime: new Date().toISOString(),
+      lastUpdated: BUILD_TIMESTAMP,
+      buildTime: BUILD_TIMESTAMP,
     };
   }
 }

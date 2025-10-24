@@ -30,6 +30,7 @@ import { useSearchParams } from "next/navigation";
 import { Sermon } from "../lib/types/Sermon";
 import { useClientColorScheme } from "../lib/hooks/useClientColorScheme";
 import { useGetActiveEncounter } from "../lib/hooks/useGetActiveEncounter";
+import { useAutoDeactivateExpiredEncounters } from "../lib/hooks/useAutoDeactivateExpiredEncounters";
 
 export default function DashboardPage() {
   const {
@@ -48,6 +49,9 @@ export default function DashboardPage() {
 
   // Buscar encontro ativo
   const { data: activeEncounter } = useGetActiveEncounter();
+
+  // Desativar automaticamente encontros expirados
+  useAutoDeactivateExpiredEncounters();
 
   const searchParams = useSearchParams();
   const created = searchParams?.get("created");

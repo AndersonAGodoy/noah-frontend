@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Força output estático para SSG
+  output: "export" === process.env.BUILD_STANDALONE ? "standalone" : undefined,
   experimental: {
     optimizePackageImports: ["@mantine/core", "@mantine/hooks"],
   },

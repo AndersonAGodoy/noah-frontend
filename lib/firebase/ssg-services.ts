@@ -87,20 +87,40 @@ function initializeFirebaseAdmin() {
   if (getApps().length === 0) {
     try {
       // Para produção, use service account key
-      if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+      const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+      
+      // Valida se a chave existe e não está vazia
+      if (serviceAccountKey && serviceAccountKey.trim().length > 0) {
         console.log("🔑 Using Firebase Admin SDK with service account");
-        const serviceAccount = JSON.parse(
-          process.env.FIREBASE_SERVICE_ACCOUNT_KEY
-        );
-        initializeApp({
-          credential: cert(serviceAccount),
-          projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-        });
-        return { type: "admin", db: getFirestore() };
+        
+        try {
+          const serviceAccount = JSON.parse(serviceAccountKey);
+          
+          // Valida se o JSON tem as propriedades necessárias
+          if (!serviceAccount.project_id || !serviceAccount.private_key || !serviceAccount.client_email) {
+            throw new Error("Invalid service account JSON structure");
+          }
+          
+          initializeApp({
+            credential: cert(serviceAccount),
+            projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+          });
+          
+          console.log("✅ Firebase Admin SDK initialized successfully");
+          return { type: "admin", db: getFirestore() };
+        } catch (parseError) {
+          console.error("❌ Error parsing FIREBASE_SERVICE_ACCOUNT_KEY:", parseError);
+          console.log("📝 Make sure FIREBASE_SERVICE_ACCOUNT_KEY is a valid JSON string");
+        }
+      } else {
+        console.log("⚠️ FIREBASE_SERVICE_ACCOUNT_KEY not found or empty");
       }
     } catch (error) {
       console.error("❌ Firebase Admin initialization error:", error);
     }
+  } else {
+    // Admin já inicializado
+    return { type: "admin", db: getFirestore() };
   }
 
   // Fallback para client SDK
@@ -164,7 +184,7 @@ export async function getPublishedSermonsSSG(): Promise<Sermon[]> {
       }
 
       const sermons: Sermon[] = [];
-      snapshot.forEach((docSnapshot) => {
+      snapshot.forEach((docSnapshot: { data: () => any; id: string; }) => {
         const data = docSnapshot.data();
         sermons.push(createSerializedSermon(docSnapshot.id, data));
       });
@@ -260,7 +280,7 @@ export async function getAllSermonIdsSSG(): Promise<string[]> {
       );
 
       const snapshot = await getDocs(q);
-      const ids = snapshot.docs.map((doc) => doc.id);
+      const ids = snapshot.docs.map((doc: { id: any; }) => doc.id);
 
       console.log(
         `✅ SSG: Found ${ids.length} published sermon IDs (Client SDK)`

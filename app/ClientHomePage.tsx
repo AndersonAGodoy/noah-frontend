@@ -26,13 +26,18 @@ import {
   IconBrandYoutube,
   IconClipboardTextFilled,
   IconBrandWhatsapp,
+  IconLogin,
+  IconLayoutDashboard,
 } from "@tabler/icons-react";
 import SermonCard from "../components/SermonCard";
 import EncontroComDeusModal from "../components/EncontroComDeusModal";
 import ThemeToggle from "../components/ThemeToggle";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useClientColorScheme } from "../lib/hooks/useClientColorScheme";
 import { Sermon } from "../lib/types/Sermon";
+import { useRouter } from "next/navigation";
+import { auth } from "../lib/firebase/config";
+import { onAuthStateChanged } from "firebase/auth";
 
 interface ClientHomePageProps {
   sermons: Sermon[];
@@ -45,7 +50,18 @@ export default function ClientHomePage({
 }: ClientHomePageProps) {
   const [eventType, setEventType] = useState<string>("");
   const [modalOpened, setModalOpened] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { isDark, mounted } = useClientColorScheme();
+  const router = useRouter();
+
+  // Verificar se o usuário está logado via Firebase Auth
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsLoggedIn(!!user);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Filtrar sermões por tipo de evento se selecionado
   const filteredSermons = eventType
@@ -88,6 +104,31 @@ export default function ClientHomePage({
               >
                 Encontro com Deus
               </Button>
+              {isLoggedIn ? (
+                <Button
+                  leftSection={<IconLayoutDashboard size={16} />}
+                  variant="light"
+                  color="white"
+                  size="sm"
+                  fw={600}
+                  onClick={() => router.push("/dashboard")}
+                  style={{ color: "white" }}
+                >
+                  Dashboard
+                </Button>
+              ) : (
+                <Button
+                  leftSection={<IconLogin size={16} />}
+                  variant="light"
+                  color="white"
+                  size="sm"
+                  fw={600}
+                  onClick={() => router.push("/login")}
+                  style={{ color: "white" }}
+                >
+                  Login
+                </Button>
+              )}
             </Group>
           </Group>
         </Container>
@@ -98,13 +139,13 @@ export default function ClientHomePage({
         <Stack align="center" gap="xl" mb="3rem">
           <Title
             order={1}
-            size="3rem"
+            size="2.5rem"
             fw={800}
             ta="center"
             c={isDark ? "gray.1" : "gray.8"}
             lh={1.1}
           >
-            Conteúdos Espirituais
+           Seja bem vindo ao nosso sistema de sermões e devocionais da igreja No'ah
           </Title>
           <Text
             size="xl"
@@ -234,13 +275,13 @@ export default function ClientHomePage({
                   <Group gap="sm">
                     <IconBrandInstagram size={20} color="white" />
                     <Anchor
-                      href="https://instagram.com/igrejanoah.guapituba"
+                      href="https://instagram.com/brunosimoes02"
                       target="_blank"
                       c="white"
                       size="sm"
                       fw={500}
                     >
-                      igrejanoah.guapituba
+                      Pastor Bruno
                     </Anchor>
                   </Group>
 
@@ -289,7 +330,7 @@ export default function ClientHomePage({
                   />
                   <Stack gap={0}>
                     <Text c="white" size="sm" fw={500}>
-                      Rua Avaré, 273 - Guapituba
+                      R. Cícero de Campos Póvoa, 42 Guapituba Mauá
                     </Text>
                     <Text c="white" size="sm" fw={500}>
                       Mauá - SP, 09390-260
@@ -300,7 +341,7 @@ export default function ClientHomePage({
                 <Divider color="violet.4" />
 
                 <Text c="gray.3" size="xs" ta="center">
-                  © 2024 Igreja No'ah Guapituba. Todos os direitos reservados.
+                  © {new Date().getFullYear()} Igreja No'ah Guapituba. Todos os direitos reservados.
                 </Text>
               </Stack>
             </Grid.Col>

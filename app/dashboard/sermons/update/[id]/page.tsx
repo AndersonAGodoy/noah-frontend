@@ -292,17 +292,35 @@ export default function AddSermon() {
             </Tabs.List>
 
             <Tabs.Panel value="editor" pt="md">
-              <MarkdownEditor
-                value={markdownContent}
-                onChange={setMarkdownContent}
-                height={650}
-              />
+              <Box
+                style={{
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  border: `1px solid ${isDark ? '#373A40' : '#dee2e6'}`,
+                }}
+              >
+                <MarkdownEditor
+                  value={markdownContent}
+                  onChange={setMarkdownContent}
+                  height={600}
+                />
+              </Box>
             </Tabs.Panel>
 
             <Tabs.Panel value="preview" pt="md">
-              <MarkdownViewer
-                content={markdownContent || "Nenhum conteúdo ainda..."}
-              />
+              <Box
+                p="md"
+                style={{
+                  borderRadius: '8px',
+                  border: `1px solid ${isDark ? '#373A40' : '#dee2e6'}`,
+                  background: isDark ? '#25262b' : '#fafbfc',
+                  minHeight: '600px',
+                }}
+              >
+                <MarkdownViewer
+                  content={markdownContent || "Nenhum conteúdo ainda..."}
+                />
+              </Box>
             </Tabs.Panel>
           </Tabs>
         </Tabs.Panel>

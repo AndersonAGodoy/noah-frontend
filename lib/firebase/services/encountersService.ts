@@ -78,10 +78,25 @@ export const encountersService = {
       }
 
       const docSnapshot = snapshot.docs[0];
-      return {
+      const encounter = {
         id: docSnapshot.id,
         ...docSnapshot.data()
       } as Encounter;
+
+      // Verificar se a data do encontro já passou
+      const encounterDate = encounter.startDate instanceof Date 
+        ? encounter.startDate 
+        : encounter.startDate.toDate();
+      
+      const now = new Date();
+      now.setHours(0, 0, 0, 0); // Zerar horas para comparar apenas a data
+      
+      // Se a data já passou, retornar null (encontro não está mais ativo)
+      if (encounterDate < now) {
+        return null;
+      }
+
+      return encounter;
     } catch (error) {
       console.error("Erro ao buscar encontro ativo:", error);
       throw error;

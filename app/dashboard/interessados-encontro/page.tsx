@@ -33,6 +33,7 @@ import Link from "next/link";
 import { useClientColorScheme } from "../../../lib/hooks/useClientColorScheme";
 import { useState, useMemo } from "react";
 import useGetAllParticipantsFirebase from "../../../lib/hooks/useGetAllParticipantsFirebase";
+import { useGetEncounters } from "../../../lib/hooks/useGetEncounters";
 
 const getTipoParticipacaoColor = (tipo: string) => {
   switch (tipo) {
@@ -68,51 +69,40 @@ export default function InteressadosEncontroPage() {
 
   // Buscar todos os participantes do Firebase
   const { data: participantsData, isLoading } = useGetAllParticipantsFirebase({
-    limit: 100,
+    limit: 1000,
     page: 1,
   });
 
+  // Buscar todos os encontros do Firebase
+  const { data: encountersData, isLoading: isLoadingEncounters } = useGetEncounters();
+
   const participants = participantsData?.data || [];
+  const encounters = encountersData?.data || [];
 
-  // Extrair datas únicas dos encontros
-  const datasEncontros = useMemo(() => {
-    if (!participants.length) return [];
+  // Criar opções de filtro baseadas nos encontros reais
+  const encontrosOptions = useMemo(() => {
+    if (!encounters || encounters.length === 0) return [];
 
-    // Baseado na data de criação dos participantes
-    const datas = Array.from(
-      new Set(
-        participants.map((p) => {
-          // Usar a data de criação formatada como data do encontro
-          const date =
-            p.createdAt instanceof Date
-              ? p.createdAt
-              : p.createdAt?.toDate?.() || new Date();
-          return date.toISOString().split("T")[0];
-        })
-      )
-    );
+    return encounters.map((encounter) => {
+      const date = encounter.startDate instanceof Date
+        ? encounter.startDate
+        : encounter.startDate.toDate();
+      
+      return {
+        value: encounter.id,
+        label: `${encounter.title} - ${date.toLocaleDateString("pt-BR")}`,
+        date: date,
+      };
+    }).sort((a, b) => b.date.getTime() - a.date.getTime()); // Mais recente primeiro
+  }, [encounters]);
 
-    return datas.map((data) => ({
-      value: data,
-      label: new Date(data).toLocaleDateString("pt-BR"),
-    }));
-  }, [participants]);
-
-  // Filtrar inscrições baseado na data selecionada
+  // Filtrar participantes baseado no encontro selecionado
   const inscricoesFiltradas = useMemo(() => {
     if (!selectedEncontro) {
       return participants;
     }
     
-    const filtrados = participants.filter((p) => {
-      const date =
-        p.createdAt instanceof Date
-          ? p.createdAt
-          : p.createdAt?.toDate?.() || new Date();
-      return date.toISOString().split("T")[0] === selectedEncontro;
-    });
-    
-    return filtrados;
+    return participants.filter((p) => p.encounterId === selectedEncontro);
   }, [selectedEncontro, participants]);
 
   const handleVerDetalhes = (person: any) => {
@@ -140,7 +130,7 @@ export default function InteressadosEncontroPage() {
       );
 
       if (selectedEncontro) {
-        const encontroLabel = datasEncontros.find(
+        const encontroLabel = encontrosOptions.find(
           (d) => d.value === selectedEncontro
         )?.label;
         doc.text(`Encontro: ${encontroLabel}`, 20, 45);
@@ -154,7 +144,7 @@ export default function InteressadosEncontroPage() {
       doc.text(
         `Primeira vez: ${
           inscricoesFiltradas.filter(
-            (i: any) => i.tipoParticipacao === "primeira-vez"
+            (i: any) => i.typeOfParticipation === "firstTime"
           ).length
         }`,
         25,
@@ -163,7 +153,7 @@ export default function InteressadosEncontroPage() {
       doc.text(
         `Veteranos: ${
           inscricoesFiltradas.filter(
-            (i: any) => i.tipoParticipacao === "ja-participei"
+            (i: any) => i.typeOfParticipation === "returning"
           ).length
         }`,
         25,
@@ -172,7 +162,7 @@ export default function InteressadosEncontroPage() {
       doc.text(
         `Liderança: ${
           inscricoesFiltradas.filter(
-            (i: any) => i.tipoParticipacao === "lideranca"
+            (i: any) => i.typeOfParticipation === "leadership"
           ).length
         }`,
         25,
@@ -192,21 +182,21 @@ export default function InteressadosEncontroPage() {
           yPosition = 20;
         }
 
-        doc.text(`${index + 1}. ${person.nome}`, 25, yPosition);
+        doc.text(`${index + 1}. ${person.name}`, 25, yPosition);
         doc.text(`Email: ${person.email}`, 30, yPosition + 8);
-        doc.text(`Telefone: ${person.telefone}`, 30, yPosition + 16);
-        doc.text(`Idade: ${person.idade} anos`, 30, yPosition + 24);
-        doc.text(`Endereço: ${person.endereco}`, 30, yPosition + 32);
+        doc.text(`Telefone: ${person.phoneNumber}`, 30, yPosition + 16);
+        doc.text(`Idade: ${person.age} anos`, 30, yPosition + 24);
+        doc.text(`Endereço: ${person.address || 'Não informado'}`, 30, yPosition + 32);
         doc.text(
-          `Tipo: ${getTipoParticipacaoLabel(person.tipoParticipacao)}`,
+          `Tipo: ${getTipoParticipacaoLabel(person.typeOfParticipation)}`,
           30,
           yPosition + 40
         );
-        if (person.observacoes) {
-          doc.text(`Observações: ${person.observacoes}`, 30, yPosition + 48);
+        if (person.observations) {
+          doc.text(`Observações: ${person.observations}`, 30, yPosition + 48);
         }
 
-        yPosition += person.observacoes ? 60 : 52;
+        yPosition += person.observations ? 60 : 52;
       });
 
       // Salvar o PDF
@@ -335,7 +325,7 @@ export default function InteressadosEncontroPage() {
             <Select
               label="Filtrar por Data do Encontro"
               placeholder="Todas as datas"
-              data={datasEncontros}
+              data={encontrosOptions}
               value={selectedEncontro}
               onChange={setSelectedEncontro}
               clearable
@@ -347,7 +337,7 @@ export default function InteressadosEncontroPage() {
                 {inscricoesFiltradas.length !== 1 ? "ões" : "ão"}
                 {selectedEncontro &&
                   ` para ${
-                    datasEncontros.find((d) => d.value === selectedEncontro)
+                    encontrosOptions.find((d) => d.value === selectedEncontro)
                       ?.label
                   }`}
                 <Text span c="blue.6" fw={500}>

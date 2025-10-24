@@ -218,26 +218,35 @@ export default function AddSermon() {
               color="blue"
               variant="light"
               mb="md"
+              mt="md"
             >
               <Text size="sm">
-                Use Markdown para formatar o conteúdo do seu sermão. Você pode
-                usar títulos, listas, citações, texto em negrito, itálico e
-                muito mais. O preview é atualizado em tempo real.
+                Use Markdown para formatar o conteúdo do seu sermão. Alterne entre as abas para editar e visualizar.
+                <br />
+                <strong>Dica:</strong> Use # para títulos, ** para negrito, * para itálico, e &gt; para citações.
               </Text>
             </Alert>
 
-            <MarkdownEditor
-              value={form.values.markdownContent || ""}
-              onChange={(value) => form.setFieldValue("markdownContent", value)}
-              height={650}
-              placeholder="Digite o conteúdo do seu sermão em Markdown...
+            <Tabs defaultValue="editor" variant="pills">
+              <Tabs.List mb="md">
+                <Tabs.Tab value="editor">✏️ Editar</Tabs.Tab>
+                <Tabs.Tab value="preview">👁️ Visualizar</Tabs.Tab>
+              </Tabs.List>
 
-# Título Principal
+              <Tabs.Panel value="editor">
+                <MarkdownEditor
+                  value={form.values.markdownContent || ""}
+                  onChange={(value) => form.setFieldValue("markdownContent", value)}
+                  height={500}
+                  placeholder="Digite o conteúdo do seu sermão em Markdown...
+
+# Título Principal do Sermão
 
 ## Introdução
 Escreva aqui a introdução do seu sermão...
 
 ## Desenvolvimento
+
 ### Primeiro Ponto
 Desenvolvimento do primeiro ponto...
 
@@ -247,19 +256,26 @@ Desenvolvimento do segundo ponto...
 ## Conclusão
 Conclua seu sermão aqui...
 
-> **Versículo chave:** 'Porque Deus amou o mundo de tal maneira...' - João 3:16"
-            />
+---
 
-            {form.values.markdownContent && (
-              <>
-                <Title order={4} mt="xl" mb="md">
-                  Pré-visualização
-                </Title>
-                <Card withBorder p="md">
-                  <MarkdownViewer content={form.values.markdownContent || ""} />
-                </Card>
-              </>
-            )}
+> **Versículo chave:** 'Porque Deus amou o mundo de tal maneira...' - João 3:16"
+                />
+              </Tabs.Panel>
+
+              <Tabs.Panel value="preview">
+                {form.values.markdownContent ? (
+                  <Card withBorder p="xl" style={{ minHeight: '500px' }}>
+                    <MarkdownViewer content={form.values.markdownContent} />
+                  </Card>
+                ) : (
+                  <Card withBorder p="xl" style={{ minHeight: '500px' }}>
+                    <Text c="dimmed" ta="center">
+                      Nenhum conteúdo para visualizar. Escreva algo na aba "Editar".
+                    </Text>
+                  </Card>
+                )}
+              </Tabs.Panel>
+            </Tabs>
           </Tabs.Panel>
           <Tabs.Panel value="reference">
             <Group

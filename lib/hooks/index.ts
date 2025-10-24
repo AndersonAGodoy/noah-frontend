@@ -21,3 +21,4 @@ export { useGetEncounters } from "./useGetEncounters";
 export { useGetActiveEncounter } from "./useGetActiveEncounter";
 export { useSetActiveEncounter } from "./useSetActiveEncounter";
 export { useUpdateEncounter } from "./useUpdateEncounter";
+export { useAutoDeactivateExpiredEncounters } from "./useAutoDeactivateExpiredEncounters";
