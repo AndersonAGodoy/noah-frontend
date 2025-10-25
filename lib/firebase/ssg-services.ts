@@ -107,15 +107,25 @@ function createSerializedSermon(id: string, data: any): Sermon {
 function initializeFirebaseAdmin() {
   if (getApps().length === 0) {
     try {
-      // Para produção, use service account key
-      const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+      // Para produção, use service account key em base64
+      const serviceAccountKeyBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
       // Valida se a chave existe e não está vazia
-      if (serviceAccountKey && serviceAccountKey.trim().length > 0) {
-        console.log("🔑 Using Firebase Admin SDK with service account");
+      if (
+        serviceAccountKeyBase64 &&
+        serviceAccountKeyBase64.trim().length > 0
+      ) {
+        console.log(
+          "🔑 Using Firebase Admin SDK with service account (base64)"
+        );
 
         try {
-          const serviceAccount = JSON.parse(serviceAccountKey);
+          // Decodifica de base64 para JSON
+          const serviceAccountJson = Buffer.from(
+            serviceAccountKeyBase64,
+            "base64"
+          ).toString("utf-8");
+          const serviceAccount = JSON.parse(serviceAccountJson);
 
           // Valida se o JSON tem as propriedades necessárias
           if (
@@ -135,11 +145,11 @@ function initializeFirebaseAdmin() {
           return { type: "admin", db: getFirestore() };
         } catch (parseError) {
           console.error(
-            "❌ Error parsing FIREBASE_SERVICE_ACCOUNT_KEY:",
+            "❌ Error decoding/parsing FIREBASE_SERVICE_ACCOUNT_KEY:",
             parseError
           );
           console.log(
-            "📝 Make sure FIREBASE_SERVICE_ACCOUNT_KEY is a valid JSON string"
+            "📝 Make sure FIREBASE_SERVICE_ACCOUNT_KEY is a valid base64-encoded JSON string"
           );
         }
       } else {
