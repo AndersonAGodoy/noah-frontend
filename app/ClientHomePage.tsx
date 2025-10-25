@@ -244,7 +244,7 @@ export default function ClientHomePage({
           )}
 
           {filteredSermons.length > 0 && (
-            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="2rem">
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
               {filteredSermons.map((sermon) => (
                 <SermonCard
                   key={sermon.id}
