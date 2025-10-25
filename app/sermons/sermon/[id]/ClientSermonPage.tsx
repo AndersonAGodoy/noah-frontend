@@ -29,6 +29,7 @@ import { formatDate } from "../../../../lib/utils/formatDate";
 import { badgeColor } from "../../../../lib/utils/badgeColor";
 import MarkdownViewer from "../../../../components/MarkdownViewer";
 import ThemeToggle from "../../../../components/ThemeToggle";
+import { useMediaQuery } from "@mantine/hooks";
 
 interface ClientSermonPageProps {
   sermon: Sermon;
@@ -41,7 +42,7 @@ export default function ClientSermonPage({
 }: ClientSermonPageProps) {
   const router = useRouter();
   const { isDark, mounted } = useClientColorScheme();
-
+  const isMobile = useMediaQuery("(max-width: 768px)");
   if (!mounted) {
     return null;
   }
@@ -402,15 +403,17 @@ export default function ClientSermonPage({
                   variant="light"
                   color="violet"
                   size="md"
+                  w={isMobile ? "100%" : undefined}
                   onClick={handleShare}
                 >
                   Compartilhar
                 </Button>
                 <Button
                   leftSection={<IconHome size={18} />}
-                  variant="outline"
-                  color="violet"
+                  variant="light"
+                  color="cyan"
                   size="md"
+                  w={isMobile ? "100%" : undefined}
                   onClick={() => router.push("/")}
                 >
                   Ver mais sermões

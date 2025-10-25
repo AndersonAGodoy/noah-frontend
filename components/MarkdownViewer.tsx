@@ -3,6 +3,7 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Title, useMantineColorScheme } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 
 interface MarkdownViewerProps {
   content: string;
@@ -15,7 +16,7 @@ export default function MarkdownViewer({
 }: MarkdownViewerProps) {
   const { colorScheme } = useMantineColorScheme();
   const isDark = colorScheme === "dark";
-
+  const isMobile = useMediaQuery("(max-width: 768px)");
   return (
     <div
       className={className}
@@ -35,7 +36,7 @@ export default function MarkdownViewer({
                 fontWeight: 700,
                 marginTop: "24px",
                 marginBottom: "16px",
-                color: isDark ? "#F8F9FA" : "#1a202c",
+                color: isDark ? "#e1e4e8" : "#1a202c",
                 borderBottom: `2px solid ${isDark ? "#373A40" : "#e1e4e8"}`,
                 paddingBottom: "8px",
               }}
@@ -48,6 +49,7 @@ export default function MarkdownViewer({
               style={{
                 fontSize: "1.5em",
                 fontWeight: 700,
+                textAlign: isMobile ? "left" : "justify",
                 marginTop: "24px",
                 marginBottom: "16px",
                 color: isDark ? "#F8F9FA" : "#2d3748",
@@ -63,6 +65,7 @@ export default function MarkdownViewer({
               style={{
                 fontSize: "1.25em",
                 fontWeight: 600,
+                textAlign: isMobile ? "left" : "justify",
                 marginTop: "20px",
                 marginBottom: "12px",
                 color: isDark ? "#F8F9FA" : "#2d3748",
@@ -75,7 +78,8 @@ export default function MarkdownViewer({
               style={{
                 marginBottom: "16px",
                 lineHeight: "1.7",
-                textAlign: "justify",
+                textWrap: "pretty",
+                textAlign: isMobile ? "left" : "justify",
               }}
               {...props}
             />
@@ -89,7 +93,7 @@ export default function MarkdownViewer({
                 background: isDark ? "#2b2841" : "#f5f3ff",
                 color: isDark ? "#e5dbff" : "#4c1d95",
                 fontStyle: "italic",
-                textAlign: "justify",
+                textWrap: "pretty",
                 borderRadius: "4px",
               }}
               {...props}
@@ -129,7 +133,7 @@ export default function MarkdownViewer({
               style={{
                 margin: "16px 0",
                 paddingLeft: "32px",
-                textAlign: "justify",
+                textAlign: isMobile ? "left" : "justify",
               }}
               {...props}
             />
@@ -139,13 +143,19 @@ export default function MarkdownViewer({
               style={{
                 margin: "16px 0",
                 paddingLeft: "32px",
-                textAlign: "justify",
+                textAlign: isMobile ? "left" : "justify",
               }}
               {...props}
             />
           ),
           li: ({ node, ...props }) => (
-            <li style={{ margin: "8px 0" }} {...props} />
+            <li
+              style={{
+                margin: "8px 0",
+                textAlign: isMobile ? "left" : "justify",
+              }}
+              {...props}
+            />
           ),
           a: ({ node, ...props }) => (
             <a
