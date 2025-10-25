@@ -2,7 +2,7 @@
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { useMantineColorScheme } from "@mantine/core";
+import { Title, useMantineColorScheme } from "@mantine/core";
 
 interface MarkdownViewerProps {
   content: string;
@@ -28,7 +28,8 @@ export default function MarkdownViewer({
         remarkPlugins={[remarkGfm]}
         components={{
           h1: ({ node, ...props }) => (
-            <h1
+            <Title
+              order={1}
               style={{
                 fontSize: "2em",
                 fontWeight: 700,
@@ -42,7 +43,8 @@ export default function MarkdownViewer({
             />
           ),
           h2: ({ node, ...props }) => (
-            <h2
+            <Title
+              order={2}
               style={{
                 fontSize: "1.5em",
                 fontWeight: 700,
@@ -56,7 +58,8 @@ export default function MarkdownViewer({
             />
           ),
           h3: ({ node, ...props }) => (
-            <h3
+            <Title
+              order={3}
               style={{
                 fontSize: "1.25em",
                 fontWeight: 600,
