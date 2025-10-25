@@ -134,7 +134,7 @@ export default function ClientHomePage({
         </Container>
       </Box>
 
-      <Container size="xl" py="3rem">
+      <Container size="xl" py="3rem" px={{ base: "md", sm: "lg", md: "xl" }}>
         {/* Hero Section */}
         <Stack align="center" gap="xl" mb="3rem">
           <Title
@@ -244,7 +244,12 @@ export default function ClientHomePage({
           )}
 
           {filteredSermons.length > 0 && (
-            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
+            <SimpleGrid
+              cols={{ base: 1, xs: 1, sm: 2, md: 2, lg: 3, xl: 3 }}
+              spacing={{ base: "sm", xs: "md", sm: "lg", lg: "xl" }}
+              verticalSpacing={{ base: "sm", xs: "md", sm: "lg", lg: "xl" }}
+              w="100%"
+            >
               {filteredSermons.map((sermon) => (
                 <SermonCard
                   key={sermon.id}

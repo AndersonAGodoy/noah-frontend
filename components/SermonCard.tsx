@@ -34,15 +34,18 @@ export default function SermonCard({
       style={{ textDecoration: "none" }}
     >
       <Card
-        maw={isMobile ? 200 : 400}
-        miw={isMobile ? 340 : 400}
-        mih={400}
+        w="100%"
+        h={{ base: 380, sm: 400 }}
         shadow="sm"
         radius="md"
         style={{ cursor: "pointer" }}
       >
         <Card.Section
-          style={{ position: "relative", height: 200, overflow: "hidden" }}
+          style={{
+            position: "relative",
+            height: isMobile ? 180 : 200,
+            overflow: "hidden",
+          }}
         >
           <Image
             src={"/noah_logo.jpg"}
@@ -67,14 +70,29 @@ export default function SermonCard({
           </Badge>
         </Card.Section>
 
-        <Stack p="md" gap="xs" justify="space-between" flex={1}>
+        <Stack
+          p={{ base: "sm", sm: "md" }}
+          gap="xs"
+          justify="space-between"
+          flex={1}
+        >
           <Flex gap="xs" justify="space-between" align="center">
-            <Title order={3} c={"violet"}>
+            <Title
+              order={3}
+              c={"violet"}
+              size={isMobile ? "lg" : "md"}
+              lineClamp={2}
+            >
               {title}
             </Title>
           </Flex>
 
-          <Text size="sm" c="dimmed" ta="justify" lineClamp={3}>
+          <Text
+            size={isMobile ? "md" : "sm"}
+            c="dimmed"
+            ta="justify"
+            lineClamp={3}
+          >
             {description}
           </Text>
 
@@ -90,16 +108,16 @@ export default function SermonCard({
               }}
             >
               <Flex gap={4} align="center" c="dimmed">
-                <IconUser size={14} stroke={1.2} />
-                <Text size="xs">{speaker}</Text>
+                <IconUser size={isMobile ? 16 : 14} stroke={1.2} />
+                <Text size={isMobile ? "sm" : "xs"}>{speaker}</Text>
               </Flex>
               <Flex gap={4} align="center" c="dimmed">
-                <IconCalendar size={14} stroke={1.2} />
-                <Text size="xs">{formattedDate}</Text>
+                <IconCalendar size={isMobile ? 16 : 14} stroke={1.2} />
+                <Text size={isMobile ? "sm" : "xs"}>{formattedDate}</Text>
               </Flex>
               <Flex gap={4} align="center" c="dimmed">
-                <IconClock size={14} stroke={1.2} />
-                <Text size="xs">{duration}</Text>
+                <IconClock size={isMobile ? 16 : 14} stroke={1.2} />
+                <Text size={isMobile ? "sm" : "xs"}>{duration}</Text>
               </Flex>
             </Flex>
           </Flex>
