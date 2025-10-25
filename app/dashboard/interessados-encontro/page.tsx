@@ -19,6 +19,10 @@ import {
   Divider,
 } from "@mantine/core";
 import {
+  useFormattedPhone,
+  formatPhoneNumber,
+} from "../../../lib/utils/phoneUtils";
+import {
   IconArrowLeft,
   IconEye,
   IconDownload,
@@ -74,7 +78,8 @@ export default function InteressadosEncontroPage() {
   });
 
   // Buscar todos os encontros do Firebase
-  const { data: encountersData, isLoading: isLoadingEncounters } = useGetEncounters();
+  const { data: encountersData, isLoading: isLoadingEncounters } =
+    useGetEncounters();
 
   const participants = participantsData?.data || [];
   const encounters = encountersData?.data || [];
@@ -83,17 +88,20 @@ export default function InteressadosEncontroPage() {
   const encontrosOptions = useMemo(() => {
     if (!encounters || encounters.length === 0) return [];
 
-    return encounters.map((encounter) => {
-      const date = encounter.startDate instanceof Date
-        ? encounter.startDate
-        : encounter.startDate.toDate();
-      
-      return {
-        value: encounter.id,
-        label: `${encounter.title} - ${date.toLocaleDateString("pt-BR")}`,
-        date: date,
-      };
-    }).sort((a, b) => b.date.getTime() - a.date.getTime()); // Mais recente primeiro
+    return encounters
+      .map((encounter) => {
+        const date =
+          encounter.startDate instanceof Date
+            ? encounter.startDate
+            : encounter.startDate.toDate();
+
+        return {
+          value: encounter.id,
+          label: `${encounter.title} - ${date.toLocaleDateString("pt-BR")}`,
+          date: date,
+        };
+      })
+      .sort((a, b) => b.date.getTime() - a.date.getTime()); // Mais recente primeiro
   }, [encounters]);
 
   // Filtrar participantes baseado no encontro selecionado
@@ -101,7 +109,7 @@ export default function InteressadosEncontroPage() {
     if (!selectedEncontro) {
       return participants;
     }
-    
+
     return participants.filter((p) => p.encounterId === selectedEncontro);
   }, [selectedEncontro, participants]);
 
@@ -184,9 +192,17 @@ export default function InteressadosEncontroPage() {
 
         doc.text(`${index + 1}. ${person.name}`, 25, yPosition);
         doc.text(`Email: ${person.email}`, 30, yPosition + 8);
-        doc.text(`Telefone: ${person.phoneNumber}`, 30, yPosition + 16);
+        doc.text(
+          `Telefone: ${formatPhoneNumber(person.phoneNumber)}`,
+          30,
+          yPosition + 16
+        );
         doc.text(`Idade: ${person.age} anos`, 30, yPosition + 24);
-        doc.text(`Endereço: ${person.address || 'Não informado'}`, 30, yPosition + 32);
+        doc.text(
+          `Endereço: ${person.address || "Não informado"}`,
+          30,
+          yPosition + 32
+        );
         doc.text(
           `Tipo: ${getTipoParticipacaoLabel(person.typeOfParticipation)}`,
           30,
@@ -228,7 +244,7 @@ export default function InteressadosEncontroPage() {
       <Table.Td visibleFrom="sm">
         <Group gap={4}>
           <IconPhone size={12} color="gray" />
-          <Text size="sm">{inscricao.phoneNumber}</Text>
+          <Text size="sm">{useFormattedPhone(inscricao.phoneNumber)}</Text>
         </Group>
       </Table.Td>
       <Table.Td visibleFrom="md">
@@ -506,7 +522,9 @@ export default function InteressadosEncontroPage() {
                   <Text size="sm" c="dimmed" fw={500}>
                     Telefone
                   </Text>
-                  <Text size="sm">{selectedPerson.phoneNumber}</Text>
+                  <Text size="sm">
+                    {useFormattedPhone(selectedPerson.phoneNumber)}
+                  </Text>
                 </Box>
               </Group>
 

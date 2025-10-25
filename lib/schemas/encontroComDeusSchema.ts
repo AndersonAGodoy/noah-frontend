@@ -10,10 +10,8 @@ export const encontroComDeusSchema = z.object({
   phoneNumber: z
     .string()
     .min(10, "Telefone deve ter pelo menos 10 dígitos")
-    .regex(
-      /^\(\d{2}\)\s\d{4,5}-\d{4}$|^\d{10,11}$/,
-      "Formato de telefone inválido"
-    ),
+    .max(11, "Telefone deve ter no máximo 11 dígitos")
+    .regex(/^\d{10,11}$/, "Telefone deve conter apenas números"),
 
   email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
 

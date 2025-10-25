@@ -12,6 +12,7 @@ import {
 } from "@tanstack/react-query";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
+import { ScrollToTopProvider } from "../components/ScrollToTopProvider";
 
 const theme = createTheme({
   fontFamily: "var(--font-inter)",
@@ -67,9 +68,11 @@ export default function ClientProviders({
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme}>
-        <ModalsProvider>{children}</ModalsProvider>
-        <Notifications />
-        <ReactQueryDevtools initialIsOpen={false} />
+        <ScrollToTopProvider>
+          <ModalsProvider>{children}</ModalsProvider>
+          <Notifications />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </ScrollToTopProvider>
       </MantineProvider>
     </QueryClientProvider>
   );

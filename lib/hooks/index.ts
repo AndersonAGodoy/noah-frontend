@@ -26,3 +26,11 @@ export { useGetActiveEncounter } from "./useGetActiveEncounter";
 export { useSetActiveEncounter } from "./useSetActiveEncounter";
 export { useUpdateEncounter } from "./useUpdateEncounter";
 export { useAutoDeactivateExpiredEncounters } from "./useAutoDeactivateExpiredEncounters";
+
+// Scroll hooks
+export {
+  useScrollToTop,
+  useInstantScrollToTop,
+  scrollToTop,
+  useScrollToElement,
+} from "./useScrollToTop";
