@@ -14,7 +14,7 @@ export const useScrollToTop = () => {
       window.scrollTo({
         top: 0,
         left: 0,
-        behavior: "smooth", // scroll suave
+        behavior: "instant", // scroll instantâneo
       });
     };
 
@@ -46,7 +46,7 @@ export const scrollToTop = (smooth: boolean = true) => {
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior: "smooth",
+      behavior: "instant", // scroll instantâneo
     });
   } else {
     window.scrollTo(0, 0);
@@ -62,7 +62,7 @@ export const useScrollToElement = (elementId: string) => {
     const element = document.getElementById(elementId);
     if (element) {
       element.scrollIntoView({
-        behavior: "smooth",
+        behavior: "instant", // scroll instantâneo
         block: "start",
       });
     }
