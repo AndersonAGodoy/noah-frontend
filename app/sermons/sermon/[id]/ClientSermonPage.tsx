@@ -87,17 +87,17 @@ export default function ClientSermonPage({
               Voltar
             </Button>
             <Group gap="sm">
-            <ThemeToggle />
-            <Button
-              leftSection={<IconShare size={18} />}
-              variant="light"
-              color="white"
-              size="sm"
-              onClick={handleShare}
-              style={{ color: "white" }}
-            >
-              Compartilhar
-            </Button>
+              <ThemeToggle />
+              <Button
+                leftSection={<IconShare size={18} />}
+                variant="light"
+                color="white"
+                size="sm"
+                onClick={handleShare}
+                style={{ color: "white" }}
+              >
+                Compartilhar
+              </Button>
             </Group>
           </Group>
         </Container>
@@ -211,18 +211,10 @@ export default function ClientSermonPage({
                       <IconClock size={20} />
                     </Avatar>
                     <Stack gap={0}>
-                      <Text
-                        size="xs"
-                        c={isDark ? "gray.5" : "gray.6"}
-                        fw={500}
-                      >
+                      <Text size="xs" c={isDark ? "gray.5" : "gray.6"} fw={500}>
                         Duração
                       </Text>
-                      <Text
-                        size="sm"
-                        fw={600}
-                        c={isDark ? "gray.1" : "gray.8"}
-                      >
+                      <Text size="sm" fw={600} c={isDark ? "gray.1" : "gray.8"}>
                         {sermon.duration}
                       </Text>
                     </Stack>
@@ -439,6 +431,8 @@ export default function ClientSermonPage({
               day: "2-digit",
               month: "long",
               year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
             })}
           </Text>
         </Stack>

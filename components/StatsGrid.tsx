@@ -1,7 +1,7 @@
 import { Group, Paper, SimpleGrid, Text, Title, Badge } from "@mantine/core";
 import { useMemo } from "react";
 
-import formatRelativeDate from "../lib/utils/formatDate";
+import formatRelativeDate, { formatDate } from "../lib/utils/formatDate";
 import { Sermon } from "../lib/types/Sermon";
 
 interface StatsGridProps {
@@ -21,6 +21,7 @@ export default function StatsGrid({
   const sum = useMemo(() => sermons.length, [sermons]);
   const lastupdate = sermons[0]?.createdAt;
   const lastSermon = sermons[0]?.date;
+  const lastSermonFormattedDate = formatDate(lastSermon || "");
 
   const parsedData = useMemo(() => {
     if (!lastupdate) return null;
@@ -130,7 +131,7 @@ export default function StatsGrid({
 
         <Text fz="xs" c="dimmed" mt={7}>
           {lastSermon
-            ? `Útlima publicação foi em ${lastSermon}`
+            ? `Útlima publicação foi em ${lastSermonFormattedDate}`
             : "Você não possui publicações"}
         </Text>
       </Paper>

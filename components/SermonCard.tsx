@@ -4,6 +4,7 @@ import { Card, Stack, Text, Title, Flex, Badge } from "@mantine/core";
 import { IconUser, IconCalendar, IconClock } from "@tabler/icons-react";
 import { getColorForEventType } from "../lib/utils/badgeColor";
 import { useMediaQuery } from "@mantine/hooks";
+import { formatDate } from "../lib/utils/formatDate";
 
 interface SermonCardProps {
   slug: string;
@@ -25,6 +26,7 @@ export default function SermonCard({
   duration,
 }: SermonCardProps) {
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const formattedDate = formatDate(date);
   return (
     <Link
       href={`sermons/sermon/${slug}`}
@@ -57,8 +59,8 @@ export default function SermonCard({
           />
           <Badge
             pos={"absolute"}
-            top={180}
-            left={isMobile ? 260 : 320}
+            top={8}
+            left={8}
             color={getColorForEventType(eventType)}
           >
             {eventType}
@@ -93,7 +95,7 @@ export default function SermonCard({
               </Flex>
               <Flex gap={4} align="center" c="dimmed">
                 <IconCalendar size={14} stroke={1.2} />
-                <Text size="xs">{date}</Text>
+                <Text size="xs">{formattedDate}</Text>
               </Flex>
               <Flex gap={4} align="center" c="dimmed">
                 <IconClock size={14} stroke={1.2} />

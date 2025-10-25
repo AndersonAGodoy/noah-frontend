@@ -146,7 +146,11 @@ export default function EncontroComDeusModal({
                       {(activeEncounter.startDate instanceof Date
                         ? activeEncounter.startDate
                         : activeEncounter.startDate.toDate()
-                      ).toLocaleDateString()}
+                      ).toLocaleDateString("pt-BR", {
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric",
+                      })}
                     </h4>
                     {activeEncounter.location && (
                       <h4>Local: {activeEncounter.location}</h4>

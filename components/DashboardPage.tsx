@@ -16,6 +16,7 @@ import { useEffect, useMemo, useRef } from "react";
 import StatsGrid from "./StatsGrid";
 import useDeleteSermonFirebase, {
   usePublishSermonFirebase,
+  useUnpublishSermonFirebase,
 } from "../lib/hooks/useDeleteSermonFirebase";
 import { modals } from "@mantine/modals";
 import { notifications, showNotification } from "@mantine/notifications";
@@ -58,6 +59,7 @@ export default function DashboardPage() {
   const updated = searchParams?.get("updated");
   const deleteSermonMutation = useDeleteSermonFirebase();
   const publishSermonMutation = usePublishSermonFirebase();
+  const unpublishSermonMutation = useUnpublishSermonFirebase();
   const { isDark } = useClientColorScheme();
 
   // Número real de inscrições no Encontro com Deus
@@ -153,6 +155,39 @@ export default function DashboardPage() {
           notifications.show({
             title: "Erro",
             message: "Falha ao publicar o sermão.",
+            color: "red",
+          });
+        }
+      },
+    });
+  };
+
+  const handleUnpublish = async (sermonId: string) => {
+    modals.openConfirmModal({
+      title: "Despublicar Sermão",
+      children: (
+        <Text size="sm">
+          Tem certeza que deseja despublicar este sermão? <br />
+          <strong>
+            Ele será removido da visualização pública e poderá ser editado
+            novamente.
+          </strong>
+        </Text>
+      ),
+      labels: { confirm: "Despublicar", cancel: "Cancelar" },
+      confirmProps: { color: "orange" },
+      onConfirm: async () => {
+        try {
+          await unpublishSermonMutation.mutateAsync(sermonId);
+          notifications.show({
+            title: "Sermão despublicado",
+            message: "O sermão foi despublicado com sucesso.",
+            color: "orange",
+          });
+        } catch (err) {
+          notifications.show({
+            title: "Erro",
+            message: "Falha ao despublicar o sermão.",
             color: "red",
           });
         }
@@ -282,8 +317,14 @@ export default function DashboardPage() {
                 onpublish={() => {
                   handlePublish(sermon.id);
                 }}
+                onUnpublish={() => {
+                  handleUnpublish(sermon.id);
+                }}
                 isPublished={!!sermon.publishedAt}
-                isPending={publishSermonMutation.isPending}
+                isPending={
+                  publishSermonMutation.isPending ||
+                  unpublishSermonMutation.isPending
+                }
               />
             ))
           ) : (

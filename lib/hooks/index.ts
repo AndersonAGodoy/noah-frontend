@@ -11,7 +11,11 @@ export { useGetParticipantsFirebase } from "./useGetParticipantsFirebase";
 
 // Sermons hooks
 export { default as useCreateSermonFirebase } from "./useCreateSermonFirebase";
-export { default as useDeleteSermonFirebase } from "./useDeleteSermonFirebase";
+export {
+  default as useDeleteSermonFirebase,
+  usePublishSermonFirebase,
+  useUnpublishSermonFirebase,
+} from "./useDeleteSermonFirebase";
 export { useGetSermonsFirebase } from "./useGetSermonsFirebase";
 export { default as useUpdateSermonFirebase } from "./useUpdateSermonFirebase";
 

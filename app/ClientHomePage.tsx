@@ -145,7 +145,8 @@ export default function ClientHomePage({
             c={isDark ? "gray.1" : "gray.8"}
             lh={1.1}
           >
-           Seja bem vindo ao nosso sistema de sermões e devocionais da igreja No'ah
+            Seja bem vindo ao nosso sistema de sermões e devocionais da igreja
+            No'ah
           </Title>
           <Text
             size="xl"
@@ -166,7 +167,13 @@ export default function ClientHomePage({
             fs="italic"
           >
             Última atualização:{" "}
-            {new Date(lastUpdated).toLocaleDateString("pt-BR")}
+            {new Date(lastUpdated).toLocaleDateString("pt-BR", {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </Text>
         </Stack>
 
@@ -341,7 +348,8 @@ export default function ClientHomePage({
                 <Divider color="violet.4" />
 
                 <Text c="gray.3" size="xs" ta="center">
-                  © {new Date().getFullYear()} Igreja No'ah Guapituba. Todos os direitos reservados.
+                  © {new Date().getFullYear()} Igreja No'ah Guapituba. Todos os
+                  direitos reservados.
                 </Text>
               </Stack>
             </Grid.Col>
