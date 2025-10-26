@@ -453,111 +453,107 @@ export default function ClientSermonPage({
           {/* Conteúdo do Sermão */}
           {sermon.markdownContent && (
             <Box>
-                {/* Decoração superior */}
-                <Box
-                  mb="xl"
-                  style={{
-                    height: 4,
-                    width: 80,
-                    background: isDark
-                      ? "linear-gradient(90deg, #7950f2 0%, #5f3dc4 100%)"
-                      : "linear-gradient(90deg, #7950f2 0%, #5f3dc4 100%)",
-                    borderRadius: 2,
-                  }}
-                />
+              {/* Decoração superior */}
+              <Box
+                mb="xl"
+                style={{
+                  height: 4,
+                  width: 80,
+                  background: isDark
+                    ? "linear-gradient(90deg, #7950f2 0%, #5f3dc4 100%)"
+                    : "linear-gradient(90deg, #7950f2 0%, #5f3dc4 100%)",
+                  borderRadius: 2,
+                }}
+              />
 
-                <Paper
-                  p={0}
-                  radius="xl"
-                  bg="transparent"
+              <Paper
+                p={0}
+                radius="xl"
+                bg="transparent"
+                style={{
+                  maxWidth: "100%",
+                }}
+              >
+                <Box
+                  p={isMobile ? "2rem" : "3rem"}
                   style={{
-                    maxWidth: "100%",
+                    background: isDark ? "#25262b" : "#ffffff",
+                    borderRadius: "16px",
+                    border: `1px solid ${isDark ? "#373A40" : "#e9ecef"}`,
+                    boxShadow: isDark
+                      ? "0 10px 40px rgba(0, 0, 0, 0.4)"
+                      : "0 10px 40px rgba(0, 0, 0, 0.06)",
                   }}
                 >
+                  {/* Letra capitular decorativa */}
                   <Box
-                    p={isMobile ? "2rem" : "3rem"}
+                    mb="lg"
                     style={{
-                      background: isDark ? "#25262b" : "#ffffff",
-                      borderRadius: "16px",
-                      border: `1px solid ${isDark ? "#373A40" : "#e9ecef"}`,
-                      boxShadow: isDark
-                        ? "0 10px 40px rgba(0, 0, 0, 0.4)"
-                        : "0 10px 40px rgba(0, 0, 0, 0.06)",
+                      borderLeft: `4px solid ${isDark ? "#7950f2" : "#5f3dc4"}`,
+                      paddingLeft: "1rem",
                     }}
                   >
-                    {/* Letra capitular decorativa */}
-                    <Box
-                      mb="lg"
-                      style={{
-                        borderLeft: `4px solid ${
-                          isDark ? "#7950f2" : "#5f3dc4"
-                        }`,
-                        paddingLeft: "1rem",
-                      }}
+                    <Text
+                      size="sm"
+                      fw={600}
+                      c={isDark ? "violet.4" : "violet.7"}
+                      tt="uppercase"
+                      style={{ letterSpacing: "0.1em" }}
                     >
-                      <Text
-                        size="sm"
-                        fw={600}
-                        c={isDark ? "violet.4" : "violet.7"}
-                        tt="uppercase"
-                        style={{ letterSpacing: "0.1em" }}
-                      >
-                        📖 Leitura
-                      </Text>
-                    </Box>
-
-                    {/* Conteúdo com tipografia melhorada */}
-                    <Box
-                      className="sermon-content"
-                      style={{
-                        fontSize: "1.0625rem",
-                        lineHeight: 1.8,
-                        color: isDark ? "#C1C2C5" : "#495057",
-                      }}
-                    >
-                      <MarkdownViewer content={sermon.markdownContent} />
-                    </Box>
-
-                    {/* Decoração inferior */}
-                    <Box
-                      mt="3rem"
-                      pt="2rem"
-                      style={{
-                        borderTop: `1px solid ${
-                          isDark ? "#373A40" : "#e9ecef"
-                        }`,
-                      }}
-                    >
-                      <Group justify="center" gap="xs">
-                        <Box
-                          style={{
-                            width: 6,
-                            height: 6,
-                            borderRadius: "50%",
-                            background: isDark ? "#7950f2" : "#5f3dc4",
-                          }}
-                        />
-                        <Box
-                          style={{
-                            width: 6,
-                            height: 6,
-                            borderRadius: "50%",
-                            background: isDark ? "#7950f2" : "#5f3dc4",
-                          }}
-                        />
-                        <Box
-                          style={{
-                            width: 6,
-                            height: 6,
-                            borderRadius: "50%",
-                            background: isDark ? "#7950f2" : "#5f3dc4",
-                          }}
-                        />
-                      </Group>
-                    </Box>
+                      📖 Leitura
+                    </Text>
                   </Box>
-                </Paper>
-              </Box>
+
+                  {/* Conteúdo com tipografia melhorada */}
+                  <Box
+                    className="sermon-content"
+                    style={{
+                      fontSize: "1.0625rem",
+                      lineHeight: 1.8,
+                      color: isDark ? "#C1C2C5" : "#495057",
+                    }}
+                  >
+                    <MarkdownViewer content={sermon.markdownContent} />
+                  </Box>
+
+                  {/* Decoração inferior */}
+                  <Box
+                    mt="3rem"
+                    pt="2rem"
+                    style={{
+                      borderTop: `1px solid ${isDark ? "#373A40" : "#e9ecef"}`,
+                    }}
+                  >
+                    <Group justify="center" gap="xs">
+                      <Box
+                        style={{
+                          width: 6,
+                          height: 6,
+                          borderRadius: "50%",
+                          background: isDark ? "#7950f2" : "#5f3dc4",
+                        }}
+                      />
+                      <Box
+                        style={{
+                          width: 6,
+                          height: 6,
+                          borderRadius: "50%",
+                          background: isDark ? "#7950f2" : "#5f3dc4",
+                        }}
+                      />
+                      <Box
+                        style={{
+                          width: 6,
+                          height: 6,
+                          borderRadius: "50%",
+                          background: isDark ? "#7950f2" : "#5f3dc4",
+                        }}
+                      />
+                    </Group>
+                  </Box>
+                </Box>
+              </Paper>
+            </Box>
           )}
 
           {/* Footer da página do sermão */}
