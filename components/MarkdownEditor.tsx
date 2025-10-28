@@ -20,18 +20,18 @@ export default function MarkdownEditor({
 }: MarkdownEditorProps) {
   const { colorScheme } = useMantineColorScheme();
   const isDark = colorScheme === 'dark';
-  
+
   // Estado local para input imediato
   const [localValue, setLocalValue] = useState(value);
-  
+
   // Debounce do valor para preview (300ms)
   const [debouncedValue] = useDebouncedValue(localValue, 300);
-  
+
   // Sincronizar valor externo com local
   useEffect(() => {
     setLocalValue(value);
   }, [value]);
-  
+
   // Atualizar parent apenas quando debounced value mudar
   useEffect(() => {
     if (debouncedValue !== value) {
@@ -52,9 +52,9 @@ export default function MarkdownEditor({
       }}
     >
       {/* Editor - 50% width */}
-      <Box 
-        style={{ 
-          width: "50%", 
+      <Box
+        style={{
+          width: "50%",
           minWidth: 320,
           display: "flex",
           flexDirection: "column",
@@ -102,10 +102,10 @@ export default function MarkdownEditor({
           backgroundColor: isDark ? "#25262b" : "#fafbfc",
         }}
       >
-        <Box 
-          style={{ 
-            height: "100%", 
-            overflowY: "auto", 
+        <Box
+          style={{
+            height: "100%",
+            overflowY: "auto",
             padding: "20px",
           }}
         >

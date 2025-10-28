@@ -29,8 +29,8 @@ const StatsGrid = memo(function StatsGrid({
       typeof lastupdate === "string"
         ? lastupdate
         : lastupdate instanceof Date
-        ? lastupdate.toISOString()
-        : lastupdate?.toDate?.().toISOString();
+          ? lastupdate.toISOString()
+          : lastupdate?.toDate?.().toISOString();
     return formatRelativeDate(dateStr);
   }, [lastupdate]);
   const formattedDate = parsedData ? parsedData : "Sem data disponível";
@@ -108,11 +108,10 @@ const StatsGrid = memo(function StatsGrid({
         </Group>
 
         <Text fz="xs" c="dimmed" mt={7}>
-          {`${
-            encontroInscricoes <= 1
+          {`${encontroInscricoes <= 1
               ? "Pessoa interessada"
               : "Pessoas interessadas"
-          }`}
+            }`}
         </Text>
       </Paper>
 

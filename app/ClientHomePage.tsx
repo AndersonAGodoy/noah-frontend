@@ -78,7 +78,7 @@ export default function ClientHomePage({
       ? sermons.filter((sermon) => sermon.eventType === eventType)
       : sermons;
   }, [eventType, sermons]);
-  
+
   // Handlers memoizados
   const handleOpenModal = useCallback(() => setModalOpened(true), []);
   const handleCloseModal = useCallback(() => setModalOpened(false), []);

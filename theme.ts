@@ -18,9 +18,9 @@ const violet: MantineColorsTuple = [
 
 export const theme = createTheme({
   primaryColor: "violet",
-  
+
   fontFamily: "var(--font-inter), -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif",
-  
+
   headings: {
     fontFamily: "var(--font-playfair), Georgia, serif",
     fontWeight: "700",
@@ -30,52 +30,52 @@ export const theme = createTheme({
       h3: { fontSize: "1.5rem", lineHeight: "1.4" },
     },
   },
-  
+
   colors: {
     violet,
   },
-  
+
   defaultRadius: "md",
-  
+
   shadows: {
     sm: "0 1px 3px rgba(0, 0, 0, 0.05)",
     md: "0 4px 6px rgba(0, 0, 0, 0.07)",
     lg: "0 10px 15px rgba(0, 0, 0, 0.1)",
     xl: "0 20px 25px rgba(0, 0, 0, 0.15)",
   },
-  
+
   components: {
     Button: {
       defaultProps: {
         radius: "md",
       },
     },
-    
+
     Card: {
       defaultProps: {
         radius: "md",
         shadow: "sm",
       },
     },
-    
+
     Paper: {
       defaultProps: {
         radius: "md",
       },
     },
-    
+
     TextInput: {
       defaultProps: {
         radius: "md",
       },
     },
-    
+
     Select: {
       defaultProps: {
         radius: "md",
       },
     },
-    
+
     Modal: {
       defaultProps: {
         radius: "md",
@@ -86,7 +86,7 @@ export const theme = createTheme({
       },
     },
   },
-  
+
   // Breakpoints responsivos
   breakpoints: {
     xs: "36em",  // 576px
