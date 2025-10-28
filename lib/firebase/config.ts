@@ -1,6 +1,11 @@
 // lib/firebase/config.ts
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
-import { getFirestore, type Firestore, enableIndexedDbPersistence } from "firebase/firestore";
+import {
+  getFirestore,
+  type Firestore,
+  persistentLocalCache,
+  persistentMultipleTabManager
+} from "firebase/firestore";
 import { getAuth, type Auth } from "firebase/auth";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
 
@@ -31,23 +36,24 @@ if (!getApps().length) {
   console.log("♻️ Firebase already initialized, reusing instance");
 }
 
-// Initialize Firebase Services (lazy initialization)
+// Initialize Firebase Services com persistência offline (nova API v10+)
+// persistentLocalCache: Cache local no IndexedDB
+// persistentMultipleTabManager: Suporte para múltiplas abas
 db = getFirestore(app);
+
+// Aplicar cache persistente (apenas no cliente)
+if (typeof window !== "undefined") {
+  // @ts-ignore - FirestoreSettings.cache é a nova API
+  db = getFirestore(app, {
+    localCache: persistentLocalCache({
+      tabManager: persistentMultipleTabManager()
+    })
+  });
+  console.log("✅ Firebase offline persistence enabled (persistentLocalCache)");
+}
+
 auth = getAuth(app);
 storage = getStorage(app);
-
-// Habilitar persistência offline (apenas no cliente)
-if (typeof window !== "undefined") {
-  enableIndexedDbPersistence(db).catch((err) => {
-    if (err.code === "failed-precondition") {
-      console.warn("⚠️ Firebase persistence failed: Multiple tabs open");
-    } else if (err.code === "unimplemented") {
-      console.warn("⚠️ Firebase persistence not available in this browser");
-    } else {
-      console.error("❌ Firebase persistence error:", err);
-    }
-  });
-}
 
 export { app, db, auth, storage };
 export default app;
