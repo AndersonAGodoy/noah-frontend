@@ -4,6 +4,7 @@ import { Card, Stack, Text, Title, Flex, Badge } from "@mantine/core";
 import { IconUser, IconCalendar, IconClock } from "@tabler/icons-react";
 import { getColorForEventType } from "../lib/utils/badgeColor";
 import { useMediaQuery } from "@mantine/hooks";
+import { memo } from "react";
 
 interface SermonCardProps {
   slug: string;
@@ -15,7 +16,7 @@ interface SermonCardProps {
   eventType: string;
 }
 
-export default function SermonCard({
+const SermonCard = memo(function SermonCard({
   slug,
   title,
   description,
@@ -30,6 +31,7 @@ export default function SermonCard({
       href={`sermons/sermon/${slug}`}
       passHref
       style={{ textDecoration: "none" }}
+      aria-label={`Ver detalhes do sermão: ${title}`}
     >
       <Card
         maw={isMobile ? 200 : 400}
@@ -45,12 +47,10 @@ export default function SermonCard({
           <Image
             src={"/noah_logo.jpg"}
             alt={title}
-            quality={80}
-            priority
+            quality={75}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            placeholder="blur"
-            blurDataURL="/noah_logo.jpg"
+            loading="lazy"
             style={{
               objectFit: "cover",
             }}
@@ -105,4 +105,6 @@ export default function SermonCard({
       </Card>
     </Link>
   );
-}
+});
+
+export default SermonCard;

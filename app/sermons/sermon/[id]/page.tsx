@@ -5,12 +5,52 @@ import {
 import { Sermon } from "../../../../lib/types/Sermon";
 import { notFound } from "next/navigation";
 import ClientSermonPage from "./ClientSermonPage";
+import type { Metadata } from "next";
 
 // Configuração de cache para SSG com ISR
 export const revalidate = 604800; // 7 dias em segundos (604800 segundos = 7 dias)
 export const dynamicParams = false; // Apenas páginas geradas no build - SSG puro
-// Removido: dynamic = "force-static" - conflita com generateStaticParams
-// Removido: fetchCache - não necessário com SSG puro
+
+// Gerar metadata dinâmico para SEO
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const sermon = await getSermonByIdSSG(id);
+
+  if (!sermon) {
+    return {
+      title: "Sermão não encontrado",
+    };
+  }
+
+  return {
+    title: `${sermon.title} - No'ah`,
+    description: sermon.description,
+    keywords: [
+      sermon.title,
+      sermon.speaker,
+      sermon.eventType,
+      "sermão",
+      "igreja",
+      "noah",
+    ],
+    openGraph: {
+      title: sermon.title,
+      description: sermon.description,
+      type: "article",
+      locale: "pt_BR",
+      publishedTime: sermon.date,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: sermon.title,
+      description: sermon.description,
+    },
+  };
+}
 
 // Gerar parâmetros estáticos para todos os sermões publicados
 export async function generateStaticParams() {

@@ -1,7 +1,7 @@
-// app/client-providers.tsx
+// app/ClientRootProvider.tsx
 "use client";
 
-import { MantineProvider, createTheme } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
@@ -12,25 +12,20 @@ import {
 } from "@tanstack/react-query";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
-
-const theme = createTheme({
-  fontFamily: "var(--font-inter)",
-  headings: {
-    fontFamily: "var(--font-playfair)",
-    fontWeight: "700",
-  },
-  colors: {
-    // Cores personalizadas podem ser adicionadas aqui se necessário
-  },
-});
+import { theme } from "../theme";
 
 function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 1000 * 60, // não refaz por 1 minuto
-        gcTime: 1000 * 60 * 10, // apaga do cache após 10 minutos
+        staleTime: 1000 * 60 * 5, // 5 minutos - dados considerados frescos
+        gcTime: 1000 * 60 * 30, // 30 minutos - garbage collection
         refetchOnWindowFocus: false,
+        refetchOnReconnect: true,
+        retry: 2,
+      },
+      mutations: {
+        retry: 1,
       },
       dehydrate: {
         // include pending queries in dehydration
@@ -64,12 +59,15 @@ export default function ClientProviders({
   children: React.ReactNode;
 }) {
   const queryClient = getQueryClient();
+  
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme}>
         <ModalsProvider>{children}</ModalsProvider>
         <Notifications />
-        <ReactQueryDevtools initialIsOpen={false} />
+        {process.env.NODE_ENV === "development" && (
+          <ReactQueryDevtools initialIsOpen={false} />
+        )}
       </MantineProvider>
     </QueryClientProvider>
   );

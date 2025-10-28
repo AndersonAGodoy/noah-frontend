@@ -31,7 +31,10 @@ export default function DashboardLayout({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Verificar autenticação
+  // Verificar autenticação com Firebase Auth
+  // Esta é a FORMA CORRETA de proteger rotas com Firebase Auth
+  // Firebase armazena tokens no cliente (localStorage), não em cookies do servidor
+  // Por isso a verificação acontece aqui no componente cliente, não no middleware
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {

@@ -1,5 +1,5 @@
 import { Group, Paper, SimpleGrid, Text, Title, Badge } from "@mantine/core";
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 
 import formatRelativeDate from "../lib/utils/formatDate";
 import { Sermon } from "../lib/types/Sermon";
@@ -13,7 +13,7 @@ interface StatsGridProps {
   } | null; // Informações do encontro ativo
 }
 
-export default function StatsGrid({
+const StatsGrid = memo(function StatsGrid({
   sermons,
   encontroInscricoes = 0,
   activeEncounter = null,
@@ -136,4 +136,6 @@ export default function StatsGrid({
       </Paper>
     </SimpleGrid>
   );
-}
+});
+
+export default StatsGrid;

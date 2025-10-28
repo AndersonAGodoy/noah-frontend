@@ -4,6 +4,7 @@ import "bytemd/dist/index.css";
 import { ColorSchemeScript } from "@mantine/core";
 import ClientProviders from "./ClientRootProvider";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { WebVitalsReporter } from "../components/WebVitalsReporter";
 import "./globals.css";
 import "./dark-mode.css";
 import "./bytemd-styles.css";
@@ -26,6 +27,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <WebVitalsReporter />
         <ClientProviders>{children}</ClientProviders>
         {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>

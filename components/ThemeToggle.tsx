@@ -40,7 +40,7 @@ export default function ThemeToggle({ size = 24, color }: ThemeToggleProps) {
       onClick={toggleColorScheme}
       variant="subtle"
       size="lg"
-      aria-label="Toggle theme"
+      aria-label={isDark ? "Mudar para modo claro" : "Mudar para modo escuro"}
       color={color}
       style={{
         color: color || (isDark ? "white" : "var(--mantine-color-gray-6)"),

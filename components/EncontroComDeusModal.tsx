@@ -17,7 +17,7 @@ import {
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import { useState } from "react";
+import { useTransition } from "react";
 import {
   encontroComDeusSchema,
   type EncontroComDeusFormData,
@@ -35,7 +35,7 @@ export default function EncontroComDeusModal({
   opened,
   onClose,
 }: EncontroComDeusModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const { mutateAsync: createParticipant } = useCreateParticipantFirebase();
   const { data: activeEncounter, isLoading: isLoadingEncounter } =
     useGetActiveEncounter();
@@ -54,47 +54,43 @@ export default function EncontroComDeusModal({
   });
 
   const handleSubmit = async (values: EncontroComDeusFormData) => {
-    setIsSubmitting(true);
+    startTransition(async () => {
+      try {
+        await createParticipant({
+          ...values,
+          observations: values.observations ?? "",
+          encounterId: activeEncounter?.id || "default-encounter",
+        });
 
-    try {
-      await createParticipant({
-        ...values,
-        observations: values.observations ?? "",
-        encounterId: activeEncounter?.id || "default-encounter",
-      });
+        notifications.show({
+          title: "Inscrição realizada com sucesso!",
+          message: "Entraremos em contato em breve com mais informações.",
+          color: "green",
+          icon: <IconCheck size="1rem" />,
+          autoClose: 5000,
+        });
 
-      notifications.show({
-        title: "Inscrição realizada com sucesso!",
-        message: "Entraremos em contato em breve com mais informações.",
-        color: "green",
-        icon: <IconCheck size="1rem" />,
-        autoClose: 5000,
-      });
+        form.reset();
+        onClose();
+      } catch (error) {
+        console.error("Erro ao criar participante:", error);
 
-      form.reset();
-      onClose();
-    } catch (error) {
-      console.error("Erro ao criar participante:", error);
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Tente novamente mais tarde ou entre em contato conosco.";
 
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Tente novamente mais tarde ou entre em contato conosco.";
-
-      notifications.show({
-        title: "Erro ao realizar inscrição",
-        message: errorMessage,
-        color: "red",
-        icon: <IconX size="1rem" />,
-        autoClose: 5000,
-      });
-      form.reset();
-      onClose();
-    } finally {
-      setIsSubmitting(false);
-      form.reset();
-      onClose();
-    }
+        notifications.show({
+          title: "Erro ao realizar inscrição",
+          message: errorMessage,
+          color: "red",
+          icon: <IconX size="1rem" />,
+          autoClose: 5000,
+        });
+        form.reset();
+        onClose();
+      }
+    });
   };
 
   return (
@@ -281,14 +277,14 @@ export default function EncontroComDeusModal({
                     variant="subtle"
                     color="gray"
                     onClick={onClose}
-                    disabled={isSubmitting}
+                    disabled={isPending}
                     radius="md"
                   >
                     Cancelar
                   </Button>
                   <Button
                     type="submit"
-                    loading={isSubmitting}
+                    loading={isPending}
                     variant="gradient"
                     gradient={{ from: "violet.6", to: "violet.8" }}
                     radius="md"

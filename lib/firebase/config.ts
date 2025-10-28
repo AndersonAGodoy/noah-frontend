@@ -1,8 +1,8 @@
 // lib/firebase/config.ts
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import { getStorage } from "firebase/storage";
+import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
+import { getFirestore, type Firestore, enableIndexedDbPersistence } from "firebase/firestore";
+import { getAuth, type Auth } from "firebase/auth";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
 
 // Configure suas credenciais do Firebase aqui
 // Você pode encontrar essas informações no Console do Firebase
@@ -16,12 +16,38 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Singleton pattern - Previne múltiplas inicializações
+let app: FirebaseApp;
+let db: Firestore;
+let auth: Auth;
+let storage: FirebaseStorage;
 
-// Initialize Firebase Services
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-export const storage = getStorage(app);
+// Initialize Firebase apenas uma vez
+if (!getApps().length) {
+  app = initializeApp(firebaseConfig);
+  console.log("✅ Firebase initialized");
+} else {
+  app = getApp();
+  console.log("♻️ Firebase already initialized, reusing instance");
+}
 
+// Initialize Firebase Services (lazy initialization)
+db = getFirestore(app);
+auth = getAuth(app);
+storage = getStorage(app);
+
+// Habilitar persistência offline (apenas no cliente)
+if (typeof window !== "undefined") {
+  enableIndexedDbPersistence(db).catch((err) => {
+    if (err.code === "failed-precondition") {
+      console.warn("⚠️ Firebase persistence failed: Multiple tabs open");
+    } else if (err.code === "unimplemented") {
+      console.warn("⚠️ Firebase persistence not available in this browser");
+    } else {
+      console.error("❌ Firebase persistence error:", err);
+    }
+  });
+}
+
+export { app, db, auth, storage };
 export default app;

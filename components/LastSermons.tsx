@@ -10,6 +10,8 @@ import {
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { getColorForEventType } from "../lib/utils/badgeColor";
+import { memo } from "react";
+
 type SermonProps = {
   id: string;
   title: string;
@@ -22,7 +24,7 @@ type SermonProps = {
   isPublished?: boolean;
 };
 
-export default function LastSermons({
+const LastSermons = memo(function LastSermons({
   id,
   title,
   speaker,
@@ -131,4 +133,6 @@ export default function LastSermons({
       </Card.Section>
     </Card>
   );
-}
+});
+
+export default LastSermons;

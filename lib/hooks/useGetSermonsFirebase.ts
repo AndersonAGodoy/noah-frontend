@@ -4,6 +4,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { sermonsService } from "../firebase/services/sermonsService";
 
+// Configurações padrão de queries
+const DEFAULT_QUERY_CONFIG = {
+  staleTime: 1000 * 60 * 5, // 5 minutos
+  gcTime: 1000 * 60 * 30, // 30 minutos
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: true,
+  retry: 2,
+};
+
 export function useGetSermonsFirebase({
   limit = 10,
   page = 1,
@@ -13,10 +22,7 @@ export function useGetSermonsFirebase({
     queryFn: async () => {
       return await sermonsService.getSermons(limit, page);
     },
-    staleTime: 30 * 1000, // 30 seconds
-    gcTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+    ...DEFAULT_QUERY_CONFIG,
   });
 }
 
@@ -36,11 +42,7 @@ export function useGetPublishedSermonsFirebase({
         throw error;
       }
     },
-    staleTime: 1 * 60 * 1000, // 1 minute
-    gcTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    retry: 2, // Tentar 2 vezes em caso de erro
+    ...DEFAULT_QUERY_CONFIG,
   });
 }
 
@@ -52,8 +54,6 @@ export function useGetSermonFirebase(sermonId: string | null) {
       return await sermonsService.getSermon(sermonId);
     },
     enabled: !!sermonId,
-    staleTime: 30 * 1000,
-    gcTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    ...DEFAULT_QUERY_CONFIG,
   });
 }

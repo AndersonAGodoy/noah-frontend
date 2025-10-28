@@ -30,14 +30,23 @@ import {
   IconLayoutDashboard,
 } from "@tabler/icons-react";
 import SermonCard from "../components/SermonCard";
-import EncontroComDeusModal from "../components/EncontroComDeusModal";
 import ThemeToggle from "../components/ThemeToggle";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useClientColorScheme } from "../lib/hooks/useClientColorScheme";
 import { Sermon } from "../lib/types/Sermon";
 import { useRouter } from "next/navigation";
 import { auth } from "../lib/firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
+import dynamic from "next/dynamic";
+
+// Dynamic import do modal pesado
+const EncontroComDeusModal = dynamic(
+  () => import("../components/EncontroComDeusModal"),
+  {
+    loading: () => <div>Carregando...</div>,
+    ssr: false,
+  }
+);
 
 interface ClientHomePageProps {
   sermons: Sermon[];
@@ -63,10 +72,18 @@ export default function ClientHomePage({
     return () => unsubscribe();
   }, []);
 
-  // Filtrar sermões por tipo de evento se selecionado
-  const filteredSermons = eventType
-    ? sermons.filter((sermon) => sermon.eventType === eventType)
-    : sermons;
+  // Filtrar sermões por tipo de evento se selecionado (memoizado)
+  const filteredSermons = useMemo(() => {
+    return eventType
+      ? sermons.filter((sermon) => sermon.eventType === eventType)
+      : sermons;
+  }, [eventType, sermons]);
+  
+  // Handlers memoizados
+  const handleOpenModal = useCallback(() => setModalOpened(true), []);
+  const handleCloseModal = useCallback(() => setModalOpened(false), []);
+  const handleDashboardClick = useCallback(() => router.push("/dashboard"), [router]);
+  const handleLoginClick = useCallback(() => router.push("/login"), [router]);
 
   if (!mounted) {
     return null;
@@ -100,7 +117,8 @@ export default function ClientHomePage({
                 color="violet"
                 size="sm"
                 fw={600}
-                onClick={() => setModalOpened(true)}
+                onClick={handleOpenModal}
+                aria-label="Abrir formulário de inscrição no Encontro com Deus"
               >
                 Encontro com Deus
               </Button>
@@ -111,8 +129,9 @@ export default function ClientHomePage({
                   color="white"
                   size="sm"
                   fw={600}
-                  onClick={() => router.push("/dashboard")}
+                  onClick={handleDashboardClick}
                   style={{ color: "white" }}
+                  aria-label="Ir para o dashboard"
                 >
                   Dashboard
                 </Button>
@@ -123,8 +142,9 @@ export default function ClientHomePage({
                   color="white"
                   size="sm"
                   fw={600}
-                  onClick={() => router.push("/login")}
+                  onClick={handleLoginClick}
                   style={{ color: "white" }}
+                  aria-label="Fazer login"
                 >
                   Login
                 </Button>
@@ -352,7 +372,7 @@ export default function ClientHomePage({
       {/* Modal */}
       <EncontroComDeusModal
         opened={modalOpened}
-        onClose={() => setModalOpened(false)}
+        onClose={handleCloseModal}
       />
     </Box>
   );

@@ -2,6 +2,8 @@
 
 import { useMantineColorScheme, Box, Textarea } from "@mantine/core";
 import MarkdownViewer from "./MarkdownViewer";
+import { useDebouncedValue } from "@mantine/hooks";
+import { useState, useEffect } from "react";
 
 interface MarkdownEditorProps {
   value: string;
@@ -18,6 +20,24 @@ export default function MarkdownEditor({
 }: MarkdownEditorProps) {
   const { colorScheme } = useMantineColorScheme();
   const isDark = colorScheme === 'dark';
+  
+  // Estado local para input imediato
+  const [localValue, setLocalValue] = useState(value);
+  
+  // Debounce do valor para preview (300ms)
+  const [debouncedValue] = useDebouncedValue(localValue, 300);
+  
+  // Sincronizar valor externo com local
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+  
+  // Atualizar parent apenas quando debounced value mudar
+  useEffect(() => {
+    if (debouncedValue !== value) {
+      onChange(debouncedValue);
+    }
+  }, [debouncedValue, onChange, value]);
 
   return (
     <Box
@@ -41,8 +61,8 @@ export default function MarkdownEditor({
         }}
       >
         <Textarea
-          value={value}
-          onChange={(event) => onChange(event.currentTarget.value)}
+          value={localValue}
+          onChange={(event) => setLocalValue(event.currentTarget.value)}
           placeholder={placeholder}
           styles={{
             input: {
@@ -89,7 +109,7 @@ export default function MarkdownEditor({
             padding: "20px",
           }}
         >
-          <MarkdownViewer content={value} />
+          <MarkdownViewer content={debouncedValue} />
         </Box>
       </Box>
     </Box>

@@ -12,21 +12,19 @@ import {
 import Link from "next/link";
 import { useGetSermonsFirebase } from "../lib/hooks/useGetSermonsFirebase";
 import useGetAllParticipantsFirebase from "../lib/hooks/useGetAllParticipantsFirebase";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 import StatsGrid from "./StatsGrid";
 import useDeleteSermonFirebase, {
   usePublishSermonFirebase,
 } from "../lib/hooks/useDeleteSermonFirebase";
 import { modals } from "@mantine/modals";
-import { notifications, showNotification } from "@mantine/notifications";
+import { notifications } from "@mantine/notifications";
 import LastSermons from "./LastSermons";
-import useUpdateSermonFirebase from "../lib/hooks/useUpdateSermonFirebase";
 import {
   IconCirclePlus,
   IconUsers,
   IconCalendarEvent,
 } from "@tabler/icons-react";
-import { useSearchParams } from "next/navigation";
 import { Sermon } from "../lib/types/Sermon";
 import { useClientColorScheme } from "../lib/hooks/useClientColorScheme";
 import { useGetActiveEncounter } from "../lib/hooks/useGetActiveEncounter";
@@ -53,9 +51,6 @@ export default function DashboardPage() {
   // Desativar automaticamente encontros expirados
   useAutoDeactivateExpiredEncounters();
 
-  const searchParams = useSearchParams();
-  const created = searchParams?.get("created");
-  const updated = searchParams?.get("updated");
   const deleteSermonMutation = useDeleteSermonFirebase();
   const publishSermonMutation = usePublishSermonFirebase();
   const { isDark } = useClientColorScheme();
@@ -69,36 +64,6 @@ export default function DashboardPage() {
     }
     return sermonsData?.data || [];
   }, [sermonsData]);
-
-  const hasNotified = useRef(false);
-
-  useEffect(() => {
-    if ((created || updated) && !hasNotified.current) {
-      showNotification({
-        title: "Sucesso",
-        message: "Sermão criado com sucesso!",
-        color: "green",
-      });
-
-      hasNotified.current = true;
-
-      // Limpar a query da URL
-      window.history.replaceState({}, document.title, "/dashboard");
-    }
-
-    if (updated && !hasNotified.current) {
-      showNotification({
-        title: "Sucesso",
-        message: "Sermão atualizado com sucesso!",
-        color: "violet",
-      });
-
-      hasNotified.current = true;
-
-      // Limpar a query da URL
-      window.history.replaceState({}, document.title, "/dashboard");
-    }
-  }, [created, updated]);
 
   const openConfirmModal = (sermonId: string) => {
     modals.openConfirmModal({

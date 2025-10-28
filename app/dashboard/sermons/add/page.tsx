@@ -17,7 +17,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useMediaQuery } from "@mantine/hooks";
-import { useState } from "react";
+import { useTransition } from "react";
 import useCreateSermonFirebase from "../../../../lib/hooks/useCreateSermonFirebase";
 import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
@@ -31,15 +31,24 @@ import {
 import { useClientColorScheme } from "../../../../lib/hooks/useClientColorScheme";
 import { sermonSchema, type SermonFormData } from "../../../../lib/schemas";
 import { zodResolver } from "../../../../lib/utils/zodResolver";
-import MarkdownEditor from "../../../../components/MarkdownEditor";
 import MarkdownViewer from "../../../../components/MarkdownViewer";
+import dynamic from "next/dynamic";
+
+// Dynamic import do editor pesado
+const MarkdownEditor = dynamic(
+  () => import("../../../../components/MarkdownEditor"),
+  {
+    loading: () => <div>Carregando editor...</div>,
+    ssr: false,
+  }
+);
 
 export default function AddSermon() {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const { isDark } = useClientColorScheme();
   const { mutateAsync: createSermon } = useCreateSermonFirebase();
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<SermonFormData>({
     mode: "controlled",
@@ -87,28 +96,27 @@ export default function AddSermon() {
     console.log("🔍 Markdown content length:", values.markdownContent?.length);
     console.log("📝 Form validation errors:", form.errors);
 
-    setIsSubmitting(true);
-    try {
-      await createSermon(values);
-      notifications.show({
-        title: "Sucesso!",
-        message: "Sermão criado com sucesso.",
-        color: "green",
-      });
-      form.reset();
-      router.push("/dashboard?created=true");
-    } catch (error) {
-      console.error("❌ Error creating sermon:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Falha ao criar o sermão.";
-      notifications.show({
-        title: "Erro",
-        message: errorMessage,
-        color: "red",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    startTransition(async () => {
+      try {
+        await createSermon(values);
+        notifications.show({
+          title: "Sucesso!",
+          message: "Sermão criado com sucesso.",
+          color: "green",
+        });
+        form.reset();
+        router.push("/dashboard");
+      } catch (error) {
+        console.error("❌ Error creating sermon:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "Falha ao criar o sermão.";
+        notifications.show({
+          title: "Erro",
+          message: errorMessage,
+          color: "red",
+        });
+      }
+    });
   };
 
   return (
@@ -348,8 +356,8 @@ Conclua seu sermão aqui...
                 color="violet"
                 type="submit"
                 leftSection={<IconCirclePlus />}
-                loading={isSubmitting}
-                disabled={isSubmitting}
+                loading={isPending}
+                disabled={isPending}
                 onClick={() => {
                   console.log("🖱️ Create button clicked!");
                   console.log("📋 Current form values:", form.values);
@@ -362,7 +370,7 @@ Conclua seu sermão aqui...
                 variant="subtle"
                 color="red"
                 onClick={() => router.back()}
-                disabled={isSubmitting}
+                disabled={isPending}
                 leftSection={<IconSquareRoundedX />}
                 type="button"
               >
