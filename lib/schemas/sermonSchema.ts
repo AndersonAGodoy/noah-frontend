@@ -65,7 +65,8 @@ export const sermonSchema = z.object({
 
   references: z
     .array(scriptureReferenceSchema)
-    .min(1, "Pelo menos uma referência bíblica é obrigatória"),
+    .optional()
+    .default([]),
 
   contentSections: z.array(contentSectionSchema).optional().default([]),
 

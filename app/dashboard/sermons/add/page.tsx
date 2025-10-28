@@ -58,7 +58,7 @@ export default function AddSermon() {
       date: "",
       time: "",
       eventType: "Culto" as const,
-      references: [{ reference: "", text: "" }],
+      references: [], // Array vazio - referências agora são opcionais
       contentSections: [],
       markdownContent: "", // Novo campo para markdown
     },
@@ -83,10 +83,8 @@ export default function AddSermon() {
 
   const removeReference = (index: number) => {
     const currentReferences = form.values.references;
-    if (currentReferences.length > 1) {
-      const newReferences = currentReferences.filter((_, i) => i !== index);
-      form.setFieldValue("references", newReferences);
-    }
+    const newReferences = currentReferences.filter((_, i) => i !== index);
+    form.setFieldValue("references", newReferences);
   };
 
   const handleCreateSermon = async (values: SermonFormData) => {
@@ -299,7 +297,7 @@ Conclua seu sermão aqui...
                 width: "100%",
               }}
             >
-              <Title order={3}>Referências bíblicas</Title>
+              <Title order={3}>Referências bíblicas (Opcional)</Title>
               <Button
                 color="violet"
                 onClick={addScriptureReference}
@@ -309,6 +307,22 @@ Conclua seu sermão aqui...
                 Adicionar referência
               </Button>
             </Group>
+
+            {form.values.references.length === 0 && (
+              <Alert
+                icon={<IconInfoCircle size={16} />}
+                title="Nenhuma referência adicionada"
+                color="blue"
+                variant="light"
+                mt="md"
+              >
+                <Text size="sm">
+                  As referências bíblicas são opcionais. Clique em "Adicionar
+                  referência" se desejar incluir textos bíblicos no seu sermão.
+                </Text>
+              </Alert>
+            )}
+
             {form.values.references.map((reference, index) => (
               <Card
                 key={index}
@@ -324,7 +338,6 @@ Conclua seu sermão aqui...
                     variant="subtle"
                     color="red"
                     onClick={() => removeReference(index)}
-                    disabled={form.values.references.length === 1}
                     type="button"
                   >
                     Remover

@@ -18,7 +18,6 @@ import {
 } from "@mantine/core";
 import {
   IconCalendar,
-  IconClock,
   IconUser,
   IconArrowLeft,
   IconHome,
@@ -105,8 +104,8 @@ export default function ClientSermonPage({
         .metadata-card:hover {
           transform: translateY(-2px);
           box-shadow: ${isDark
-            ? "0 12px 40px rgba(0, 0, 0, 0.4) !important"
-            : "0 12px 40px rgba(0, 0, 0, 0.15) !important"};
+          ? "0 12px 40px rgba(0, 0, 0, 0.4) !important"
+          : "0 12px 40px rgba(0, 0, 0, 0.15) !important"};
         }
       `}</style>
 
@@ -279,19 +278,22 @@ export default function ClientSermonPage({
               )}
             </Stack>
 
-            {/* Metadados premium */}
+            {/* Metadados premium - 2 cards principais */}
             <Box
               mb="3rem"
               style={{
                 display: "grid",
                 gridTemplateColumns: isMobile
                   ? "1fr"
-                  : "repeat(auto-fit, minmax(280px, 1fr))",
-                gap: "1rem",
+                  : isTablet
+                    ? "repeat(2, 1fr)"
+                    : "repeat(2, 1fr)",
+                gap: "1.5rem",
+                maxWidth: isTablet ? "100%" : "800px",
               }}
             >
               <Paper
-                p="lg"
+                p="xl"
                 radius="xl"
                 bg={isDark ? "dark.6" : "white"}
                 style={{
@@ -307,13 +309,13 @@ export default function ClientSermonPage({
                   <Avatar
                     color="violet"
                     radius="xl"
-                    size="lg"
+                    size="xl"
                     variant="gradient"
                     gradient={{ from: "violet.6", to: "violet.8" }}
                   >
-                    <IconUser size={24} />
+                    <IconUser size={28} />
                   </Avatar>
-                  <Stack gap={2}>
+                  <Stack gap={4}>
                     <Text
                       size="xs"
                       c={isDark ? "gray.5" : "gray.6"}
@@ -323,7 +325,7 @@ export default function ClientSermonPage({
                     >
                       Pregador
                     </Text>
-                    <Text size="md" fw={700} c={isDark ? "gray.1" : "gray.8"}>
+                    <Text size="lg" fw={700} c={isDark ? "gray.1" : "gray.8"}>
                       {sermon.speaker}
                     </Text>
                   </Stack>
@@ -331,7 +333,7 @@ export default function ClientSermonPage({
               </Paper>
 
               <Paper
-                p="lg"
+                p="xl"
                 radius="xl"
                 bg={isDark ? "dark.6" : "white"}
                 style={{
@@ -347,13 +349,13 @@ export default function ClientSermonPage({
                   <Avatar
                     color="blue"
                     radius="xl"
-                    size="lg"
+                    size="xl"
                     variant="gradient"
                     gradient={{ from: "blue.6", to: "cyan.6" }}
                   >
-                    <IconCalendar size={24} />
+                    <IconCalendar size={28} />
                   </Avatar>
-                  <Stack gap={2}>
+                  <Stack gap={4}>
                     <Text
                       size="xs"
                       c={isDark ? "gray.5" : "gray.6"}
@@ -361,56 +363,14 @@ export default function ClientSermonPage({
                       tt="uppercase"
                       style={{ letterSpacing: "0.05em" }}
                     >
-                      Data
+                      Data do Culto
                     </Text>
-                    <Text size="md" fw={700} c={isDark ? "gray.1" : "gray.8"}>
+                    <Text size="lg" fw={700} c={isDark ? "gray.1" : "gray.8"}>
                       {formatDate(sermon.date)}
                     </Text>
                   </Stack>
                 </Group>
               </Paper>
-
-              {sermon.duration && (
-                <Paper
-                  p="lg"
-                  radius="xl"
-                  bg={isDark ? "dark.6" : "white"}
-                  style={{
-                    border: `1px solid ${isDark ? "#373A40" : "#e9ecef"}`,
-                    boxShadow: isDark
-                      ? "0 8px 32px rgba(0, 0, 0, 0.3)"
-                      : "0 8px 32px rgba(0, 0, 0, 0.08)",
-                    transition: "all 0.3s ease",
-                  }}
-                  className="metadata-card"
-                >
-                  <Group gap="md">
-                    <Avatar
-                      color="green"
-                      radius="xl"
-                      size="lg"
-                      variant="gradient"
-                      gradient={{ from: "green.6", to: "teal.6" }}
-                    >
-                      <IconClock size={24} />
-                    </Avatar>
-                    <Stack gap={2}>
-                      <Text
-                        size="xs"
-                        c={isDark ? "gray.5" : "gray.6"}
-                        fw={500}
-                        tt="uppercase"
-                        style={{ letterSpacing: "0.05em" }}
-                      >
-                        Duração
-                      </Text>
-                      <Text size="md" fw={700} c={isDark ? "gray.1" : "gray.8"}>
-                        {sermon.duration}
-                      </Text>
-                    </Stack>
-                  </Group>
-                </Paper>
-              )}
             </Box>
           </Box>
 

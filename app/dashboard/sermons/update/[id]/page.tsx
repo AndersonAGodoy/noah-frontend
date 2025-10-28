@@ -62,12 +62,12 @@ export default function AddSermon() {
       setTime(data.time || "");
       setEventType(data.eventType || "Culto");
       setMarkdownContent(data.markdownContent || "");
-      setReferences(data.references || [{ reference: "", text: "" }]);
+      setReferences(data.references || []); // Array vazio se não houver referências
       setContentSections(
         data.contentSections?.length
           ? data.contentSections.map((section) => ({
-              ...section,
-            }))
+            ...section,
+          }))
           : [{ type: "parágrafo", content: "" }]
       );
     }
@@ -76,7 +76,7 @@ export default function AddSermon() {
   //Referencia biblica
   const [references, setReferences] = useState<
     { id?: string; reference: string; text: string }[]
-  >([{ reference: "", text: "" }]);
+  >([]); // Inicializa vazio - referências são opcionais
 
   //sessões
   const [contentSections, setContentSections] = useState<
@@ -334,7 +334,7 @@ export default function AddSermon() {
               width: "100%",
             }}
           >
-            <Title order={3}>Referências bíblicas</Title>
+            <Title order={3}>Referências bíblicas (Opcional)</Title>
             <Button
               color="violet"
               onClick={addScriptureReference}
@@ -343,6 +343,22 @@ export default function AddSermon() {
               Adicionar referência
             </Button>
           </Group>
+
+          {references.length === 0 && (
+            <Alert
+              icon={<IconInfoCircle size={16} />}
+              title="Nenhuma referência adicionada"
+              color="blue"
+              variant="light"
+              mt="md"
+            >
+              <Text size="sm">
+                As referências bíblicas são opcionais. Clique em "Adicionar
+                referência" se desejar incluir textos bíblicos no seu sermão.
+              </Text>
+            </Alert>
+          )}
+
           {references.map((reference, index) => (
             <Card
               key={index}
@@ -362,7 +378,6 @@ export default function AddSermon() {
                     newReferences.splice(index, 1);
                     setReferences(newReferences);
                   }}
-                  disabled={references.length === 1}
                 >
                   Remover
                 </Button>
