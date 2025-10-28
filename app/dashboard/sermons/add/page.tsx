@@ -1,6 +1,5 @@
 "use client";
 import {
-  Blockquote,
   Box,
   Button,
   Card,
@@ -22,7 +21,6 @@ import useCreateSermonFirebase from "../../../../lib/hooks/useCreateSermonFireba
 import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
 import {
-  IconBible,
   IconCirclePlus,
   IconSquareRoundedX,
   IconMarkdown,
@@ -211,6 +209,7 @@ export default function AddSermon() {
               placeholder="Selecione o tipo de conteúdo"
               data={[
                 { value: "Culto", label: "Culto" },
+                { value: "Devocional", label: "Devocional" },
                 { value: "Estudo Bíblico", label: "Estudo Bíblico" },
                 { value: "Retiro", label: "Retiro" },
                 { value: "Conferência", label: "Conferência" },
@@ -229,9 +228,11 @@ export default function AddSermon() {
               mt="md"
             >
               <Text size="sm">
-                Use Markdown para formatar o conteúdo do seu sermão. Alterne entre as abas para editar e visualizar.
+                Use Markdown para formatar o conteúdo do seu sermão. Alterne
+                entre as abas para editar e visualizar.
                 <br />
-                <strong>Dica:</strong> Use # para títulos, ** para negrito, * para itálico, e &gt; para citações.
+                <strong>Dica:</strong> Use # para títulos, ** para negrito, *
+                para itálico, e &gt; para citações.
               </Text>
             </Alert>
 
@@ -244,7 +245,9 @@ export default function AddSermon() {
               <Tabs.Panel value="editor">
                 <MarkdownEditor
                   value={form.values.markdownContent || ""}
-                  onChange={(value) => form.setFieldValue("markdownContent", value)}
+                  onChange={(value) =>
+                    form.setFieldValue("markdownContent", value)
+                  }
                   height={500}
                   placeholder="Digite o conteúdo do seu sermão em Markdown...
 
@@ -272,13 +275,14 @@ Conclua seu sermão aqui...
 
               <Tabs.Panel value="preview">
                 {form.values.markdownContent ? (
-                  <Card withBorder p="xl" style={{ minHeight: '500px' }}>
+                  <Card withBorder p="xl" style={{ minHeight: "500px" }}>
                     <MarkdownViewer content={form.values.markdownContent} />
                   </Card>
                 ) : (
-                  <Card withBorder p="xl" style={{ minHeight: '500px' }}>
+                  <Card withBorder p="xl" style={{ minHeight: "500px" }}>
                     <Text c="dimmed" ta="center">
-                      Nenhum conteúdo para visualizar. Escreva algo na aba "Editar".
+                      Nenhum conteúdo para visualizar. Escreva algo na aba
+                      "Editar".
                     </Text>
                   </Card>
                 )}

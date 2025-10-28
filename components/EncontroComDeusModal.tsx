@@ -14,10 +14,12 @@ import {
   Paper,
   Checkbox,
 } from "@mantine/core";
+import { useState, useEffect } from "react";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useTransition } from "react";
+
 import {
   encontroComDeusSchema,
   type EncontroComDeusFormData,
@@ -25,6 +27,7 @@ import {
 import { zodResolver } from "../lib/utils/zodResolver";
 import useCreateParticipantFirebase from "../lib/hooks/useCreateParticipantFirebase";
 import { useGetActiveEncounter } from "../lib/hooks/useGetActiveEncounter";
+import { PhoneInput } from "../lib/utils/phoneUtils";
 
 interface EncontroComDeusModalProps {
   opened: boolean;
@@ -142,7 +145,11 @@ export default function EncontroComDeusModal({
                       {(activeEncounter.startDate instanceof Date
                         ? activeEncounter.startDate
                         : activeEncounter.startDate.toDate()
-                      ).toLocaleDateString()}
+                      ).toLocaleDateString("pt-BR", {
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric",
+                      })}
                     </h4>
                     {activeEncounter.location && (
                       <h4>Local: {activeEncounter.location}</h4>
@@ -172,12 +179,12 @@ export default function EncontroComDeusModal({
                 />
 
                 <Group grow>
-                  <TextInput
-                    label="Telefone"
-                    placeholder="(11) 99999-9999"
+                  <PhoneInput
                     required
-                    {...form.getInputProps("phoneNumber")}
                     radius="md"
+                    value={form.getValues().phoneNumber || ''}
+                    onChange={(value) => form.setFieldValue("phoneNumber", value)}
+                    error={form.errors.phoneNumber}
                   />
 
                   <NumberInput

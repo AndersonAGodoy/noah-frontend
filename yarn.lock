@@ -1826,6 +1826,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-input-mask@npm:^3.0.6":
+  version: 3.0.6
+  resolution: "@types/react-input-mask@npm:3.0.6"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10c0/af7a8b938a6d89416630ab27d0d2b6b962acf9ac1de567c745b5041f5cfa07e42715f525a84a5b3cf51fca4b8b8e20cc32e16b80b7c04411c2ebb81aaf462b1f
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:*":
+  version: 19.2.2
+  resolution: "@types/react@npm:19.2.2"
+  dependencies:
+    csstype: "npm:^3.0.2"
+  checksum: 10c0/f830b1204aca4634ce3c6cb3477b5d3d066b80a4dd832a4ee0069acb504b6debd2416548a43a11c1407c12bc60e2dc6cf362934a18fe75fe06a69c0a98cba8ab
+  languageName: node
+  linkType: hard
+
 "@types/react@npm:19.0.12":
   version: 19.0.12
   resolution: "@types/react@npm:19.0.12"
@@ -4556,6 +4574,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"invariant@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "invariant@npm:2.2.4"
+  dependencies:
+    loose-envify: "npm:^1.0.0"
+  checksum: 10c0/5af133a917c0bcf65e84e7f23e779e7abc1cd49cb7fdc62d00d1de74b0d8c1b5ee74ac7766099fb3be1b05b26dfc67bab76a17030d2fe7ea2eef867434362dfc
+  languageName: node
+  linkType: hard
+
 "is-alphabetical@npm:^2.0.0":
   version: 2.0.1
   resolution: "is-alphabetical@npm:2.0.1"
@@ -5231,7 +5258,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.0.0, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -5285,6 +5312,7 @@ __metadata:
     "@types/node": "npm:22.13.11"
     "@types/react": "npm:19.0.12"
     "@types/react-dom": "npm:19.0.4"
+    "@types/react-input-mask": "npm:^3.0.6"
     bytemd: "npm:^1.22.0"
     eslint: "npm:9.23.0"
     eslint-config-next: "npm:15.2.3"
@@ -5299,6 +5327,7 @@ __metadata:
     postcss-simple-vars: "npm:^7.0.1"
     react: "npm:19.0.0"
     react-dom: "npm:19.0.0"
+    react-input-mask: "npm:^2.0.4"
     react-markdown: "npm:^10.1.0"
     rehype-raw: "npm:^7.0.0"
     rehype-react: "npm:^8.0.0"
@@ -6982,6 +7011,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-input-mask@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "react-input-mask@npm:2.0.4"
+  dependencies:
+    invariant: "npm:^2.2.4"
+    warning: "npm:^4.0.2"
+  peerDependencies:
+    react: ">=0.14.0"
+    react-dom: ">=0.14.0"
+  checksum: 10c0/89fc110a99e79ee3fa3f63696d5d46ab8889c653b33c0e50c6b24d70b715e1c8d475b8637ceb9e0f4fcacec5e39f653156faef4f5f06972886c4b1e643f66a82
+  languageName: node
+  linkType: hard
+
 "react-is@npm:^16.13.1":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
@@ -8628,6 +8670,15 @@ __metadata:
     "@types/unist": "npm:^3.0.0"
     vfile-message: "npm:^4.0.0"
   checksum: 10c0/e5d9eb4810623f23758cfc2205323e33552fb5972e5c2e6587babe08fe4d24859866277404fb9e2a20afb71013860d96ec806cb257536ae463c87d70022ab9ef
+  languageName: node
+  linkType: hard
+
+"warning@npm:^4.0.2":
+  version: 4.0.3
+  resolution: "warning@npm:4.0.3"
+  dependencies:
+    loose-envify: "npm:^1.0.0"
+  checksum: 10c0/aebab445129f3e104c271f1637fa38e55eb25f968593e3825bd2f7a12bd58dc3738bb70dc8ec85826621d80b4acfed5a29ebc9da17397c6125864d72301b937e
   languageName: node
   linkType: hard
 

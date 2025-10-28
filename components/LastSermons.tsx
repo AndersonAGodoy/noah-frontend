@@ -12,6 +12,7 @@ import Link from "next/link";
 import { getColorForEventType } from "../lib/utils/badgeColor";
 import { memo } from "react";
 
+import { formatDate } from "../lib/utils/formatDate";
 type SermonProps = {
   id: string;
   title: string;
@@ -20,6 +21,7 @@ type SermonProps = {
   date: string;
   onRemove?: () => void;
   onpublish?: () => void;
+  onUnpublish?: () => void;
   isPending?: boolean;
   isPublished?: boolean;
 };
@@ -32,11 +34,12 @@ const LastSermons = memo(function LastSermons({
   date,
   onRemove,
   onpublish,
+  onUnpublish,
   isPending,
   isPublished,
 }: SermonProps) {
   const isMobile = useMediaQuery("(max-width: 1175px)");
-
+  const formattedDate = formatDate(date);
   return (
     <Card shadow="sm" mt="sm" padding="lg" radius="md" withBorder>
       <Card.Section p="md">
@@ -71,7 +74,7 @@ const LastSermons = memo(function LastSermons({
               </Text>
               <IconClockHour4 size={14} stroke={1.5} />
               <Text c="dimmed" ml={"xs"}>
-                {date}
+                {formattedDate}
               </Text>
             </Box>
           </Stack>
@@ -91,20 +94,31 @@ const LastSermons = memo(function LastSermons({
               {eventType}
             </Badge>
 
-            <Button
-              fullWidth={isMobile}
-              color="violet"
-              mr={"xs"}
-              variant="outline"
-              leftSection={
-                isPublished ? <IconChecks color="green" /> : <IconPencilShare />
-              }
-              onClick={onpublish}
-              disabled={isPublished}
-              loading={isPending}
-            >
-              {isPublished ? "Sermão publicado" : " Publicar Sermão"}
-            </Button>
+            {!isPublished ? (
+              <Button
+                fullWidth={isMobile}
+                color="violet"
+                mr={"xs"}
+                variant="outline"
+                leftSection={<IconPencilShare />}
+                onClick={onpublish}
+                loading={isPending}
+              >
+                Publicar Sermão
+              </Button>
+            ) : (
+              <Button
+                fullWidth={isMobile}
+                color="orange"
+                mr={"xs"}
+                variant="outline"
+                leftSection={<IconChecks color="green" />}
+                onClick={onUnpublish}
+                loading={isPending}
+              >
+                Despublicar
+              </Button>
+            )}
 
             {!isPublished && (
               <Button

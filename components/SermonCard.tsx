@@ -1,10 +1,11 @@
 import Link from "next/link";
-import Image from "next/image";
+import NextImage from "next/image";
 import { Card, Stack, Text, Title, Flex, Badge } from "@mantine/core";
 import { IconUser, IconCalendar, IconClock } from "@tabler/icons-react";
 import { getColorForEventType } from "../lib/utils/badgeColor";
 import { useMediaQuery } from "@mantine/hooks";
 import { memo } from "react";
+import { formatDate } from "../lib/utils/formatDate";
 
 interface SermonCardProps {
   slug: string;
@@ -26,6 +27,7 @@ const SermonCard = memo(function SermonCard({
   duration,
 }: SermonCardProps) {
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const formattedDate = formatDate(date);
   return (
     <Link
       href={`sermons/sermon/${slug}`}
@@ -34,20 +36,42 @@ const SermonCard = memo(function SermonCard({
       aria-label={`Ver detalhes do sermão: ${title}`}
     >
       <Card
-        maw={isMobile ? 200 : 400}
-        miw={isMobile ? 340 : 400}
-        mih={400}
+        w="100%"
+        h={{ base: 380, sm: 400 }}
         shadow="sm"
-        radius="md"
-        style={{ cursor: "pointer" }}
+        radius="lg"
+        style={{
+          cursor: "pointer",
+          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          border: "1px solid transparent",
+        }}
+        __vars={{
+          "--card-hover-transform": "translateY(-4px) scale(1.02)",
+          "--card-hover-shadow":
+            "0 20px 40px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.08)",
+          "--card-hover-border": "1px solid var(--mantine-color-violet-2)",
+        }}
+        onMouseEnter={(e) => {
+          if (!isMobile) {
+            e.currentTarget.style.transform = "var(--card-hover-transform)";
+            e.currentTarget.style.boxShadow = "var(--card-hover-shadow)";
+            e.currentTarget.style.border = "var(--card-hover-border)";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isMobile) {
+            e.currentTarget.style.transform = "translateY(0) scale(1)";
+            e.currentTarget.style.boxShadow = "";
+            e.currentTarget.style.border = "1px solid transparent";
+          }
+        }}
       >
         <Card.Section
           style={{ position: "relative", height: 200, overflow: "hidden" }}
         >
-          <Image
+          <NextImage
             src={"/noah_logo.jpg"}
             alt={title}
-            quality={75}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             loading="lazy"
@@ -56,23 +80,48 @@ const SermonCard = memo(function SermonCard({
             }}
           />
           <Badge
-            pos={"absolute"}
-            top={180}
-            left={isMobile ? 260 : 320}
+            pos="absolute"
+            top={12}
+            left={12}
             color={getColorForEventType(eventType)}
+            size={isMobile ? "md" : "sm"}
+            style={{
+              zIndex: 3,
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)",
+              backdropFilter: "blur(8px)",
+              fontWeight: 600,
+              textTransform: "uppercase",
+              letterSpacing: "0.5px",
+            }}
+            variant="filled"
           >
             {eventType}
           </Badge>
         </Card.Section>
 
-        <Stack p="md" gap="xs" justify="space-between" flex={1}>
+        <Stack
+          p={{ base: "sm", sm: "md" }}
+          gap="xs"
+          justify="space-between"
+          flex={1}
+        >
           <Flex gap="xs" justify="space-between" align="center">
-            <Title order={3} c={"violet"}>
+            <Title
+              order={3}
+              c={"violet"}
+              size={isMobile ? "lg" : "md"}
+              lineClamp={2}
+            >
               {title}
             </Title>
           </Flex>
 
-          <Text size="sm" c="dimmed" ta="justify" lineClamp={3}>
+          <Text
+            size={isMobile ? "md" : "sm"}
+            c="dimmed"
+            ta="justify"
+            lineClamp={3}
+          >
             {description}
           </Text>
 
@@ -88,16 +137,16 @@ const SermonCard = memo(function SermonCard({
               }}
             >
               <Flex gap={4} align="center" c="dimmed">
-                <IconUser size={14} stroke={1.2} />
-                <Text size="xs">{speaker}</Text>
+                <IconUser size={isMobile ? 16 : 14} stroke={1.2} />
+                <Text size={isMobile ? "sm" : "xs"}>{speaker}</Text>
               </Flex>
               <Flex gap={4} align="center" c="dimmed">
-                <IconCalendar size={14} stroke={1.2} />
-                <Text size="xs">{date}</Text>
+                <IconCalendar size={isMobile ? 16 : 14} stroke={1.2} />
+                <Text size={isMobile ? "sm" : "xs"}>{formattedDate}</Text>
               </Flex>
               <Flex gap={4} align="center" c="dimmed">
-                <IconClock size={14} stroke={1.2} />
-                <Text size="xs">{duration}</Text>
+                <IconClock size={isMobile ? 16 : 14} stroke={1.2} />
+                <Text size={isMobile ? "sm" : "xs"}>{duration}</Text>
               </Flex>
             </Flex>
           </Flex>

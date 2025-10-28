@@ -16,6 +16,27 @@ import {
 import { db } from "../config";
 import type { Sermon } from "../../types/Sermon";
 
+// Helper function to convert different date formats to timestamp
+function getTimestamp(
+  dateValue: string | Date | { toDate(): Date } | undefined
+): number {
+  if (!dateValue) return 0;
+
+  if (typeof dateValue === "string") {
+    return new Date(dateValue).getTime();
+  }
+
+  if (dateValue instanceof Date) {
+    return dateValue.getTime();
+  }
+
+  if ("toDate" in dateValue) {
+    return dateValue.toDate().getTime();
+  }
+
+  return 0;
+}
+
 const SERMONS_COLLECTION = "sermons";
 
 export const sermonsService = {
@@ -160,9 +181,11 @@ export const sermonsService = {
         ...doc.data(),
       })) as Sermon[];
 
-      // Ordenar no cliente e limitar
+      // Ordenar no cliente por data de criação e limitar
       const sortedSermons = sermons
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .sort((a, b) => {
+          return getTimestamp(b.createdAt) - getTimestamp(a.createdAt); // Mais recente primeiro
+        })
         .slice(0, pageSize);
 
       console.log("✅ Published sermons returned:", sortedSermons.length);
@@ -182,12 +205,12 @@ export const sermonsService = {
             ...doc.data(),
           })) as Sermon[];
 
-          // Filtrar e ordenar no cliente
+          // Filtrar e ordenar no cliente por data de criação
           const publishedSermons = allSermons
             .filter((sermon) => sermon.isPublished === true)
-            .sort(
-              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-            )
+            .sort((a, b) => {
+              return getTimestamp(b.createdAt) - getTimestamp(a.createdAt); // Mais recente primeiro
+            })
             .slice(0, pageSize);
 
           console.log("✅ Fallback query successful:", publishedSermons.length);
@@ -218,6 +241,24 @@ export const sermonsService = {
     } catch (error) {
       throw new Error(
         `Erro ao publicar sermão: ${
+          error instanceof Error ? error.message : "Erro desconhecido"
+        }`
+      );
+    }
+  },
+
+  // Despublicar sermão
+  async unpublishSermon(id: string): Promise<void> {
+    try {
+      const docRef = doc(db, SERMONS_COLLECTION, id);
+      await updateDoc(docRef, {
+        isPublished: false,
+        publishedAt: null,
+        updatedAt: new Date(),
+      });
+    } catch (error) {
+      throw new Error(
+        `Erro ao despublicar sermão: ${
           error instanceof Error ? error.message : "Erro desconhecido"
         }`
       );

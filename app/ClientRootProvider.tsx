@@ -59,7 +59,7 @@ export default function ClientProviders({
   children: React.ReactNode;
 }) {
   const queryClient = getQueryClient();
-  
+
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme}>

@@ -13,6 +13,8 @@ import {
   Divider,
   Anchor,
   Avatar,
+  Progress,
+  Breadcrumbs,
 } from "@mantine/core";
 import {
   IconCalendar,
@@ -21,6 +23,8 @@ import {
   IconArrowLeft,
   IconHome,
   IconShare,
+  IconChevronRight,
+  IconBook,
 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useClientColorScheme } from "../../../../lib/hooks/useClientColorScheme";
@@ -29,6 +33,9 @@ import { formatDate } from "../../../../lib/utils/formatDate";
 import { badgeColor } from "../../../../lib/utils/badgeColor";
 import MarkdownViewer from "../../../../components/MarkdownViewer";
 import ThemeToggle from "../../../../components/ThemeToggle";
+
+import { useMediaQuery } from "@mantine/hooks";
+import { useEffect, useState } from "react";
 
 interface ClientSermonPageProps {
   sermon: Sermon;
@@ -41,6 +48,33 @@ export default function ClientSermonPage({
 }: ClientSermonPageProps) {
   const router = useRouter();
   const { isDark, mounted } = useClientColorScheme();
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isTablet = useMediaQuery("(max-width: 1200px)");
+  const [readingProgress, setReadingProgress] = useState(0);
+  const [estimatedReadTime, setEstimatedReadTime] = useState(0);
+
+  // Calcular tempo estimado de leitura
+  useEffect(() => {
+    if (sermon.markdownContent) {
+      const words = sermon.markdownContent.split(/\s+/).length;
+      const readTime = Math.ceil(words / 200); // 200 palavras por minuto
+      setEstimatedReadTime(readTime);
+    }
+  }, [sermon.markdownContent]);
+
+  // Progress bar da leitura
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (scrollTop / docHeight) * 100;
+      setReadingProgress(Math.min(Math.max(progress, 0), 100));
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   if (!mounted) {
     return null;
@@ -66,7 +100,32 @@ export default function ClientSermonPage({
 
   return (
     <Box bg={isDark ? "dark.8" : "gray.0"} mih="100vh">
-      {/* Header com gradiente */}
+      {/* Estilos CSS inline para animações */}
+      <style jsx global>{`
+        .metadata-card:hover {
+          transform: translateY(-2px);
+          box-shadow: ${isDark
+            ? "0 12px 40px rgba(0, 0, 0, 0.4) !important"
+            : "0 12px 40px rgba(0, 0, 0, 0.15) !important"};
+        }
+      `}</style>
+
+      {/* Progress Bar fixo */}
+      <Progress
+        value={readingProgress}
+        size="xs"
+        color="violet"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
+          borderRadius: 0,
+        }}
+      />
+
+      {/* Header simples e elegante */}
       <Box
         style={{
           background: isDark
@@ -86,38 +145,108 @@ export default function ClientSermonPage({
             >
               Voltar
             </Button>
+
             <Group gap="sm">
-            <ThemeToggle />
-            <Button
-              leftSection={<IconShare size={18} />}
-              variant="light"
-              color="white"
-              size="sm"
-              onClick={handleShare}
-              style={{ color: "white" }}
-            >
-              Compartilhar
-            </Button>
+              <ThemeToggle />
+              <Button
+                leftSection={<IconShare size={18} />}
+                variant="light"
+                color="white"
+                size="sm"
+                onClick={handleShare}
+                style={{ color: "white" }}
+              >
+                Compartilhar
+              </Button>
             </Group>
           </Group>
         </Container>
       </Box>
 
       <Container size="lg" py="3rem">
+        {/* Breadcrumbs abaixo do header */}
+        <Box mb="2rem">
+          <Breadcrumbs
+            separator={
+              <IconChevronRight
+                size={16}
+                color={isDark ? "#9775fa" : "#7950f2"}
+              />
+            }
+            separatorMargin="xs"
+          >
+            <Anchor
+              onClick={() => router.push("/")}
+              style={{
+                color: isDark ? "#c1c2c5" : "#495057",
+                textDecoration: "none",
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                cursor: "pointer",
+              }}
+            >
+              Início
+            </Anchor>
+            <Anchor
+              onClick={() => router.push("/#sermons")}
+              style={{
+                color: isDark ? "#c1c2c5" : "#495057",
+                textDecoration: "none",
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                cursor: "pointer",
+              }}
+            >
+              Sermões
+            </Anchor>
+            <Text
+              size="sm"
+              c={isDark ? "violet.4" : "violet.7"}
+              fw={600}
+              style={{ fontSize: "0.875rem" }}
+            >
+              {sermon.title.length > 30
+                ? `${sermon.title.substring(0, 30)}...`
+                : sermon.title}
+            </Text>
+          </Breadcrumbs>
+        </Box>
+
         <Stack gap="2rem">
-          {/* Hero Section do Sermão */}
+          {/* Hero Section Premium */}
           <Box>
-            <Stack gap="md" mb="xl">
-              <Group gap="sm">
-                <Badge
-                  color={badgeColor(sermon.eventType)}
-                  variant="light"
-                  size="lg"
-                  radius="md"
-                  style={{ textTransform: "uppercase", fontWeight: 600 }}
-                >
-                  {sermon.eventType}
-                </Badge>
+            <Stack gap="lg" mb="xl">
+              {/* Badge e tempo de leitura */}
+              <Group justify="space-between" align="flex-start">
+                <Group gap="md">
+                  <Badge
+                    color={badgeColor(sermon.eventType)}
+                    variant="gradient"
+                    size="lg"
+                    radius="md"
+                    style={{
+                      textTransform: "uppercase",
+                      fontWeight: 700,
+                      letterSpacing: "0.05em",
+                    }}
+                    gradient={{
+                      from: badgeColor(sermon.eventType) + ".6",
+                      to: badgeColor(sermon.eventType) + ".8",
+                    }}
+                  >
+                    {sermon.eventType}
+                  </Badge>
+                  <Badge
+                    variant="light"
+                    color="gray"
+                    size="md"
+                    radius="md"
+                    leftSection={<IconBook size={14} />}
+                    style={{ fontWeight: 500 }}
+                  >
+                    {estimatedReadTime} min de leitura
+                  </Badge>
+                </Group>
               </Group>
 
               <Title
@@ -135,37 +264,66 @@ export default function ClientSermonPage({
 
               {sermon.description && (
                 <Text
-                  size="xl"
-                  c={isDark ? "gray.4" : "gray.6"}
-                  lh={1.6}
-                  maw={800}
+                  size={isMobile ? "lg" : "xl"}
+                  c={isDark ? "gray.3" : "gray.7"}
+                  lh={1.7}
+                  maw={900}
                   fw={400}
+                  style={{
+                    fontSize: isMobile ? "1.125rem" : "1.25rem",
+                    textWrap: "pretty",
+                  }}
                 >
                   {sermon.description}
                 </Text>
               )}
             </Stack>
 
-            {/* Metadados com cards */}
-            <Group gap="lg" mb="2rem">
+            {/* Metadados premium */}
+            <Box
+              mb="3rem"
+              style={{
+                display: "grid",
+                gridTemplateColumns: isMobile
+                  ? "1fr"
+                  : "repeat(auto-fit, minmax(280px, 1fr))",
+                gap: "1rem",
+              }}
+            >
               <Paper
-                p="md"
-                radius="md"
+                p="lg"
+                radius="xl"
                 bg={isDark ? "dark.6" : "white"}
                 style={{
                   border: `1px solid ${isDark ? "#373A40" : "#e9ecef"}`,
-                  flex: 1,
+                  boxShadow: isDark
+                    ? "0 8px 32px rgba(0, 0, 0, 0.3)"
+                    : "0 8px 32px rgba(0, 0, 0, 0.08)",
+                  transition: "all 0.3s ease",
                 }}
+                className="metadata-card"
               >
-                <Group gap="sm">
-                  <Avatar color="violet" radius="xl" size="md">
-                    <IconUser size={20} />
+                <Group gap="md">
+                  <Avatar
+                    color="violet"
+                    radius="xl"
+                    size="lg"
+                    variant="gradient"
+                    gradient={{ from: "violet.6", to: "violet.8" }}
+                  >
+                    <IconUser size={24} />
                   </Avatar>
-                  <Stack gap={0}>
-                    <Text size="xs" c={isDark ? "gray.5" : "gray.6"} fw={500}>
+                  <Stack gap={2}>
+                    <Text
+                      size="xs"
+                      c={isDark ? "gray.5" : "gray.6"}
+                      fw={500}
+                      tt="uppercase"
+                      style={{ letterSpacing: "0.05em" }}
+                    >
                       Pregador
                     </Text>
-                    <Text size="sm" fw={600} c={isDark ? "gray.1" : "gray.8"}>
+                    <Text size="md" fw={700} c={isDark ? "gray.1" : "gray.8"}>
                       {sermon.speaker}
                     </Text>
                   </Stack>
@@ -173,23 +331,39 @@ export default function ClientSermonPage({
               </Paper>
 
               <Paper
-                p="md"
-                radius="md"
+                p="lg"
+                radius="xl"
                 bg={isDark ? "dark.6" : "white"}
                 style={{
                   border: `1px solid ${isDark ? "#373A40" : "#e9ecef"}`,
-                  flex: 1,
+                  boxShadow: isDark
+                    ? "0 8px 32px rgba(0, 0, 0, 0.3)"
+                    : "0 8px 32px rgba(0, 0, 0, 0.08)",
+                  transition: "all 0.3s ease",
                 }}
+                className="metadata-card"
               >
-                <Group gap="sm">
-                  <Avatar color="violet" radius="xl" size="md">
-                    <IconCalendar size={20} />
+                <Group gap="md">
+                  <Avatar
+                    color="blue"
+                    radius="xl"
+                    size="lg"
+                    variant="gradient"
+                    gradient={{ from: "blue.6", to: "cyan.6" }}
+                  >
+                    <IconCalendar size={24} />
                   </Avatar>
-                  <Stack gap={0}>
-                    <Text size="xs" c={isDark ? "gray.5" : "gray.6"} fw={500}>
+                  <Stack gap={2}>
+                    <Text
+                      size="xs"
+                      c={isDark ? "gray.5" : "gray.6"}
+                      fw={500}
+                      tt="uppercase"
+                      style={{ letterSpacing: "0.05em" }}
+                    >
                       Data
                     </Text>
-                    <Text size="sm" fw={600} c={isDark ? "gray.1" : "gray.8"}>
+                    <Text size="md" fw={700} c={isDark ? "gray.1" : "gray.8"}>
                       {formatDate(sermon.date)}
                     </Text>
                   </Stack>
@@ -198,38 +372,46 @@ export default function ClientSermonPage({
 
               {sermon.duration && (
                 <Paper
-                  p="md"
-                  radius="md"
+                  p="lg"
+                  radius="xl"
                   bg={isDark ? "dark.6" : "white"}
                   style={{
                     border: `1px solid ${isDark ? "#373A40" : "#e9ecef"}`,
-                    flex: 1,
+                    boxShadow: isDark
+                      ? "0 8px 32px rgba(0, 0, 0, 0.3)"
+                      : "0 8px 32px rgba(0, 0, 0, 0.08)",
+                    transition: "all 0.3s ease",
                   }}
+                  className="metadata-card"
                 >
-                  <Group gap="sm">
-                    <Avatar color="violet" radius="xl" size="md">
-                      <IconClock size={20} />
+                  <Group gap="md">
+                    <Avatar
+                      color="green"
+                      radius="xl"
+                      size="lg"
+                      variant="gradient"
+                      gradient={{ from: "green.6", to: "teal.6" }}
+                    >
+                      <IconClock size={24} />
                     </Avatar>
-                    <Stack gap={0}>
+                    <Stack gap={2}>
                       <Text
                         size="xs"
                         c={isDark ? "gray.5" : "gray.6"}
                         fw={500}
+                        tt="uppercase"
+                        style={{ letterSpacing: "0.05em" }}
                       >
                         Duração
                       </Text>
-                      <Text
-                        size="sm"
-                        fw={600}
-                        c={isDark ? "gray.1" : "gray.8"}
-                      >
+                      <Text size="md" fw={700} c={isDark ? "gray.1" : "gray.8"}>
                         {sermon.duration}
                       </Text>
                     </Stack>
                   </Group>
                 </Paper>
               )}
-            </Group>
+            </Box>
           </Box>
 
           <Divider
@@ -268,7 +450,7 @@ export default function ClientSermonPage({
             labelPosition="center"
           />
 
-          {/* Conteúdo do Sermão - Estilo revista/blog moderno */}
+          {/* Conteúdo do Sermão */}
           {sermon.markdownContent && (
             <Box>
               {/* Decoração superior */}
@@ -281,7 +463,6 @@ export default function ClientSermonPage({
                     ? "linear-gradient(90deg, #7950f2 0%, #5f3dc4 100%)"
                     : "linear-gradient(90deg, #7950f2 0%, #5f3dc4 100%)",
                   borderRadius: 2,
-                  margin: "0 auto",
                 }}
               />
 
@@ -290,12 +471,11 @@ export default function ClientSermonPage({
                 radius="xl"
                 bg="transparent"
                 style={{
-                  maxWidth: "900px",
-                  margin: "0 auto",
+                  maxWidth: "100%",
                 }}
               >
                 <Box
-                  p="3rem"
+                  p={isMobile ? "2rem" : "3rem"}
                   style={{
                     background: isDark ? "#25262b" : "#ffffff",
                     borderRadius: "16px",
@@ -410,15 +590,17 @@ export default function ClientSermonPage({
                   variant="light"
                   color="violet"
                   size="md"
+                  w={isMobile ? "100%" : undefined}
                   onClick={handleShare}
                 >
                   Compartilhar
                 </Button>
                 <Button
                   leftSection={<IconHome size={18} />}
-                  variant="outline"
-                  color="violet"
+                  variant="light"
+                  color="cyan"
                   size="md"
+                  w={isMobile ? "100%" : undefined}
                   onClick={() => router.push("/")}
                 >
                   Ver mais sermões
@@ -439,6 +621,8 @@ export default function ClientSermonPage({
               day: "2-digit",
               month: "long",
               year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
             })}
           </Text>
         </Stack>
