@@ -2,6 +2,7 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import {
   getFirestore,
+  initializeFirestore,
   type Firestore,
   persistentLocalCache,
   persistentMultipleTabManager
@@ -36,17 +37,21 @@ if (!getApps().length) {
   console.log("♻️ Firebase already initialized, reusing instance");
 }
 
-// Aplicar cache persistente (apenas no cliente)
+// Initialize Firebase Services
+// No cliente: usa cache persistente
+// No servidor: usa cache padrão
 if (typeof window !== "undefined") {
-  // @ts-ignore - FirestoreSettings.cache é a nova API
-  db = getFirestore(app, {
+  // Cliente: cache persistente com suporte a múltiplas abas
+  db = initializeFirestore(app, {
     localCache: persistentLocalCache({
       tabManager: persistentMultipleTabManager()
     })
   });
-  console.log("✅ Firebase offline persistence enabled (persistentLocalCache)");
+  console.log("✅ Firebase client initialized with offline persistence");
 } else {
+  // Servidor: sem cache persistente (não suportado no Node.js)
   db = getFirestore(app);
+  console.log("✅ Firebase server initialized (no persistence)");
 }
 
 auth = getAuth(app);
