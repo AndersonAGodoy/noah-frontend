@@ -36,11 +36,6 @@ if (!getApps().length) {
   console.log("♻️ Firebase already initialized, reusing instance");
 }
 
-// Initialize Firebase Services com persistência offline (nova API v10+)
-// persistentLocalCache: Cache local no IndexedDB
-// persistentMultipleTabManager: Suporte para múltiplas abas
-db = getFirestore(app);
-
 // Aplicar cache persistente (apenas no cliente)
 if (typeof window !== "undefined") {
   // @ts-ignore - FirestoreSettings.cache é a nova API
@@ -50,6 +45,8 @@ if (typeof window !== "undefined") {
     })
   });
   console.log("✅ Firebase offline persistence enabled (persistentLocalCache)");
+} else {
+  db = getFirestore(app);
 }
 
 auth = getAuth(app);
