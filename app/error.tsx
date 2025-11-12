@@ -14,6 +14,8 @@ export default function Error({
     useEffect(() => {
         // Log do erro para serviço de monitoramento
         console.error("Application error:", error);
+        console.error("Error stack:", error.stack);
+        console.error("Error digest:", error.digest);
     }, [error]);
 
     return (

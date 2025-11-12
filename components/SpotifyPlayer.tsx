@@ -24,6 +24,11 @@ export default function SpotifyPlayer({ spotifyUri }: SpotifyPlayerProps) {
   const controllerRef = useRef<any>(null);
   const scriptLoadedRef = useRef(false);
 
+  // Validação do URI
+  if (!spotifyUri || !spotifyUri.startsWith("spotify:")) {
+    return null;
+  }
+
   useEffect(() => {
     if (!spotifyUri || !embedContainerRef.current) return;
 

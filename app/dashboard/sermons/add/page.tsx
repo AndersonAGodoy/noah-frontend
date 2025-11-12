@@ -99,10 +99,6 @@ export default function AddSermon() {
   };
 
   const handleCreateSermon = async (values: SermonFormData) => {
-    console.log("🚀 handleCreateSermon called with values:", values);
-    console.log("🔍 Markdown content length:", values.markdownContent?.length);
-    console.log("📝 Form validation errors:", form.errors);
-
     startTransition(async () => {
       try {
         await createSermon(values);
@@ -114,7 +110,6 @@ export default function AddSermon() {
         form.reset();
         router.push("/dashboard");
       } catch (error) {
-        console.error("❌ Error creating sermon:", error);
         const errorMessage =
           error instanceof Error ? error.message : "Falha ao criar o sermão.";
         notifications.show({
@@ -444,11 +439,6 @@ Conclua seu sermão aqui...
                 leftSection={<IconCirclePlus />}
                 loading={isPending}
                 disabled={isPending}
-                onClick={() => {
-                  console.log("🖱️ Create button clicked!");
-                  console.log("📋 Current form values:", form.values);
-                  console.log("❌ Current form errors:", form.errors);
-                }}
               >
                 Criar Sermão
               </Button>

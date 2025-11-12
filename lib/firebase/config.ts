@@ -32,11 +32,11 @@ if (!getApps().length) {
   app = getApp();
 }
 
-// Initialize Firebase Services - Uma única vez
-let db = getFirestore(app);
-let auth = getAuth(app);
-let storage = getStorage(app);
 // Initialize Firebase Services
+let db: Firestore;
+let auth: Auth;
+let storage: FirebaseStorage;
+
 // No cliente: usa cache persistente
 // No servidor: usa cache padrão
 if (typeof window !== "undefined") {
@@ -46,11 +46,9 @@ if (typeof window !== "undefined") {
       tabManager: persistentMultipleTabManager(),
     }),
   });
-  console.log("✅ Firebase client initialized with offline persistence");
 } else {
   // Servidor: sem cache persistente (não suportado no Node.js)
   db = getFirestore(app);
-  console.log("✅ Firebase server initialized (no persistence)");
 }
 
 auth = getAuth(app);

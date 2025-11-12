@@ -83,7 +83,6 @@ const nextConfig = {
   },
 
   // Configurações de build para otimização
-  swcMinify: true,
   compiler: {
     removeConsole:
       process.env.NODE_ENV === "production"
