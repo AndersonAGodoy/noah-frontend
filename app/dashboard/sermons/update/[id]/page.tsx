@@ -382,7 +382,7 @@ export default function AddSermon() {
               <Text size="xs" c="dimmed" mb="md">
                 URI: {spotifyEmbed}
               </Text>
-              
+
               <Box mt="xl">
                 <Text size="md" fw={600} mb="md">
                   📱 Preview do Player:
