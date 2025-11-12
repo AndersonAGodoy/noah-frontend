@@ -21,6 +21,7 @@ export default function useCreateSermonFirebase() {
         references: data.references,
         contentSections: data.contentSections,
         markdownContent: data.markdownContent,
+        spotifyEmbed: data.spotifyEmbed,
         isPublished: false,
       });
     },

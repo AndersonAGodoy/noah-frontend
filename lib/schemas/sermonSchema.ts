@@ -69,9 +69,11 @@ export const sermonSchema = z.object({
 
   markdownContent: z
     .string()
-    .min(10, "Conteúdo do sermão deve ter pelo menos 10 caracteres")
     .optional()
-    .or(z.literal("")),
+    .refine(
+      (val) => !val || val.length === 0 || val.length >= 10,
+      "Conteúdo do sermão deve ter pelo menos 10 caracteres"
+    ),
 
   spotifyEmbed: z
     .string()

@@ -26,6 +26,8 @@ export default function useUpdateSermonFirebase() {
         eventType: data.eventType,
         references: data.references,
         contentSections: data.contentSections,
+        markdownContent: data.markdownContent,
+        spotifyEmbed: data.spotifyEmbed,
       });
       return id;
     },
