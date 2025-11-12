@@ -1,11 +1,6 @@
 // lib/firebase/config.ts
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
-import {
-  getFirestore,
-  type Firestore,
-  persistentLocalCache,
-  persistentMultipleTabManager
-} from "firebase/firestore";
+import { getFirestore, type Firestore } from "firebase/firestore";
 import { getAuth, type Auth } from "firebase/auth";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
 
@@ -21,39 +16,19 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Singleton pattern - Previne múltiplas inicializações
+// Initialize Firebase App - Singleton pattern
 let app: FirebaseApp;
-let db: Firestore;
-let auth: Auth;
-let storage: FirebaseStorage;
 
-// Initialize Firebase apenas uma vez
 if (!getApps().length) {
   app = initializeApp(firebaseConfig);
-  console.log("✅ Firebase initialized");
 } else {
   app = getApp();
-  console.log("♻️ Firebase already initialized, reusing instance");
 }
 
-// Initialize Firebase Services com persistência offline (nova API v10+)
-// persistentLocalCache: Cache local no IndexedDB
-// persistentMultipleTabManager: Suporte para múltiplas abas
-db = getFirestore(app);
-
-// Aplicar cache persistente (apenas no cliente)
-if (typeof window !== "undefined") {
-  // @ts-ignore - FirestoreSettings.cache é a nova API
-  db = getFirestore(app, {
-    localCache: persistentLocalCache({
-      tabManager: persistentMultipleTabManager()
-    })
-  });
-  console.log("✅ Firebase offline persistence enabled (persistentLocalCache)");
-}
-
-auth = getAuth(app);
-storage = getStorage(app);
+// Initialize Firebase Services - Uma única vez
+const db = getFirestore(app);
+const auth = getAuth(app);
+const storage = getStorage(app);
 
 export { app, db, auth, storage };
 export default app;

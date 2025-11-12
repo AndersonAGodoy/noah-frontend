@@ -32,15 +32,7 @@ export function useGetPublishedSermonsFirebase({
   return useQuery({
     queryKey: ["publishedSermonsFirebase", limit],
     queryFn: async () => {
-      console.log("🔍 Fetching published sermons with limit:", limit);
-      try {
-        const result = await sermonsService.getPublishedSermons(limit);
-        console.log("✅ Published sermons fetched successfully:", result);
-        return result;
-      } catch (error) {
-        console.error("❌ Error fetching published sermons:", error);
-        throw error;
-      }
+      return await sermonsService.getPublishedSermons(limit);
     },
     ...DEFAULT_QUERY_CONFIG,
   });

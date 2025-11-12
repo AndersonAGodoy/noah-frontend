@@ -63,16 +63,22 @@ export const sermonSchema = z.object({
     }
   ),
 
-  references: z
-    .array(scriptureReferenceSchema)
-    .optional()
-    .default([]),
+  references: z.array(scriptureReferenceSchema).optional().default([]),
 
   contentSections: z.array(contentSectionSchema).optional().default([]),
 
   markdownContent: z
     .string()
     .min(10, "Conteúdo do sermão deve ter pelo menos 10 caracteres")
+    .optional()
+    .or(z.literal("")),
+
+  spotifyEmbed: z
+    .string()
+    .regex(
+      /^spotify:(episode|track|album|playlist|show):[a-zA-Z0-9]+$/,
+      "URI do Spotify inválido. Use o formato: spotify:episode:ID ou spotify:track:ID"
+    )
     .optional()
     .or(z.literal("")),
 });

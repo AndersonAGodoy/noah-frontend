@@ -33,6 +33,16 @@ import useUpdateSermonFirebase from "../../../../../lib/hooks/useUpdateSermonFir
 import { useClientColorScheme } from "../../../../../lib/hooks/useClientColorScheme";
 import MarkdownEditor from "../../../../../components/MarkdownEditor";
 import MarkdownViewer from "../../../../../components/MarkdownViewer";
+import dynamic from "next/dynamic";
+
+// Dynamic import do SpotifyPlayer
+const SpotifyPlayer = dynamic(
+  () => import("../../../../../components/SpotifyPlayer"),
+  {
+    loading: () => <div>Carregando preview...</div>,
+    ssr: false,
+  }
+);
 
 export default function AddSermon() {
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -45,6 +55,7 @@ export default function AddSermon() {
   const [time, setTime] = useState("");
   const [eventType, setEventType] = useState("Culto");
   const [markdownContent, setMarkdownContent] = useState("");
+  const [spotifyEmbed, setSpotifyEmbed] = useState("");
   const updateSermonMutation = useUpdateSermonFirebase();
   const params = useParams();
   const id = Array.isArray(params?.id) ? params.id[0] : params?.id ?? null;
@@ -62,12 +73,13 @@ export default function AddSermon() {
       setTime(data.time || "");
       setEventType(data.eventType || "Culto");
       setMarkdownContent(data.markdownContent || "");
+      setSpotifyEmbed(data.spotifyEmbed || "");
       setReferences(data.references || []); // Array vazio se não houver referências
       setContentSections(
         data.contentSections?.length
           ? data.contentSections.map((section) => ({
-            ...section,
-          }))
+              ...section,
+            }))
           : [{ type: "parágrafo", content: "" }]
       );
     }
@@ -144,6 +156,7 @@ export default function AddSermon() {
         })),
         references,
         markdownContent,
+        spotifyEmbed,
       };
       await updateSermonMutation.mutateAsync({
         id,
@@ -192,6 +205,9 @@ export default function AddSermon() {
           </Tabs.Tab>
           <Tabs.Tab color="violet" value="content">
             Conteúdo do Sermão
+          </Tabs.Tab>
+          <Tabs.Tab color="violet" value="spotify">
+            🎵 Spotify
           </Tabs.Tab>
           <Tabs.Tab color="violet" value="reference">
             Referências bíblicas
@@ -294,9 +310,9 @@ export default function AddSermon() {
             <Tabs.Panel value="editor" pt="md">
               <Box
                 style={{
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  border: `1px solid ${isDark ? '#373A40' : '#dee2e6'}`,
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  border: `1px solid ${isDark ? "#373A40" : "#dee2e6"}`,
                 }}
               >
                 <MarkdownEditor
@@ -311,10 +327,10 @@ export default function AddSermon() {
               <Box
                 p="md"
                 style={{
-                  borderRadius: '8px',
-                  border: `1px solid ${isDark ? '#373A40' : '#dee2e6'}`,
-                  background: isDark ? '#25262b' : '#fafbfc',
-                  minHeight: '600px',
+                  borderRadius: "8px",
+                  border: `1px solid ${isDark ? "#373A40" : "#dee2e6"}`,
+                  background: isDark ? "#25262b" : "#fafbfc",
+                  minHeight: "600px",
                 }}
               >
                 <MarkdownViewer
@@ -324,6 +340,59 @@ export default function AddSermon() {
             </Tabs.Panel>
           </Tabs>
         </Tabs.Panel>
+
+        <Tabs.Panel value="spotify">
+          <Alert
+            icon={<IconInfoCircle size={16} />}
+            title="Embed do Spotify (Opcional)"
+            color="green"
+            variant="light"
+            mb="md"
+            mt="md"
+          >
+            <Text size="sm">
+              Cole aqui o <strong>URI do Spotify</strong> para que os usuários
+              possam ouvir o sermão diretamente na página.
+              <br />
+              <strong>Formato correto:</strong>{" "}
+              spotify:episode:4qhaEf9Tvw20ILSQ0EW1ra
+              <br />
+              <strong>Como obter:</strong> No Spotify, clique com botão direito
+              no episódio → Compartilhar → Copiar link do episódio.
+              <br />
+              Depois, copie apenas o ID (depois de /episode/) e use no formato:
+              spotify:episode:ID
+            </Text>
+          </Alert>
+
+          <TextInput
+            label="URI do Spotify"
+            value={spotifyEmbed}
+            onChange={(e) => setSpotifyEmbed(e.target.value)}
+            placeholder="spotify:episode:4qhaEf9Tvw20ILSQ0EW1ra"
+            variant="filled"
+            description="Use o formato: spotify:episode:ID ou spotify:track:ID"
+          />
+
+          {spotifyEmbed && spotifyEmbed.startsWith("spotify:") && (
+            <Box mt="xl">
+              <Text size="sm" fw={600} mb="sm">
+                ✅ URI válido! O player será exibido na página do sermão.
+              </Text>
+              <Text size="xs" c="dimmed" mb="md">
+                URI: {spotifyEmbed}
+              </Text>
+              
+              <Box mt="xl">
+                <Text size="md" fw={600} mb="md">
+                  📱 Preview do Player:
+                </Text>
+                <SpotifyPlayer spotifyUri={spotifyEmbed} />
+              </Box>
+            </Box>
+          )}
+        </Tabs.Panel>
+
         <Tabs.Panel value="reference">
           <Group
             mt={"md"}

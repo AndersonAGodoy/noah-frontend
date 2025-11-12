@@ -32,6 +32,7 @@ import { formatDate } from "../../../../lib/utils/formatDate";
 import { badgeColor } from "../../../../lib/utils/badgeColor";
 import MarkdownViewer from "../../../../components/MarkdownViewer";
 import ThemeToggle from "../../../../components/ThemeToggle";
+import SpotifyPlayer from "../../../../components/SpotifyPlayer";
 
 import { useMediaQuery } from "@mantine/hooks";
 import { useEffect, useState } from "react";
@@ -104,8 +105,8 @@ export default function ClientSermonPage({
         .metadata-card:hover {
           transform: translateY(-2px);
           box-shadow: ${isDark
-          ? "0 12px 40px rgba(0, 0, 0, 0.4) !important"
-          : "0 12px 40px rgba(0, 0, 0, 0.15) !important"};
+            ? "0 12px 40px rgba(0, 0, 0, 0.4) !important"
+            : "0 12px 40px rgba(0, 0, 0, 0.15) !important"};
         }
       `}</style>
 
@@ -286,8 +287,8 @@ export default function ClientSermonPage({
                 gridTemplateColumns: isMobile
                   ? "1fr"
                   : isTablet
-                    ? "repeat(2, 1fr)"
-                    : "repeat(2, 1fr)",
+                  ? "repeat(2, 1fr)"
+                  : "repeat(2, 1fr)",
                 gap: "1.5rem",
                 maxWidth: isTablet ? "100%" : "800px",
               }}
@@ -425,6 +426,11 @@ export default function ClientSermonPage({
                   borderRadius: 2,
                 }}
               />
+
+              {/* Player do Spotify (se disponível) */}
+              {sermon.spotifyEmbed && (
+                <SpotifyPlayer spotifyUri={sermon.spotifyEmbed} />
+              )}
 
               <Paper
                 p={0}

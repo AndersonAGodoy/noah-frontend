@@ -23,6 +23,7 @@ export type Sermon = {
   references: ScriptureReference[];
   contentSections: ContentSection[];
   markdownContent?: string; // Novo campo para conteúdo em markdown
+  spotifyEmbed?: string; // URL do embed do Spotify
   createdAt?: string | Date | { toDate(): Date }; // Aceita string (SSG) ou Date/Timestamp (runtime)
   updatedAt?: string | Date | { toDate(): Date }; // Aceita string (SSG) ou Date/Timestamp (runtime)
   publishedAt?: string | Date | { toDate(): Date }; // Aceita string (SSG) ou Date/Timestamp (runtime)

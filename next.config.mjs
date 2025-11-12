@@ -3,15 +3,19 @@ const nextConfig = {
   reactStrictMode: true,
   // Força output estático para SSG
   output: "export" === process.env.BUILD_STANDALONE ? "standalone" : undefined,
-  
+
   experimental: {
-    optimizePackageImports: ["@mantine/core", "@mantine/hooks", "@tabler/icons-react"],
+    optimizePackageImports: [
+      "@mantine/core",
+      "@mantine/hooks",
+      "@tabler/icons-react",
+    ],
   },
-  
+
   eslint: {
     ignoreDuringBuilds: true,
   },
-  
+
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
@@ -27,7 +31,7 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 dias
   },
-  
+
   // Configuração para ISR (Incremental Static Regeneration)
   async headers() {
     return [
@@ -69,26 +73,33 @@ const nextConfig = {
             key: "Referrer-Policy",
             value: "origin-when-cross-origin",
           },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
         ],
       },
     ];
   },
-  
+
   // Configurações de build para otimização
   swcMinify: true,
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production" ? {
-      exclude: ["error", "warn"],
-    } : false,
+    removeConsole:
+      process.env.NODE_ENV === "production"
+        ? {
+            exclude: ["error", "warn"],
+          }
+        : false,
   },
-  
+
   // Otimizações de bundle
   modularizeImports: {
     "@tabler/icons-react": {
       transform: "@tabler/icons-react/dist/esm/icons/{{member}}",
     },
   },
-  
+
   // Configurações de produção
   poweredByHeader: false,
   compress: true,

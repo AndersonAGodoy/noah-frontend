@@ -9,7 +9,6 @@ import {
   doc,
   query,
   where,
-  orderBy,
   limit,
   type Query,
 } from "firebase/firestore";
@@ -76,18 +75,29 @@ export const sermonsService = {
       const total = countSnapshot.size;
       const totalPages = Math.ceil(total / pageSize);
 
-      // Query com paginação
-      const paginatedQuery = query(
+      // Query simples sem orderBy (para evitar problema de índice)
+      // Vamos ordenar no cliente
+      const simpleQuery = query(
         collection(db, SERMONS_COLLECTION),
-        orderBy("date", "desc"),
-        limit(pageSize)
+        limit(pageSize * 2) // Buscar mais para ter flexibilidade na ordenação
       );
 
-      const snapshot = await getDocs(paginatedQuery);
-      const data = snapshot.docs.map((doc) => ({
+      const snapshot = await getDocs(simpleQuery);
+
+      const allData = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       })) as Sermon[];
+
+      // Ordenar no cliente por data (mais recente primeiro)
+      const sortedData = allData.sort((a, b) => {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return dateB - dateA; // Descending
+      });
+
+      // Aplicar limit após ordenação
+      const data = sortedData.slice(0, pageSize);
 
       return {
         data,
@@ -160,67 +170,53 @@ export const sermonsService = {
   // Obter sermões publicados
   async getPublishedSermons(pageSize: number = 10): Promise<Sermon[]> {
     try {
-      console.log("🔍 Getting published sermons...");
+      // Tentar primeiro com where clause
+      try {
+        const q = query(
+          collection(db, SERMONS_COLLECTION),
+          where("isPublished", "==", true)
+        );
 
-      // Query simples para evitar problemas com índices compostos
-      const q = query(
-        collection(db, SERMONS_COLLECTION),
-        where("isPublished", "==", true)
-      );
+        const snapshot = await getDocs(q);
 
-      const snapshot = await getDocs(q);
-      console.log("📊 Published sermons found:", snapshot.size);
-
-      if (snapshot.empty) {
-        console.log("📭 No published sermons found");
-        return [];
-      }
-
-      const sermons = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Sermon[];
-
-      // Ordenar no cliente por data de criação e limitar
-      const sortedSermons = sermons
-        .sort((a, b) => {
-          return getTimestamp(b.createdAt) - getTimestamp(a.createdAt); // Mais recente primeiro
-        })
-        .slice(0, pageSize);
-
-      console.log("✅ Published sermons returned:", sortedSermons.length);
-      return sortedSermons;
-    } catch (error) {
-      console.error("❌ Error in getPublishedSermons:", error);
-
-      // Se o erro for de índice, tenta uma query mais simples ainda
-      if (error instanceof Error && error.message.includes("index")) {
-        console.log("🔄 Trying fallback query without where clause...");
-        try {
-          const fallbackQuery = query(collection(db, SERMONS_COLLECTION));
-          const fallbackSnapshot = await getDocs(fallbackQuery);
-
-          const allSermons = fallbackSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          })) as Sermon[];
-
-          // Filtrar e ordenar no cliente por data de criação
-          const publishedSermons = allSermons
-            .filter((sermon) => sermon.isPublished === true)
-            .sort((a, b) => {
-              return getTimestamp(b.createdAt) - getTimestamp(a.createdAt); // Mais recente primeiro
-            })
-            .slice(0, pageSize);
-
-          console.log("✅ Fallback query successful:", publishedSermons.length);
-          return publishedSermons;
-        } catch (fallbackError) {
-          console.error("❌ Fallback query also failed:", fallbackError);
-          throw fallbackError;
+        if (snapshot.empty) {
+          return [];
         }
-      }
 
+        const sermons = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Sermon[];
+
+        // Ordenar no cliente por data de criação e limitar
+        const sortedSermons = sermons
+          .sort((a, b) => {
+            return getTimestamp(b.createdAt) - getTimestamp(a.createdAt);
+          })
+          .slice(0, pageSize);
+
+        return sortedSermons;
+      } catch (whereError) {
+        // Fallback: buscar tudo e filtrar no cliente
+        const fallbackQuery = query(collection(db, SERMONS_COLLECTION));
+        const fallbackSnapshot = await getDocs(fallbackQuery);
+
+        const allSermons = fallbackSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Sermon[];
+
+        // Filtrar e ordenar no cliente
+        const publishedSermons = allSermons
+          .filter((sermon) => sermon.isPublished === true)
+          .sort((a, b) => {
+            return getTimestamp(b.createdAt) - getTimestamp(a.createdAt);
+          })
+          .slice(0, pageSize);
+
+        return publishedSermons;
+      }
+    } catch (error) {
       throw new Error(
         `Erro ao buscar sermões publicados: ${
           error instanceof Error ? error.message : "Erro desconhecido"
