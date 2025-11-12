@@ -25,12 +25,18 @@ export default function SpotifyPlayer({ spotifyUri }: SpotifyPlayerProps) {
   const scriptLoadedRef = useRef(false);
 
   // Validação do URI
-  if (!spotifyUri || !spotifyUri.startsWith("spotify:")) {
+  if (!spotifyUri?.trim()) {
+    console.warn("⚠️ spotifyUri está vazio ou inválido:", spotifyUri);
+    return null;
+  }
+
+  if (!spotifyUri.startsWith("spotify:")) {
+    console.error("❌ URI do Spotify deve começar com 'spotify:', recebido:", spotifyUri);
     return null;
   }
 
   useEffect(() => {
-    if (!spotifyUri || !embedContainerRef.current) return;
+    if (!spotifyUri?.trim() || !embedContainerRef.current) return;
 
     // Verificar se o script já foi carregado
     const existingScript = document.querySelector(
@@ -39,9 +45,14 @@ export default function SpotifyPlayer({ spotifyUri }: SpotifyPlayerProps) {
 
     const initializePlayer = (IFrameAPI: any) => {
       const element = embedContainerRef.current;
-      if (!element) return;
+      if (!element) {
+        console.error("❌ Elemento de container não encontrado");
+        return;
+      }
 
       try {
+        console.log("✅ Inicializando player Spotify com URI:", spotifyUri);
+        
         const options = {
           width: "100%",
           height: "352",
@@ -49,6 +60,7 @@ export default function SpotifyPlayer({ spotifyUri }: SpotifyPlayerProps) {
         };
 
         const callback = (EmbedController: any) => {
+          console.log("✅ Controller Spotify criado com sucesso");
           controllerRef.current = EmbedController;
         };
 
@@ -62,11 +74,13 @@ export default function SpotifyPlayer({ spotifyUri }: SpotifyPlayerProps) {
     window.onSpotifyIframeApiReady = initializePlayer;
 
     if (!existingScript && !scriptLoadedRef.current) {
+      console.log("📥 Carregando script do Spotify...");
       // Adicionar o script da API do Spotify
       const script = document.createElement("script");
       script.src = "https://open.spotify.com/embed/iframe-api/v1";
       script.async = true;
       script.onload = () => {
+        console.log("✅ Script do Spotify carregado com sucesso");
         scriptLoadedRef.current = true;
       };
       script.onerror = () => {
@@ -74,6 +88,7 @@ export default function SpotifyPlayer({ spotifyUri }: SpotifyPlayerProps) {
       };
       document.body.appendChild(script);
     } else if (window.Spotify) {
+      console.log("✅ Spotify API já estava carregada, inicializando...");
       // Se a API já estiver carregada, inicializar imediatamente
       initializePlayer(window.Spotify);
     }

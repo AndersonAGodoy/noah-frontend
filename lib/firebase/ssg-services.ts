@@ -98,6 +98,7 @@ function createSerializedSermon(id: string, data: any): Sermon {
     isPublished: data.isPublished || false,
     references: serializeFirebaseData(data.references || []),
     contentSections: serializeFirebaseData(data.contentSections || []),
+    spotifyEmbed: data.spotifyEmbed || undefined, // Incluir o campo do Spotify
     createdAt: serializeFirebaseData(data.createdAt) || "",
     updatedAt: serializeFirebaseData(data.updatedAt) || "",
   };
