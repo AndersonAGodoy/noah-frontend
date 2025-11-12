@@ -1,6 +1,13 @@
 // lib/firebase/config.ts
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
-import { getFirestore, type Firestore } from "firebase/firestore";
+
+import {
+  getFirestore,
+  initializeFirestore,
+  type Firestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+} from "firebase/firestore";
 import { getAuth, type Auth } from "firebase/auth";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
 
@@ -26,9 +33,28 @@ if (!getApps().length) {
 }
 
 // Initialize Firebase Services - Uma única vez
-const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
+let db = getFirestore(app);
+let auth = getAuth(app);
+let storage = getStorage(app);
+// Initialize Firebase Services
+// No cliente: usa cache persistente
+// No servidor: usa cache padrão
+if (typeof window !== "undefined") {
+  // Cliente: cache persistente com suporte a múltiplas abas
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+      tabManager: persistentMultipleTabManager(),
+    }),
+  });
+  console.log("✅ Firebase client initialized with offline persistence");
+} else {
+  // Servidor: sem cache persistente (não suportado no Node.js)
+  db = getFirestore(app);
+  console.log("✅ Firebase server initialized (no persistence)");
+}
+
+auth = getAuth(app);
+storage = getStorage(app);
 
 export { app, db, auth, storage };
 export default app;
