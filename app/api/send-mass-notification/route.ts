@@ -9,7 +9,17 @@ if (!admin.apps.length) {
 
   if (serviceAccountKey) {
     try {
-      const serviceAccount = JSON.parse(serviceAccountKey);
+      // Tentar decodificar se estiver em base64
+      let serviceAccount;
+      if (serviceAccountKey.startsWith('{')) {
+        // Já é JSON
+        serviceAccount = JSON.parse(serviceAccountKey);
+      } else {
+        // Está em base64, decodificar primeiro
+        const decoded = Buffer.from(serviceAccountKey, 'base64').toString('utf-8');
+        serviceAccount = JSON.parse(decoded);
+      }
+      
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
       });
