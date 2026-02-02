@@ -31,10 +31,8 @@ export async function saveFCMToken(
         ? {
             token: tokenOrData,
             deviceInfo: {
-              browser:
-                navigator.userAgent.match(/Chrome|Firefox|Safari|Edge/)?.[0] ||
-                "Unknown",
-              os: navigator.platform || "Unknown",
+              userAgent: navigator.userAgent || "Unknown",
+              platform: navigator.platform || "Unknown",
             },
           }
         : tokenOrData;
@@ -58,8 +56,8 @@ export async function saveFCMToken(
         token: data.token,
         userId: data.userId || null,
         deviceInfo: {
-          browser: data.deviceInfo?.browser || "Unknown",
-          os: data.deviceInfo?.os || "Unknown",
+          userAgent: data.deviceInfo?.userAgent || "Unknown",
+          platform: data.deviceInfo?.platform || "Unknown",
           installDate: serverTimestamp(),
         },
         lastActive: serverTimestamp(),
