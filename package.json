@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "build:ssg": "next build && next export",
+    "dev": "node scripts/generate-sw.js && next dev --turbopack",
+    "build": "node scripts/generate-sw.js && next build",
+    "build:ssg": "node scripts/generate-sw.js && next build && next export",
     "start": "next start",
     "start:prod": "NODE_ENV=production next start",
     "lint": "next lint",

@@ -48,6 +48,10 @@ web_modules/
 # TypeScript cache
 *.tsbuildinfo
 
+# Service Workers gerados automaticamente (contêm API keys)
+public/sw.js
+public/firebase-messaging-sw.js
+
 # Optional npm cache directory
 .npm
 
