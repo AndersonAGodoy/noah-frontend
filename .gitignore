@@ -132,3 +132,23 @@ dist
 .pnp.*
 
 .DS_Store
+
+# PWA Ignore Rules
+# Adicione estas linhas ao seu .gitignore existente
+
+# Service Worker gerado pelo next-pwa
+/public/sw.js.map
+/public/workbox-*.js
+/public/workbox-*.js.map
+
+# Não ignore os ícones PWA (você deve commitá-los)
+# !/public/icons/*.png
+
+# Não ignore o manifest
+# !/public/manifest.json
+
+# Ambiente
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

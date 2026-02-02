@@ -1,7 +1,7 @@
 /* app/globals.css */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:wght@700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;600&display=swap");
 
 :root {
-  --font-inter: "Inter", sans-serif;
-  --font-playfair: "Playfair Display", sans-serif;
+  --font-body: "Montserrat", sans-serif;
+  --font-heading: "Cormorant Garamond", serif;
 }

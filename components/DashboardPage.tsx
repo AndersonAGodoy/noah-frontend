@@ -30,6 +30,8 @@ import { Sermon } from "../lib/types/Sermon";
 import { useClientColorScheme } from "../lib/hooks/useClientColorScheme";
 import { useGetActiveEncounter } from "../lib/hooks/useGetActiveEncounter";
 import { useAutoDeactivateExpiredEncounters } from "../lib/hooks/useAutoDeactivateExpiredEncounters";
+import { InstallMetrics } from "./InstallMetrics";
+import { useFCMToken } from "../lib/hooks/useFCMToken";
 
 export default function DashboardPage() {
   const {
@@ -51,6 +53,9 @@ export default function DashboardPage() {
 
   // Desativar automaticamente encontros expirados
   useAutoDeactivateExpiredEncounters();
+
+  // Registrar token FCM
+  useFCMToken();
 
   const deleteSermonMutation = useDeleteSermonFirebase();
   const publishSermonMutation = usePublishSermonFirebase();
@@ -266,6 +271,11 @@ export default function DashboardPage() {
             encontroInscricoes={encontroInscricoes}
             activeEncounter={activeEncounter}
           />
+
+          <Box mt="md">
+            <InstallMetrics />
+          </Box>
+
           <Title mt={"md"} order={1} c={"violet"}>
             Últimos Sermões
           </Title>

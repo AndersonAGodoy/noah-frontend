@@ -20,7 +20,7 @@ import {
 
 // Helper function to convert different date formats to timestamp
 function getTimestamp(
-  dateValue: string | Date | { toDate(): Date } | undefined
+  dateValue: string | Date | { toDate(): Date } | undefined,
 ): number {
   if (!dateValue) return 0;
 
@@ -62,7 +62,7 @@ function serializeFirebaseData(data: any): any {
   // Se tem propriedade seconds, é um Timestamp serializado
   if (data.seconds !== undefined) {
     return new Date(
-      data.seconds * 1000 + (data.nanoseconds || 0) / 1000000
+      data.seconds * 1000 + (data.nanoseconds || 0) / 1000000,
     ).toISOString();
   }
 
@@ -108,25 +108,27 @@ function createSerializedSermon(id: string, data: any): Sermon {
 function initializeFirebaseAdmin() {
   if (getApps().length === 0) {
     try {
-      // Para produção, use service account key em base64
-      const serviceAccountKeyBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+      // Para produção, use service account key (pode ser JSON string ou base64)
+      const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
       // Valida se a chave existe e não está vazia
-      if (
-        serviceAccountKeyBase64 &&
-        serviceAccountKeyBase64.trim().length > 0
-      ) {
-        console.log(
-          "🔑 Using Firebase Admin SDK with service account (base64)"
-        );
+      if (serviceAccountKey && serviceAccountKey.trim().length > 0) {
+        console.log("🔑 Using Firebase Admin SDK with service account");
 
         try {
-          // Decodifica de base64 para JSON
-          const serviceAccountJson = Buffer.from(
-            serviceAccountKeyBase64,
-            "base64"
-          ).toString("utf-8");
-          const serviceAccount = JSON.parse(serviceAccountJson);
+          let serviceAccount;
+
+          // Tentar parse direto (JSON string)
+          try {
+            serviceAccount = JSON.parse(serviceAccountKey);
+          } catch {
+            // Se falhar, tentar decodificar de base64
+            const serviceAccountJson = Buffer.from(
+              serviceAccountKey,
+              "base64",
+            ).toString("utf-8");
+            serviceAccount = JSON.parse(serviceAccountJson);
+          }
 
           // Valida se o JSON tem as propriedades necessárias
           if (
@@ -146,11 +148,11 @@ function initializeFirebaseAdmin() {
           return { type: "admin", db: getFirestore() };
         } catch (parseError) {
           console.error(
-            "❌ Error decoding/parsing FIREBASE_SERVICE_ACCOUNT_KEY:",
-            parseError
+            "❌ Error parsing FIREBASE_SERVICE_ACCOUNT_KEY:",
+            parseError,
           );
           console.log(
-            "📝 Make sure FIREBASE_SERVICE_ACCOUNT_KEY is a valid base64-encoded JSON string"
+            "📝 Make sure FIREBASE_SERVICE_ACCOUNT_KEY is a valid JSON string or base64-encoded JSON",
           );
         }
       } else {
@@ -184,7 +186,7 @@ export async function getPublishedSermonsSSG(): Promise<Sermon[]> {
       const snapshot = await sermonsRef.where("isPublished", "==", true).get();
 
       console.log(
-        `📊 SSG: Found ${snapshot.size} published sermons (Admin SDK)`
+        `📊 SSG: Found ${snapshot.size} published sermons (Admin SDK)`,
       );
 
       if (snapshot.empty) {
@@ -203,20 +205,20 @@ export async function getPublishedSermonsSSG(): Promise<Sermon[]> {
       });
 
       console.log(
-        "✅ SSG: Successfully fetched and sorted sermons by creation date (Admin SDK)"
+        "✅ SSG: Successfully fetched and sorted sermons by creation date (Admin SDK)",
       );
       return sortedSermons;
     } else {
       // Usar Firebase Client SDK
       const q = query(
         collection(firebase.db as any, "sermons"),
-        where("isPublished", "==", true)
+        where("isPublished", "==", true),
       );
 
       const snapshot = await getDocs(q);
 
       console.log(
-        `📊 SSG: Found ${snapshot.size} published sermons (Client SDK)`
+        `📊 SSG: Found ${snapshot.size} published sermons (Client SDK)`,
       );
 
       if (snapshot.empty) {
@@ -235,7 +237,7 @@ export async function getPublishedSermonsSSG(): Promise<Sermon[]> {
       });
 
       console.log(
-        "✅ SSG: Successfully fetched and sorted sermons by creation date (Client SDK)"
+        "✅ SSG: Successfully fetched and sorted sermons by creation date (Client SDK)",
       );
       return sortedSermons;
     }
@@ -267,7 +269,7 @@ export async function getSermonByIdSSG(id: string): Promise<Sermon | null> {
       const sermon = createSerializedSermon(sermonDoc.id, data);
 
       console.log(
-        `✅ SSG: Successfully fetched sermon: ${sermon.title} (Admin SDK)`
+        `✅ SSG: Successfully fetched sermon: ${sermon.title} (Admin SDK)`,
       );
       return sermon;
     } else {
@@ -283,7 +285,7 @@ export async function getSermonByIdSSG(id: string): Promise<Sermon | null> {
       const sermon = createSerializedSermon(sermonDoc.id, data);
 
       console.log(
-        `✅ SSG: Successfully fetched sermon: ${sermon.title} (Client SDK)`
+        `✅ SSG: Successfully fetched sermon: ${sermon.title} (Client SDK)`,
       );
       return sermon;
     }
@@ -310,21 +312,21 @@ export async function getAllSermonIdsSSG(): Promise<string[]> {
       const ids = snapshot.docs.map((doc: any) => doc.id);
 
       console.log(
-        `✅ SSG: Found ${ids.length} published sermon IDs (Admin SDK)`
+        `✅ SSG: Found ${ids.length} published sermon IDs (Admin SDK)`,
       );
       return ids;
     } else {
       // Usar Firebase Client SDK
       const q = query(
         collection(firebase.db as any, "sermons"),
-        where("isPublished", "==", true)
+        where("isPublished", "==", true),
       );
 
       const snapshot = await getDocs(q);
       const ids = snapshot.docs.map((doc: { id: any }) => doc.id);
 
       console.log(
-        `✅ SSG: Found ${ids.length} published sermon IDs (Client SDK)`
+        `✅ SSG: Found ${ids.length} published sermon IDs (Client SDK)`,
       );
       return ids;
     }

@@ -1,0 +1,53 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.admin == true;
+    }
+    
+    // Sermões - Leitura pública, escrita admin
+    match /sermons/{sermonId} {
+      allow read: if true; // Público pode ler
+      allow write: if isAdmin(); // Apenas admin pode criar/editar
+    }
+    
+    // Encontros - Leitura pública, escrita admin
+    match /encounters/{encounterId} {
+      allow read: if true; // Público pode ler
+      allow write: if isAdmin(); // Apenas admin pode criar/editar
+    }
+    
+    // Participantes - Criar público, ler/editar admin
+    match /participants/{participantId} {
+      allow read: if isAdmin(); // Apenas admin pode ler
+      allow create: if true; // Público pode se cadastrar
+      allow update, delete: if isAdmin(); // Apenas admin pode editar/deletar
+    }
+    
+    // FCM Tokens - Criar/atualizar PÚBLICO (sem autenticação necessária)
+    match /fcmTokens/{tokenId} {
+      allow read: if false; // Ninguém pode ler (privacidade)
+      allow create: if true; // QUALQUER UM pode criar token
+      allow update: if true; // QUALQUER UM pode atualizar (lastActive)
+      allow delete: if isAdmin(); // Apenas admin pode deletar
+    }
+    
+    // Métricas de instalação - Apenas admin pode ler/escrever
+    match /installMetrics/{metricId} {
+      allow read: if isAuthenticated(); // Autenticados podem ler
+      allow write: if isAdmin(); // Apenas admin pode escrever
+    }
+    
+    // Bloquear acesso a outras coleções
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

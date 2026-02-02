@@ -25,8 +25,31 @@ export default function useCreateSermonFirebase() {
         isPublished: false,
       });
     },
-    onSuccess: () => {
+    onSuccess: async (sermon) => {
       queryClient.invalidateQueries({ queryKey: ["sermonsFirebase"] });
+
+      // Enviar notificação push para todos os usuários
+      try {
+        const response = await fetch("/api/send-mass-notification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: "Novo Sermão Disponível",
+            body: sermon.title,
+            url: `/sermons/sermon/${sermon.id}`,
+            imageUrl: sermon.imageUrl,
+          }),
+        });
+
+        if (!response.ok) {
+          console.error("Failed to send notification");
+        } else {
+          const result = await response.json();
+          console.log(`Notification sent to ${result.successCount} devices`);
+        }
+      } catch (error) {
+        console.error("Error sending notification:", error);
+      }
     },
     onError: (error) => {
       console.error("Error creating sermon:", error);

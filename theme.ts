@@ -19,10 +19,11 @@ const violet: MantineColorsTuple = [
 export const theme = createTheme({
   primaryColor: "violet",
 
-  fontFamily: "var(--font-inter), -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif",
+  fontFamily:
+    "var(--font-body), -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif",
 
   headings: {
-    fontFamily: "var(--font-playfair), Georgia, serif",
+    fontFamily: "var(--font-heading), Georgia, serif",
     fontWeight: "700",
     sizes: {
       h1: { fontSize: "2.5rem", lineHeight: "1.2" },
@@ -89,10 +90,10 @@ export const theme = createTheme({
 
   // Breakpoints responsivos
   breakpoints: {
-    xs: "36em",  // 576px
-    sm: "48em",  // 768px
-    md: "62em",  // 992px
-    lg: "75em",  // 1200px
-    xl: "88em",  // 1408px
+    xs: "36em", // 576px
+    sm: "48em", // 768px
+    md: "62em", // 992px
+    lg: "75em", // 1200px
+    xl: "88em", // 1408px
   },
 });

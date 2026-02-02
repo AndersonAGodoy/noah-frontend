@@ -13,6 +13,8 @@ import {
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import { theme } from "../theme";
+import { PWAInstallBanner } from "../components/PWAInstallBanner";
+import { ConsentModal } from "../components/ConsentModal";
 
 function makeQueryClient() {
   return new QueryClient({
@@ -65,6 +67,8 @@ export default function ClientProviders({
       <MantineProvider theme={theme}>
         <ModalsProvider>{children}</ModalsProvider>
         <Notifications />
+        <ConsentModal />
+        <PWAInstallBanner />
         {process.env.NODE_ENV === "development" && (
           <ReactQueryDevtools initialIsOpen={false} />
         )}
