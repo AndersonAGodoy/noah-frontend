@@ -3,7 +3,7 @@
 
 const fs = require("fs");
 const path = require("path");
-require("dotenv").config();
+
 
 // Ler variáveis de ambiente
 const firebaseConfig = {
