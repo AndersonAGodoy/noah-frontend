@@ -10,7 +10,7 @@ export default function useCreateSermonFirebase() {
 
   return useMutation({
     mutationFn: async (data: SermonFormData) => {
-      return await sermonsService.createSermon({
+      const sermonId = await sermonsService.createSermon({
         title: data.title,
         description: data.description,
         speaker: data.speaker,
@@ -24,6 +24,12 @@ export default function useCreateSermonFirebase() {
         spotifyEmbed: data.spotifyEmbed,
         isPublished: false,
       });
+      
+      // Retornar os dados completos para usar no onSuccess
+      return {
+        id: sermonId,
+        ...data,
+      };
     },
     onSuccess: async (sermon) => {
       queryClient.invalidateQueries({ queryKey: ["sermonsFirebase"] });
