@@ -24,7 +24,7 @@ export default function useCreateSermonFirebase() {
         spotifyEmbed: data.spotifyEmbed,
         isPublished: false,
       });
-      
+
       // Retornar os dados completos para usar no onSuccess
       return {
         id: sermonId,

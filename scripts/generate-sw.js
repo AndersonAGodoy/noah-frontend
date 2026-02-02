@@ -4,7 +4,6 @@
 const fs = require("fs");
 const path = require("path");
 
-
 // Ler variáveis de ambiente
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
