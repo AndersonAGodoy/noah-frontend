@@ -73,6 +73,7 @@ export function ConsentModal() {
     <Modal
       opened={opened}
       onClose={() => setOpened(false)}
+      zIndex={2000}
       title={
         <Text fw={700} size="lg">
           Notificações e Privacidade

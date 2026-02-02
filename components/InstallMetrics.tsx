@@ -26,9 +26,21 @@ export function InstallMetrics() {
 
   useEffect(() => {
     async function fetchMetrics() {
-      const data = await getInstallMetrics();
-      setMetrics(data);
-      setLoading(false);
+      try {
+        const data = await getInstallMetrics();
+        setMetrics(data);
+      } catch (error) {
+        console.error("Error fetching install metrics:", error);
+        // Mesmo com erro, mostrar UI com valores zero
+        setMetrics({
+          totalInstalls: 0,
+          activeInstalls: 0,
+          lastUpdated: new Date(),
+          installsByMonth: {},
+        });
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchMetrics();
