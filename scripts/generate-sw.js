@@ -1,9 +1,9 @@
 // Script para gerar Service Workers com configurações do Firebase
 // Executado automaticamente durante o build
 
-const fs = require('fs');
-const path = require('path');
-require('dotenv').config();
+const fs = require("fs");
+const path = require("path");
+require("dotenv").config();
 
 // Ler variáveis de ambiente
 const firebaseConfig = {
@@ -22,7 +22,7 @@ const missingVars = Object.entries(firebaseConfig)
   .map(([key]) => key);
 
 if (missingVars.length > 0) {
-  console.error('❌ Variáveis de ambiente faltando:', missingVars.join(', '));
+  console.error("❌ Variáveis de ambiente faltando:", missingVars.join(", "));
   process.exit(1);
 }
 
@@ -183,18 +183,18 @@ self.addEventListener("notificationclick", (event) => {
 `;
 
 // Criar diretório public se não existir
-const publicDir = path.join(__dirname, '..', 'public');
+const publicDir = path.join(__dirname, "..", "public");
 if (!fs.existsSync(publicDir)) {
   fs.mkdirSync(publicDir, { recursive: true });
 }
 
 // Escrever arquivos
-const fcmSwPath = path.join(publicDir, 'firebase-messaging-sw.js');
-const swPath = path.join(publicDir, 'sw.js');
+const fcmSwPath = path.join(publicDir, "firebase-messaging-sw.js");
+const swPath = path.join(publicDir, "sw.js");
 
-fs.writeFileSync(fcmSwPath, fcmSwTemplate, 'utf8');
-fs.writeFileSync(swPath, swTemplate, 'utf8');
+fs.writeFileSync(fcmSwPath, fcmSwTemplate, "utf8");
+fs.writeFileSync(swPath, swTemplate, "utf8");
 
-console.log('✅ Service Workers gerados com sucesso!');
-console.log('   📁', fcmSwPath);
-console.log('   📁', swPath);
+console.log("✅ Service Workers gerados com sucesso!");
+console.log("   📁", fcmSwPath);
+console.log("   📁", swPath);
