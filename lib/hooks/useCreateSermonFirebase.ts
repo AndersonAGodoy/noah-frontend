@@ -43,7 +43,7 @@ export default function useCreateSermonFirebase() {
             title: "Novo Sermão Disponível",
             body: sermon.title,
             url: `/sermons/sermon/${sermon.id}`,
-            imageUrl: sermon.imageUrl,
+            imageUrl: "/icons/icon-192x192.png",
           }),
         });
 
