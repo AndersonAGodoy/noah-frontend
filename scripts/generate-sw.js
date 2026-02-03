@@ -3,6 +3,11 @@
 
 const fs = require("fs");
 const path = require("path");
+const dotenv = require("dotenv");
+
+// Carregar variáveis de ambiente locais (.env.local tem prioridade)
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 // Ler variáveis de ambiente
 const firebaseConfig = {
@@ -95,6 +100,22 @@ self.addEventListener("notificationclick", (event) => {
       }),
   );
 });
+
+// Ativar imediatamente
+self.addEventListener("install", (event) => {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(clients.claim());
+});
+
+// Listener para mensagem SKIP_WAITING
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
 `;
 
 // Template do sw.js (PWA principal)
@@ -149,6 +170,23 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache)),
   );
+  // Forçar ativação imediata do novo SW
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    clients.claim().then(() => {
+      console.log("Service Worker ativado e controlando a página");
+    })
+  );
+});
+
+// Listener para mensagem SKIP_WAITING
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener("fetch", (event) => {

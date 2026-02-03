@@ -39,7 +39,7 @@ const MarkdownEditor = dynamic(
   {
     loading: () => <div>Carregando editor...</div>,
     ssr: false,
-  }
+  },
 );
 
 // Dynamic import do SpotifyPlayer
@@ -48,7 +48,7 @@ const SpotifyPlayer = dynamic(
   {
     loading: () => <div>Carregando preview...</div>,
     ssr: false,
-  }
+  },
 );
 
 export default function AddSermon() {
@@ -87,7 +87,7 @@ export default function AddSermon() {
   const updateReference = (
     index: number,
     field: "reference" | "text",
-    value: string
+    value: string,
   ) => {
     form.setFieldValue(`references.${index}.${field}`, value);
   };
@@ -432,29 +432,30 @@ Conclua seu sermão aqui...
                 />
               </Card>
             ))}
-            <Flex justify={"flex-end"} mt="md" gap="xs">
-              <Button
-                color="violet"
-                type="submit"
-                leftSection={<IconCirclePlus />}
-                loading={isPending}
-                disabled={isPending}
-              >
-                Criar Sermão
-              </Button>
-              <Button
-                variant="subtle"
-                color="red"
-                onClick={() => router.back()}
-                disabled={isPending}
-                leftSection={<IconSquareRoundedX />}
-                type="button"
-              >
-                Cancelar
-              </Button>
-            </Flex>
           </Tabs.Panel>
         </Tabs>
+
+        <Flex justify={"flex-end"} mt="md" gap="xs">
+          <Button
+            color="violet"
+            type="submit"
+            leftSection={<IconCirclePlus />}
+            loading={isPending}
+            disabled={isPending}
+          >
+            Criar Sermão
+          </Button>
+          <Button
+            variant="subtle"
+            color="red"
+            onClick={() => router.back()}
+            disabled={isPending}
+            leftSection={<IconSquareRoundedX />}
+            type="button"
+          >
+            Cancelar
+          </Button>
+        </Flex>
       </form>
     </Box>
   );

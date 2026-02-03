@@ -29,7 +29,11 @@ if (!admin.apps.length) {
       console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY:", error);
       throw new Error("Invalid FIREBASE_SERVICE_ACCOUNT_KEY format");
     }
-  } else {
+  } else if (
+    process.env.FIREBASE_PROJECT_ID &&
+    process.env.FIREBASE_CLIENT_EMAIL &&
+    process.env.FIREBASE_PRIVATE_KEY
+  ) {
     // Fallback para variáveis individuais
     admin.initializeApp({
       credential: admin.credential.cert({
@@ -38,40 +42,61 @@ if (!admin.apps.length) {
         privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
       }),
     });
+  } else {
+    console.warn(
+      "⚠️ Firebase Admin credentials not configured - notifications disabled",
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    // 🔒 VERIFICAÇÃO DE AUTENTICAÇÃO
+    // Verificar se Firebase Admin está configurado
+    if (!admin.apps.length) {
+      console.warn("⚠️ Firebase Admin not initialized - skipping notification");
+      return NextResponse.json({
+        success: true,
+        message: "Notifications disabled (credentials not configured)",
+        successCount: 0,
+        failureCount: 0,
+      });
+    }
+
+    // Verificar autenticação via session cookie
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get("session")?.value;
 
     if (!sessionCookie) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized - No session" },
+        { success: false, error: "No session" },
         { status: 401 },
       );
     }
 
-    // Verificar se o usuário está autenticado
-    let decodedClaims;
+    // Verificar se o usuário é admin
     try {
-      decodedClaims = await admin
+      const decodedClaims = await admin
         .auth()
         .verifySessionCookie(sessionCookie, true);
+
+      const userDoc = await admin
+        .firestore()
+        .collection("users")
+        .doc(decodedClaims.uid)
+        .get();
+
+      const userData = userDoc.data();
+
+      if (!userData || userData.role !== "admin") {
+        return NextResponse.json(
+          { success: false, error: "Unauthorized - admin only" },
+          { status: 403 },
+        );
+      }
     } catch (error) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized - Invalid session" },
+        { success: false, error: "Invalid session" },
         { status: 401 },
-      );
-    }
-
-    // Verificar se é admin (adicione este campo customizado no Firebase Auth)
-    if (!decodedClaims.admin) {
-      return NextResponse.json(
-        { success: false, error: "Forbidden - Admin access required" },
-        { status: 403 },
       );
     }
 
@@ -109,9 +134,6 @@ export async function POST(request: NextRequest) {
 
     // Enviar para todos os tokens
     const response = await admin.messaging().sendEachForMulticast(message);
-
-    console.log(`Sent ${response.successCount} notifications`);
-    console.log(`Failed ${response.failureCount} notifications`);
 
     // Marcar tokens inválidos
     if (response.failureCount > 0) {

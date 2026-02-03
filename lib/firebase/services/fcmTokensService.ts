@@ -43,13 +43,14 @@ export async function saveFCMToken(
     }
 
     // Usar o token como ID do documento para evitar duplicatas
-    // Isso elimina a necessidade de fazer query (que requer permissão de leitura)
     const tokenHash = data.token
       .replace(/[^a-zA-Z0-9]/g, "_")
       .substring(0, 100);
     const docRef = doc(db, TOKENS_COLLECTION, tokenHash);
+    const now = serverTimestamp();
 
     // Usar setDoc com merge para criar ou atualizar
+    // O merge garante que createdAt e installDate não sejam sobrescritos se já existirem
     await setDoc(
       docRef,
       {
@@ -58,18 +59,28 @@ export async function saveFCMToken(
         deviceInfo: {
           userAgent: data.deviceInfo?.userAgent || "Unknown",
           platform: data.deviceInfo?.platform || "Unknown",
-          installDate: serverTimestamp(),
         },
-        lastActive: serverTimestamp(),
+        lastActive: now,
         isValid: true,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
+        updatedAt: now,
       },
       { merge: true },
     );
 
-    console.log("✅ FCM Token saved successfully:", tokenHash);
+    // Definir createdAt e installDate apenas se for novo documento (sem merge nestes campos)
+    // Isso é feito em uma operação separada que só funciona se os campos não existirem
+    await setDoc(
+      docRef,
+      {
+        createdAt: now,
+        deviceInfo: {
+          installDate: now,
+        },
+      },
+      { merge: true, mergeFields: [] }, // Merge vazio = só adiciona se não existir
+    );
 
+    console.log("✅ FCM Token saved/updated:", tokenHash);
     return tokenHash;
   } catch (error) {
     console.error("Error saving FCM token:", error);
@@ -88,6 +99,34 @@ export async function getAllValidTokens(): Promise<string[]> {
   } catch (error) {
     console.error("Error getting valid tokens:", error);
     return [];
+  }
+}
+
+// Buscar todos os tokens com detalhes (para admin)
+export async function getAllFCMTokensWithDetails(): Promise<FCMToken[]> {
+  try {
+    const tokensRef = collection(db, TOKENS_COLLECTION);
+    const snapshot = await getDocs(tokensRef);
+
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        token: data.token,
+        userId: data.userId || null,
+        deviceInfo: data.deviceInfo || {
+          userAgent: "Unknown",
+          platform: "Unknown",
+        },
+        lastActive: data.lastActive?.toDate() || new Date(),
+        isValid: data.isValid ?? true,
+        createdAt: data.createdAt?.toDate() || new Date(),
+        updatedAt: data.updatedAt?.toDate() || new Date(),
+      };
+    });
+  } catch (error) {
+    console.error("Error getting FCM tokens with details:", error);
+    throw error;
   }
 }
 

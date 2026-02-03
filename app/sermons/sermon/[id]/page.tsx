@@ -78,12 +78,12 @@ interface SermonPageProps {
 const BUILD_TIMESTAMP = new Date().toISOString();
 
 async function getSermon(
-  id: string
+  id: string,
 ): Promise<{ sermon: Sermon | null; lastUpdated: string; buildTime: string }> {
   try {
     // Usa timestamp fixo do build, não do request
     console.log(
-      `🏗️ SSG: Building sermon page for ID: ${id} at ${BUILD_TIMESTAMP}`
+      `🏗️ SSG: Building sermon page for ID: ${id} at ${BUILD_TIMESTAMP}`,
     );
     console.log(`⏰ Revalidation configured for: 7 days (604800 seconds)`);
 
@@ -126,16 +126,12 @@ export default async function SermonPage({ params }: SermonPageProps) {
   if (sermon) {
     console.log(`📊 SermonPage: Sermon published:`, sermon.isPublished);
     console.log(`📊 SermonPage: Sermon title:`, sermon.title);
-  }
-
-  if (!sermon) {
+    console.log(
+      `📄 Rendering sermon page ${id} - Build time: ${buildTime} - Last updated: ${lastUpdated}`,
+    );
+    return <ClientSermonPage sermon={sermon} lastUpdated={lastUpdated} />;
+  } else {
     console.log(`❌ SermonPage: Returning 404 for sermon ID: ${id}`);
     notFound();
   }
-
-  console.log(
-    `📄 Rendering sermon page ${id} - Build time: ${buildTime} - Last updated: ${lastUpdated}`
-  );
-
-  return <ClientSermonPage sermon={sermon} lastUpdated={lastUpdated} />;
 }

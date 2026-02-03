@@ -3,51 +3,48 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Helper functions
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    
+    // Helper function to check if user is admin
     function isAdmin() {
-      return isAuthenticated() && request.auth.token.admin == true;
+      return request.auth != null && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
     
-    // Sermões - Leitura pública, escrita admin
-    match /sermons/{sermonId} {
-      allow read: if true; // Público pode ler
-      allow write: if isAdmin(); // Apenas admin pode criar/editar
-    }
-    
-    // Encontros - Leitura pública, escrita admin
-    match /encounters/{encounterId} {
-      allow read: if true; // Público pode ler
-      allow write: if isAdmin(); // Apenas admin pode criar/editar
-    }
-    
-    // Participantes - Criar público, ler/editar admin
-    match /participants/{participantId} {
-      allow read: if isAdmin(); // Apenas admin pode ler
-      allow create: if true; // Público pode se cadastrar
-      allow update, delete: if isAdmin(); // Apenas admin pode editar/deletar
-    }
-    
-    // FCM Tokens - Criar/atualizar PÚBLICO (sem autenticação necessária)
+    // FCM Tokens - admin can read all, anyone can create/update
     match /fcmTokens/{tokenId} {
-      allow read: if false; // Ninguém pode ler (privacidade)
-      allow create: if true; // QUALQUER UM pode criar token
-      allow update: if true; // QUALQUER UM pode atualizar (lastActive)
-      allow delete: if isAdmin(); // Apenas admin pode deletar
+      allow read: if isAdmin();
+      allow create, update: if true; // Allow anyone to save their FCM tokens
+      allow delete: if isAdmin();
     }
     
-    // Métricas de instalação - Apenas admin pode ler/escrever
+    // Install Metrics - admin can read, anyone can write
     match /installMetrics/{metricId} {
-      allow read: if isAuthenticated(); // Autenticados podem ler
-      allow write: if isAdmin(); // Apenas admin pode escrever
+      allow read: if isAdmin();
+      allow create, update: if true; // Allow users to save install metrics
+      allow delete: if isAdmin();
     }
     
-    // Bloquear acesso a outras coleções
-    match /{document=**} {
-      allow read, write: if false;
+    // Users collection
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Sermons - admin can read/write
+    match /sermons/{sermonId} {
+      allow read: if true; // Public reading
+      allow write: if isAdmin();
+    }
+    
+    // Participants - admin can read/write
+    match /participants/{participantId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+    
+    // Encounters - admin can read/write
+    match /encounters/{encounterId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
     }
   }
 }

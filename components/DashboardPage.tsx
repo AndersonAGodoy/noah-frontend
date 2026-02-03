@@ -7,12 +7,13 @@ import {
   Notification,
   Stack,
   Group,
+  Pagination,
 } from "@mantine/core";
 
 import Link from "next/link";
 import { useGetSermonsFirebase } from "../lib/hooks/useGetSermonsFirebase";
 import useGetAllParticipantsFirebase from "../lib/hooks/useGetAllParticipantsFirebase";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import StatsGrid from "./StatsGrid";
 import useDeleteSermonFirebase, {
   usePublishSermonFirebase,
@@ -32,8 +33,12 @@ import { useGetActiveEncounter } from "../lib/hooks/useGetActiveEncounter";
 import { useAutoDeactivateExpiredEncounters } from "../lib/hooks/useAutoDeactivateExpiredEncounters";
 import { InstallMetrics } from "./InstallMetrics";
 import { useFCMToken } from "../lib/hooks/useFCMToken";
+import { RegisteredDevices } from "./RegisteredDevices";
 
 export default function DashboardPage() {
+  const [sermonPage, setSermonPage] = useState(1);
+  const SERMONS_PER_PAGE = 5;
+
   const {
     data: sermonsData,
     isLoading,
@@ -71,6 +76,12 @@ export default function DashboardPage() {
     }
     return sermonsData?.data || [];
   }, [sermonsData]);
+
+  // Paginação dos sermões
+  const totalSermonPages = Math.ceil(allSermons.length / SERMONS_PER_PAGE);
+  const startIndex = (sermonPage - 1) * SERMONS_PER_PAGE;
+  const endIndex = startIndex + SERMONS_PER_PAGE;
+  const paginatedSermons = allSermons.slice(startIndex, endIndex);
 
   const openConfirmModal = (sermonId: string) => {
     modals.openConfirmModal({
@@ -271,37 +282,49 @@ export default function DashboardPage() {
             encontroInscricoes={encontroInscricoes}
             activeEncounter={activeEncounter}
           />
-
           <Box mt="md">
-            <InstallMetrics />
+            <RegisteredDevices />
           </Box>
 
           <Title mt={"md"} order={1} c={"violet"}>
             Últimos Sermões
           </Title>
           {allSermons.length > 0 ? (
-            allSermons.map((sermon: Sermon) => (
-              <LastSermons
-                key={sermon.id}
-                id={sermon.id}
-                title={sermon.title}
-                speaker={sermon.speaker}
-                date={sermon.date}
-                eventType={sermon.eventType}
-                onRemove={() => openConfirmModal(sermon.id)}
-                onpublish={() => {
-                  handlePublish(sermon.id);
-                }}
-                onUnpublish={() => {
-                  handleUnpublish(sermon.id);
-                }}
-                isPublished={!!sermon.publishedAt}
-                isPending={
-                  publishSermonMutation.isPending ||
-                  unpublishSermonMutation.isPending
-                }
-              />
-            ))
+            <>
+              {paginatedSermons.map((sermon: Sermon) => (
+                <LastSermons
+                  key={sermon.id}
+                  id={sermon.id}
+                  title={sermon.title}
+                  speaker={sermon.speaker}
+                  date={sermon.date}
+                  eventType={sermon.eventType}
+                  onRemove={() => openConfirmModal(sermon.id)}
+                  onpublish={() => {
+                    handlePublish(sermon.id);
+                  }}
+                  onUnpublish={() => {
+                    handleUnpublish(sermon.id);
+                  }}
+                  isPublished={!!sermon.publishedAt}
+                  isPending={
+                    publishSermonMutation.isPending ||
+                    unpublishSermonMutation.isPending
+                  }
+                />
+              ))}
+
+              {totalSermonPages > 1 && (
+                <Group justify="center" mt="xl">
+                  <Pagination
+                    total={totalSermonPages}
+                    value={sermonPage}
+                    onChange={setSermonPage}
+                    size="md"
+                  />
+                </Group>
+              )}
+            </>
           ) : (
             <Notification
               withCloseButton={false}

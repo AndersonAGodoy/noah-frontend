@@ -1,10 +1,9 @@
-// lib/hooks/useGetActiveEncounter.ts
 import { useQuery } from "@tanstack/react-query";
-import { encountersService } from "../firebase/services";
+import { getAllFCMTokensWithDetails } from "../firebase/services/fcmTokensService";
 import { auth } from "../firebase/config";
 import { useEffect, useState } from "react";
 
-export const useGetActiveEncounter = () => {
+export function useGetAllFCMTokens() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -15,8 +14,10 @@ export const useGetActiveEncounter = () => {
   }, []);
 
   return useQuery({
-    queryKey: ["activeEncounter"],
-    queryFn: () => encountersService.getActiveEncounter(),
+    queryKey: ["fcmTokens"],
+    queryFn: getAllFCMTokensWithDetails,
     enabled: isAuthenticated, // Só buscar quando autenticado
+    refetchInterval: 30000,
+    staleTime: 15000,
   });
-};
+}
