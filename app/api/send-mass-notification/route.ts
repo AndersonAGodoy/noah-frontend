@@ -43,9 +43,9 @@ if (!admin.apps.length) {
       }),
     });
   } else {
-    // console.warn(
-      "⚠️ Firebase Admin credentials not configured - notifications disabled",
-    );
+    // // console.warn(
+    //   "⚠️ Firebase Admin credentials not configured - notifications disabled",
+    // );
   }
 }
 
