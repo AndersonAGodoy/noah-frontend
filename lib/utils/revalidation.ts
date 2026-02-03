@@ -8,7 +8,7 @@ export async function triggerRevalidation(
   sermonId?: string
 ) {
   try {
-    console.log("🔄 Triggering manual revalidation...", { type, sermonId });
+    // console.log("🔄 Triggering manual revalidation...", { type, sermonId });
 
     const response = await fetch("/api/revalidate", {
       method: "POST",
@@ -24,11 +24,11 @@ export async function triggerRevalidation(
     }
 
     const result = await response.json();
-    console.log("✅ Manual revalidation successful:", result);
+    // console.log("✅ Manual revalidation successful:", result);
 
     return result;
   } catch (error) {
-    console.error("❌ Manual revalidation failed:", error);
+    // console.error("❌ Manual revalidation failed:", error);
     throw error;
   }
 }
@@ -40,11 +40,11 @@ export function useRevalidation() {
   const revalidateOnPublish = async (sermonId: string) => {
     try {
       await triggerRevalidation("sermon-published", sermonId);
-      console.log(
+      // console.log(
         "🎉 Novo sermão publicado! Cache atualizado automaticamente."
       );
     } catch (error) {
-      console.error("Erro ao atualizar cache:", error);
+      // console.error("Erro ao atualizar cache:", error);
       // Mesmo se a revalidação falhar, o sermão foi publicado
       // A próxima visita às páginas vai mostrar o conteúdo atualizado
     }
@@ -53,9 +53,9 @@ export function useRevalidation() {
   const revalidateOnUnpublish = async (sermonId: string) => {
     try {
       await triggerRevalidation("sermon-unpublished", sermonId);
-      console.log("📝 Sermão despublicado! Cache atualizado automaticamente.");
+      // console.log("📝 Sermão despublicado! Cache atualizado automaticamente.");
     } catch (error) {
-      console.error("Erro ao atualizar cache:", error);
+      // console.error("Erro ao atualizar cache:", error);
     }
   };
 

@@ -30,7 +30,7 @@ export function InstallMetrics() {
         const data = await getInstallMetrics();
         setMetrics(data);
       } catch (error) {
-        console.error("Error fetching install metrics:", error);
+        // console.error("Error fetching install metrics:", error);
         // Mesmo com erro, mostrar UI com valores zero
         setMetrics({
           totalInstalls: 0,

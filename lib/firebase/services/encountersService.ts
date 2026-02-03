@@ -26,7 +26,7 @@ export const encountersService = {
       });
       return docRef.id;
     } catch (error) {
-      console.error("Erro ao criar encontro:", error);
+      // console.error("Erro ao criar encontro:", error);
       throw error;
     }
   },
@@ -57,7 +57,7 @@ export const encountersService = {
         totalPages: Math.ceil(encounters.length / pageSize),
       };
     } catch (error) {
-      console.error("Erro ao buscar encontros:", error);
+      // console.error("Erro ao buscar encontros:", error);
       throw error;
     }
   },
@@ -98,7 +98,7 @@ export const encountersService = {
 
       return encounter;
     } catch (error) {
-      console.error("Erro ao buscar encontro ativo:", error);
+      // console.error("Erro ao buscar encontro ativo:", error);
       throw error;
     }
   },
@@ -112,7 +112,7 @@ export const encountersService = {
         updatedAt: serverTimestamp(),
       });
     } catch (error) {
-      console.error("Erro ao atualizar encontro:", error);
+      // console.error("Erro ao atualizar encontro:", error);
       throw error;
     }
   },
@@ -139,7 +139,7 @@ export const encountersService = {
 
       await Promise.all(batch);
     } catch (error) {
-      console.error("Erro ao desativar encontros:", error);
+      // console.error("Erro ao desativar encontros:", error);
       throw error;
     }
   },
@@ -157,7 +157,7 @@ export const encountersService = {
         updatedAt: serverTimestamp(),
       });
     } catch (error) {
-      console.error("Erro ao definir encontro ativo:", error);
+      // console.error("Erro ao definir encontro ativo:", error);
       throw error;
     }
   },

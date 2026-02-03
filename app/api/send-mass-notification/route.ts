@@ -26,7 +26,7 @@ if (!admin.apps.length) {
         credential: admin.credential.cert(serviceAccount),
       });
     } catch (error) {
-      console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY:", error);
+      // console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY:", error);
       throw new Error("Invalid FIREBASE_SERVICE_ACCOUNT_KEY format");
     }
   } else if (
@@ -43,7 +43,7 @@ if (!admin.apps.length) {
       }),
     });
   } else {
-    console.warn(
+    // console.warn(
       "⚠️ Firebase Admin credentials not configured - notifications disabled",
     );
   }
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
   try {
     // Verificar se Firebase Admin está configurado
     if (!admin.apps.length) {
-      console.warn("⚠️ Firebase Admin not initialized - skipping notification");
+      // console.warn("⚠️ Firebase Admin not initialized - skipping notification");
       return NextResponse.json({
         success: true,
         message: "Notifications disabled (credentials not configured)",
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
           .auth()
           .verifySessionCookie(sessionCookie, true);
       } catch (error) {
-        console.error("Session cookie verification failed:", error);
+        // console.error("Session cookie verification failed:", error);
       }
     }
 
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       try {
         decodedClaims = await admin.auth().verifyIdToken(idToken);
       } catch (error) {
-        console.error("ID token verification failed:", error);
+        // console.error("ID token verification failed:", error);
       }
     }
 
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
       failureCount: response.failureCount,
     });
   } catch (error: any) {
-    console.error("Error sending mass notification:", error);
+    // console.error("Error sending mass notification:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 },

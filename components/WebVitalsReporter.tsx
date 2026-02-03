@@ -6,7 +6,7 @@ export function WebVitalsReporter() {
     useReportWebVitals((metric) => {
         // Log apenas em desenvolvimento
         if (process.env.NODE_ENV === "development") {
-            console.log(`[Web Vitals] ${metric.name}:`, metric.value);
+            // console.log(`[Web Vitals] ${metric.name}:`, metric.value);
         }
 
         // Em produção, você pode enviar para um serviço de analytics

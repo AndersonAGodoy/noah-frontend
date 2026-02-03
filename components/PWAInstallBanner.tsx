@@ -40,8 +40,8 @@ export function PWAInstallBanner() {
     // Rejeição explícita - salva no localStorage
     localStorage.setItem("pwa-install-rejected", "true");
     setDismissed(true);
-    // Mostrar modal com instruções
-    setTimeout(() => setShowInstructions(true), 500);
+    // Mostrar modal com instruções imediatamente
+    setShowInstructions(true);
   };
 
   const handleInstall = () => {
@@ -53,58 +53,9 @@ export function PWAInstallBanner() {
     setShowInstructions(false);
   };
 
-  if (!mounted || !isInstallable || dismissed) return null;
-
-  return (
-    <>
-      <Paper
-        p="md"
-        shadow="lg"
-        radius="md"
-        withBorder
-        style={{
-          position: "fixed",
-          bottom: 20,
-          left: 20,
-          right: 20,
-          zIndex: 1000,
-          maxWidth: 600,
-          margin: "0 auto",
-        }}
-      >
-        <Group justify="space-between" wrap="nowrap">
-          <div style={{ flex: 1 }}>
-            <Text fw={600} size="sm">
-              Instalar No&apos;ah
-            </Text>
-            <Text size="xs" c="dimmed">
-              Instale o app para acesso rápido e receba notificações de novos
-              sermões
-            </Text>
-          </div>
-          <Group gap="xs" wrap="nowrap">
-            <Button
-              variant="light"
-              size="xs"
-              onClick={handleInstall}
-              leftSection={<IconDownload size={16} />}
-            >
-              Instalar
-            </Button>
-            <Button
-              variant="subtle"
-              size="xs"
-              color="gray"
-              onClick={handleReject}
-            >
-              Não
-            </Button>
-            <CloseButton onClick={handleDismiss} />
-          </Group>
-        </Group>
-      </Paper>
-
-      {/* Modal de Instruções */}
+  // Se o modal de instruções está aberto, renderizar apenas ele
+  if (showInstructions) {
+    return (
       <Modal
         opened={showInstructions}
         onClose={closeInstructions}
@@ -165,6 +116,57 @@ export function PWAInstallBanner() {
           </Button>
         </Stack>
       </Modal>
-    </>
+    );
+  }
+
+  if (!mounted || !isInstallable || dismissed) return null;
+
+  return (
+    <Paper
+      p="md"
+      shadow="lg"
+      radius="md"
+      withBorder
+      style={{
+        position: "fixed",
+        bottom: 20,
+        left: 20,
+        right: 20,
+        zIndex: 1000,
+        maxWidth: 600,
+        margin: "0 auto",
+      }}
+    >
+      <Group justify="space-between" wrap="nowrap">
+        <div style={{ flex: 1 }}>
+          <Text fw={600} size="sm">
+            Instalar No&apos;ah
+          </Text>
+          <Text size="xs" c="dimmed">
+            Instale o app para acesso rápido e receba notificações de novos
+            sermões
+          </Text>
+        </div>
+        <Group gap="xs" wrap="nowrap">
+          <Button
+            variant="light"
+            size="xs"
+            onClick={handleInstall}
+            leftSection={<IconDownload size={16} />}
+          >
+            Instalar
+          </Button>
+          <Button
+            variant="subtle"
+            size="xs"
+            color="gray"
+            onClick={handleReject}
+          >
+            Não
+          </Button>
+          <CloseButton onClick={handleDismiss} />
+        </Group>
+      </Group>
+    </Paper>
   );
 }

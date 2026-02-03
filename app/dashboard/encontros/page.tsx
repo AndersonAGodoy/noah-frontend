@@ -80,7 +80,7 @@ export default function EncontrosPage() {
         maxParticipants: "",
       });
     } catch (error) {
-      console.error("Erro ao criar encontro:", error);
+      // console.error("Erro ao criar encontro:", error);
     } finally {
       setIsCreating(false);
     }
@@ -90,7 +90,7 @@ export default function EncontrosPage() {
     try {
       await setActiveEncounter.mutateAsync(encounterId);
     } catch (error) {
-      console.error("Erro ao definir encontro ativo:", error);
+      // console.error("Erro ao definir encontro ativo:", error);
     }
   };
 

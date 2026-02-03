@@ -221,7 +221,7 @@ export default function InteressadosEncontroPage() {
         : `encontro-todas-inscricoes.pdf`;
       doc.save(fileName);
     } catch (error) {
-      console.error("Erro ao gerar PDF:", error);
+      // console.error("Erro ao gerar PDF:", error);
       alert("Erro ao gerar PDF. Verifique o console para mais detalhes.");
     }
   };

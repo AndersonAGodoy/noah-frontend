@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
   if (data.ok) {
     const responseData = await data.json();
-    console.log("responseData", responseData);
+    // console.log("responseData", responseData);
     response.cookies.set("token", responseData["access_token"]);
     return redirect("/dashboard");
   } else {

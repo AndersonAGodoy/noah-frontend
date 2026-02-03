@@ -55,7 +55,7 @@ export async function generateMetadata({
 // Gerar parâmetros estáticos para todos os sermões publicados
 export async function generateStaticParams() {
   try {
-    console.log("🏗️ SSG: Generating static params for sermons...");
+    // console.log("🏗️ SSG: Generating static params for sermons...");
 
     const sermonIds = await getAllSermonIdsSSG();
 
@@ -63,7 +63,7 @@ export async function generateStaticParams() {
       id,
     }));
   } catch (error) {
-    console.error("❌ SSG: Error generating static params:", error);
+    // console.error("❌ SSG: Error generating static params:", error);
     return [];
   }
 }
@@ -82,10 +82,10 @@ async function getSermon(
 ): Promise<{ sermon: Sermon | null; lastUpdated: string; buildTime: string }> {
   try {
     // Usa timestamp fixo do build, não do request
-    console.log(
+    // console.log(
       `🏗️ SSG: Building sermon page for ID: ${id} at ${BUILD_TIMESTAMP}`,
     );
-    console.log(`⏰ Revalidation configured for: 7 days (604800 seconds)`);
+    // console.log(`⏰ Revalidation configured for: 7 days (604800 seconds)`);
 
     const sermon = await getSermonByIdSSG(id);
 
@@ -97,14 +97,14 @@ async function getSermon(
       };
     }
 
-    console.log(`✅ SSG: Successfully built sermon page for ID: ${id}`);
+    // console.log(`✅ SSG: Successfully built sermon page for ID: ${id}`);
     return {
       sermon,
       lastUpdated: BUILD_TIMESTAMP,
       buildTime: BUILD_TIMESTAMP,
     };
   } catch (error) {
-    console.error(`❌ SSG: Error building sermon page for ${id}:`, error);
+    // console.error(`❌ SSG: Error building sermon page for ${id}:`, error);
 
     return {
       sermon: null,
@@ -118,20 +118,20 @@ export default async function SermonPage({ params }: SermonPageProps) {
   // Aguarda a Promise de params antes de usar suas propriedades
   const { id } = await params;
 
-  console.log(`🔍 SermonPage: Requested sermon ID: ${id}`);
+  // console.log(`🔍 SermonPage: Requested sermon ID: ${id}`);
 
   const { sermon, lastUpdated, buildTime } = await getSermon(id);
 
-  console.log(`📊 SermonPage: Sermon found:`, !!sermon);
+  // console.log(`📊 SermonPage: Sermon found:`, !!sermon);
   if (sermon) {
-    console.log(`📊 SermonPage: Sermon published:`, sermon.isPublished);
-    console.log(`📊 SermonPage: Sermon title:`, sermon.title);
-    console.log(
+    // console.log(`📊 SermonPage: Sermon published:`, sermon.isPublished);
+    // console.log(`📊 SermonPage: Sermon title:`, sermon.title);
+    // console.log(
       `📄 Rendering sermon page ${id} - Build time: ${buildTime} - Last updated: ${lastUpdated}`,
     );
     return <ClientSermonPage sermon={sermon} lastUpdated={lastUpdated} />;
   } else {
-    console.log(`❌ SermonPage: Returning 404 for sermon ID: ${id}`);
+    // console.log(`❌ SermonPage: Returning 404 for sermon ID: ${id}`);
     notFound();
   }
 }

@@ -29,7 +29,7 @@ export const useAutoDeactivateExpiredEncounters = () => {
 
             // Se a data já passou, desativar
             if (encounterDate < now) {
-              console.log(`🔄 Desativando encontro expirado: ${encounter.title}`);
+              // console.log(`🔄 Desativando encontro expirado: ${encounter.title}`);
               await encountersService.updateEncounter(encounter.id, {
                 isActive: false,
               });
@@ -39,7 +39,7 @@ export const useAutoDeactivateExpiredEncounters = () => {
 
         return { success: true, checkedAt: new Date().toISOString() };
       } catch (error) {
-        console.error("Erro ao desativar encontros expirados:", error);
+        // console.error("Erro ao desativar encontros expirados:", error);
         return { success: false, error };
       }
     },

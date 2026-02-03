@@ -29,7 +29,7 @@ export default function useCreateParticipantFirebase() {
       queryClient.invalidateQueries({ queryKey: ["participants"] });
     },
     onError: (error) => {
-      console.error("Error creating participant:", error);
+      // console.error("Error creating participant:", error);
     },
   });
 }

@@ -15,7 +15,7 @@ export default function DashboardError({
     const router = useRouter();
 
     useEffect(() => {
-        console.error("Dashboard error:", error);
+        // console.error("Dashboard error:", error);
     }, [error]);
 
     return (

@@ -15,10 +15,14 @@ import {
 } from "firebase/firestore";
 import { db } from "../config";
 import { FCMToken, CreateFCMToken, InstallMetrics } from "../../types/FCMToken";
+import { logger } from "../../utils/logger";
 
 const TOKENS_COLLECTION = "fcmTokens";
 const METRICS_COLLECTION = "installMetrics";
 const METRICS_DOC_ID = "stats";
+
+// Intervalo mínimo entre atualizações do lastActive (7 dias)
+const UPDATE_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000; // 7 dias
 
 // Salvar ou atualizar token
 export async function saveFCMToken(
@@ -47,43 +51,56 @@ export async function saveFCMToken(
       .replace(/[^a-zA-Z0-9]/g, "_")
       .substring(0, 100);
     const docRef = doc(db, TOKENS_COLLECTION, tokenHash);
-    const now = serverTimestamp();
 
-    // Usar setDoc com merge para criar ou atualizar
-    // O merge garante que createdAt e installDate não sejam sobrescritos se já existirem
-    await setDoc(
-      docRef,
-      {
+    // Verificar se o documento já existe
+    const existingDoc = await getDoc(docRef);
+    const isNewToken = !existingDoc.exists();
+
+    if (isNewToken) {
+      // ✅ NOVO TOKEN - Criar documento completo
+      const now = serverTimestamp();
+      await setDoc(docRef, {
         token: data.token,
         userId: data.userId || null,
         deviceInfo: {
           userAgent: data.deviceInfo?.userAgent || "Unknown",
           platform: data.deviceInfo?.platform || "Unknown",
+          installDate: now,
         },
         lastActive: now,
         isValid: true,
-        updatedAt: now,
-      },
-      { merge: true },
-    );
-
-    // Definir createdAt e installDate apenas se for novo documento (sem merge nestes campos)
-    // Isso é feito em uma operação separada que só funciona se os campos não existirem
-    await setDoc(
-      docRef,
-      {
         createdAt: now,
-        deviceInfo: {
-          installDate: now,
-        },
-      },
-      { merge: true, mergeFields: [] }, // Merge vazio = só adiciona se não existir
-    );
+        updatedAt: now,
+      });
 
-    console.log("✅ FCM Token saved/updated:", tokenHash);
+      // Atualizar métricas apenas para novos tokens
+      await updateInstallMetrics(1);
+      logger.log("✅ New FCM Token registered:", tokenHash);
+    } else {
+      // ✅ TOKEN EXISTENTE - Verificar se precisa atualizar
+      const existingData = existingDoc.data();
+      const lastActive = existingData?.lastActive?.toDate();
+      const now = new Date();
+
+      // Só fazer WRITE se passou mais de 7 dias desde o último update
+      if (
+        !lastActive ||
+        now.getTime() - lastActive.getTime() > UPDATE_INTERVAL_MS
+      ) {
+        await updateDoc(docRef, {
+          lastActive: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          isValid: true,
+        });
+        logger.log("✅ FCM Token lastActive updated (7+ days):", tokenHash);
+      } else {
+        logger.log("⏭️ FCM Token skipped update (recently active):", tokenHash);
+      }
+    }
+
     return tokenHash;
   } catch (error) {
-    console.error("Error saving FCM token:", error);
+    logger.error("Error saving FCM token:", error);
     throw error;
   }
 }
@@ -97,7 +114,7 @@ export async function getAllValidTokens(): Promise<string[]> {
 
     return snapshot.docs.map((doc) => doc.data().token);
   } catch (error) {
-    console.error("Error getting valid tokens:", error);
+    logger.error("Error getting valid tokens:", error);
     return [];
   }
 }
@@ -125,7 +142,7 @@ export async function getAllFCMTokensWithDetails(): Promise<FCMToken[]> {
       };
     });
   } catch (error) {
-    console.error("Error getting FCM tokens with details:", error);
+    logger.error("Error getting FCM tokens with details:", error);
     throw error;
   }
 }
@@ -148,7 +165,7 @@ export async function markTokenAsInvalid(token: string): Promise<void> {
       await updateInstallMetrics(-1);
     }
   } catch (error) {
-    console.error("Error marking token as invalid:", error);
+    logger.error("Error marking token as invalid:", error);
   }
 }
 
@@ -181,7 +198,7 @@ async function updateInstallMetrics(delta: number): Promise<void> {
       });
     }
   } catch (error) {
-    console.error("Error updating install metrics:", error);
+    logger.error("Error updating install metrics:", error);
   }
 }
 
@@ -203,7 +220,7 @@ export async function getInstallMetrics(): Promise<InstallMetrics | null> {
       installsByMonth: data.installsByMonth || {},
     };
   } catch (error) {
-    console.error("Error getting install metrics:", error);
+    logger.error("Error getting install metrics:", error);
     return null;
   }
 }
@@ -237,7 +254,7 @@ export async function cleanupOldTokens(
 
     return deletedCount;
   } catch (error) {
-    console.error("Error cleaning up old tokens:", error);
+    logger.error("Error cleaning up old tokens:", error);
     return 0;
   }
 }

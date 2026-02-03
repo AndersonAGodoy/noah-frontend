@@ -21,7 +21,7 @@ if (!admin.apps.length) {
         credential: admin.credential.cert(serviceAccount),
       });
     } catch (error) {
-      console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY:", error);
+      // console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY:", error);
     }
   }
 }
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     await batch.commit();
 
-    console.log(`✅ Reset ${count} FCM tokens to valid`);
+    // console.log(`✅ Reset ${count} FCM tokens to valid`);
 
     return NextResponse.json({
       success: true,
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       count,
     });
   } catch (error: any) {
-    console.error("Error resetting FCM tokens:", error);
+    // console.error("Error resetting FCM tokens:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 },

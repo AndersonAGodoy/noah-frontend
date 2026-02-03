@@ -113,7 +113,7 @@ function initializeFirebaseAdmin() {
 
       // Valida se a chave existe e não está vazia
       if (serviceAccountKey && serviceAccountKey.trim().length > 0) {
-        console.log("🔑 Using Firebase Admin SDK with service account");
+        // console.log("🔑 Using Firebase Admin SDK with service account");
 
         try {
           let serviceAccount;
@@ -144,22 +144,22 @@ function initializeFirebaseAdmin() {
             projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
           });
 
-          console.log("✅ Firebase Admin SDK initialized successfully");
+          // console.log("✅ Firebase Admin SDK initialized successfully");
           return { type: "admin", db: getFirestore() };
         } catch (parseError) {
-          console.error(
+          // console.error(
             "❌ Error parsing FIREBASE_SERVICE_ACCOUNT_KEY:",
             parseError,
           );
-          console.log(
+          // console.log(
             "📝 Make sure FIREBASE_SERVICE_ACCOUNT_KEY is a valid JSON string or base64-encoded JSON",
           );
         }
       } else {
-        console.log("⚠️ FIREBASE_SERVICE_ACCOUNT_KEY not found or empty");
+        // console.log("⚠️ FIREBASE_SERVICE_ACCOUNT_KEY not found or empty");
       }
     } catch (error) {
-      console.error("❌ Firebase Admin initialization error:", error);
+      // console.error("❌ Firebase Admin initialization error:", error);
     }
   } else {
     // Admin já inicializado
@@ -167,7 +167,7 @@ function initializeFirebaseAdmin() {
   }
 
   // Fallback para client SDK
-  console.log("🔄 Falling back to Firebase Client SDK");
+  // console.log("🔄 Falling back to Firebase Client SDK");
   if (getClientApps().length === 0) {
     initClientApp(firebaseConfig);
   }
@@ -176,7 +176,7 @@ function initializeFirebaseAdmin() {
 
 export async function getPublishedSermonsSSG(): Promise<Sermon[]> {
   try {
-    console.log("🔍 SSG: Getting published sermons...");
+    // console.log("🔍 SSG: Getting published sermons...");
 
     const firebase = initializeFirebaseAdmin();
 
@@ -185,12 +185,12 @@ export async function getPublishedSermonsSSG(): Promise<Sermon[]> {
       const sermonsRef = (firebase.db as any).collection("sermons");
       const snapshot = await sermonsRef.where("isPublished", "==", true).get();
 
-      console.log(
+      // console.log(
         `📊 SSG: Found ${snapshot.size} published sermons (Admin SDK)`,
       );
 
       if (snapshot.empty) {
-        console.log("📭 SSG: No published sermons found");
+        // console.log("📭 SSG: No published sermons found");
         return [];
       }
 
@@ -204,7 +204,7 @@ export async function getPublishedSermonsSSG(): Promise<Sermon[]> {
         return getTimestamp(b.createdAt) - getTimestamp(a.createdAt); // Mais recente primeiro
       });
 
-      console.log(
+      // console.log(
         "✅ SSG: Successfully fetched and sorted sermons by creation date (Admin SDK)",
       );
       return sortedSermons;
@@ -217,12 +217,12 @@ export async function getPublishedSermonsSSG(): Promise<Sermon[]> {
 
       const snapshot = await getDocs(q);
 
-      console.log(
+      // console.log(
         `📊 SSG: Found ${snapshot.size} published sermons (Client SDK)`,
       );
 
       if (snapshot.empty) {
-        console.log("📭 SSG: No published sermons found");
+        // console.log("📭 SSG: No published sermons found");
         return [];
       }
 
@@ -236,20 +236,20 @@ export async function getPublishedSermonsSSG(): Promise<Sermon[]> {
         return getTimestamp(b.createdAt) - getTimestamp(a.createdAt); // Mais recente primeiro
       });
 
-      console.log(
+      // console.log(
         "✅ SSG: Successfully fetched and sorted sermons by creation date (Client SDK)",
       );
       return sortedSermons;
     }
   } catch (error) {
-    console.error("❌ SSG: Error fetching published sermons:", error);
+    // console.error("❌ SSG: Error fetching published sermons:", error);
     return [];
   }
 }
 
 export async function getSermonByIdSSG(id: string): Promise<Sermon | null> {
   try {
-    console.log(`🔍 SSG: Fetching sermon with id: ${id}`);
+    // console.log(`🔍 SSG: Fetching sermon with id: ${id}`);
 
     const firebase = initializeFirebaseAdmin();
 
@@ -261,14 +261,14 @@ export async function getSermonByIdSSG(id: string): Promise<Sermon | null> {
         .get();
 
       if (!sermonDoc.exists) {
-        console.log(`📭 SSG: Sermon with id ${id} not found`);
+        // console.log(`📭 SSG: Sermon with id ${id} not found`);
         return null;
       }
 
       const data = sermonDoc.data();
       const sermon = createSerializedSermon(sermonDoc.id, data);
 
-      console.log(
+      // console.log(
         `✅ SSG: Successfully fetched sermon: ${sermon.title} (Admin SDK)`,
       );
       return sermon;
@@ -277,27 +277,27 @@ export async function getSermonByIdSSG(id: string): Promise<Sermon | null> {
       const sermonDoc = await getDoc(doc(firebase.db as any, "sermons", id));
 
       if (!sermonDoc.exists()) {
-        console.log(`📭 SSG: Sermon with id ${id} not found`);
+        // console.log(`📭 SSG: Sermon with id ${id} not found`);
         return null;
       }
 
       const data = sermonDoc.data();
       const sermon = createSerializedSermon(sermonDoc.id, data);
 
-      console.log(
+      // console.log(
         `✅ SSG: Successfully fetched sermon: ${sermon.title} (Client SDK)`,
       );
       return sermon;
     }
   } catch (error) {
-    console.error(`❌ SSG: Error fetching sermon ${id}:`, error);
+    // console.error(`❌ SSG: Error fetching sermon ${id}:`, error);
     return null;
   }
 }
 
 export async function getAllSermonIdsSSG(): Promise<string[]> {
   try {
-    console.log("🔍 SSG: Fetching all published sermon IDs...");
+    // console.log("🔍 SSG: Fetching all published sermon IDs...");
 
     const firebase = initializeFirebaseAdmin();
 
@@ -311,7 +311,7 @@ export async function getAllSermonIdsSSG(): Promise<string[]> {
 
       const ids = snapshot.docs.map((doc: any) => doc.id);
 
-      console.log(
+      // console.log(
         `✅ SSG: Found ${ids.length} published sermon IDs (Admin SDK)`,
       );
       return ids;
@@ -325,13 +325,13 @@ export async function getAllSermonIdsSSG(): Promise<string[]> {
       const snapshot = await getDocs(q);
       const ids = snapshot.docs.map((doc: { id: any }) => doc.id);
 
-      console.log(
+      // console.log(
         `✅ SSG: Found ${ids.length} published sermon IDs (Client SDK)`,
       );
       return ids;
     }
   } catch (error) {
-    console.error("❌ SSG: Error fetching sermon IDs:", error);
+    // console.error("❌ SSG: Error fetching sermon IDs:", error);
     return [];
   }
 }

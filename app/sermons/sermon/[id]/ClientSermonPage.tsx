@@ -89,7 +89,7 @@ export default function ClientSermonPage({
           url: window.location.href,
         });
       } catch (err) {
-        console.log("Erro ao compartilhar:", err);
+        // console.log("Erro ao compartilhar:", err);
       }
     } else {
       // Fallback: copiar link

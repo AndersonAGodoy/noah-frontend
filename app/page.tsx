@@ -42,7 +42,7 @@ async function getSermons(): Promise<{
   lastUpdated: string;
 }> {
   try {
-    console.log("🏗️ SSG: Building homepage with static data...");
+    // console.log("🏗️ SSG: Building homepage with static data...");
 
     const sermons = await getPublishedSermonsSSG();
 
@@ -51,7 +51,7 @@ async function getSermons(): Promise<{
       lastUpdated: new Date().toISOString(),
     };
   } catch (error) {
-    console.error("❌ SSG: Error building homepage:", error);
+    // console.error("❌ SSG: Error building homepage:", error);
 
     // Em caso de erro, retorna dados vazios mas não quebra o build
     return {

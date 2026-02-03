@@ -61,7 +61,7 @@ export default function DashboardLayout({
       await authService.logout();
       route.replace("/login");
     } catch (error) {
-      console.error("Erro ao fazer logout:", error);
+      // console.error("Erro ao fazer logout:", error);
     }
   };
 

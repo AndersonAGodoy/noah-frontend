@@ -17,7 +17,7 @@ export default function useDeleteSermonFirebase() {
       queryClient.invalidateQueries({ queryKey: ["sermonsFirebase"] });
     },
     onError: (error) => {
-      console.error("Error deleting sermon:", error);
+      // console.error("Error deleting sermon:", error);
     },
   });
 }
@@ -89,12 +89,12 @@ export function usePublishSermonFirebase() {
 
           if (!response.ok) {
             const errorText = await response.text();
-            console.error("❌ Failed to send notification:", errorText);
+            // console.error("❌ Failed to send notification:", errorText);
           } else {
             await response.json();
           }
         } catch (error) {
-          console.error("❌ Error sending notification:", error);
+          // console.error("❌ Error sending notification:", error);
         }
       }
 
@@ -102,7 +102,7 @@ export function usePublishSermonFirebase() {
       try {
         await triggerRevalidation("sermon-published", sermonId);
       } catch (error) {
-        console.error(
+        // console.error(
           "⚠️ Sermão publicado, mas falha na revalidação do cache:",
           error,
         );
@@ -111,7 +111,7 @@ export function usePublishSermonFirebase() {
       }
     },
     onError: (error) => {
-      console.error("Error publishing sermon:", error);
+      // console.error("Error publishing sermon:", error);
     },
   });
 }
@@ -132,11 +132,11 @@ export function useUnpublishSermonFirebase() {
       // Trigger manual revalidation para SSG
       try {
         await triggerRevalidation("sermon-unpublished", sermonId);
-        console.log(
+        // console.log(
           "📝 Sermão despublicado e cache SSG atualizado automaticamente!",
         );
       } catch (error) {
-        console.error(
+        // console.error(
           "⚠️ Sermão despublicado, mas falha na revalidação do cache:",
           error,
         );
@@ -144,7 +144,7 @@ export function useUnpublishSermonFirebase() {
       }
     },
     onError: (error) => {
-      console.error("Error unpublishing sermon:", error);
+      // console.error("Error unpublishing sermon:", error);
     },
   });
 }

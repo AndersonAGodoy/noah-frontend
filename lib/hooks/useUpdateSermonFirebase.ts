@@ -35,7 +35,7 @@ export default function useUpdateSermonFirebase() {
       queryClient.invalidateQueries({ queryKey: ["sermonsFirebase"] });
     },
     onError: (error) => {
-      console.error("Error updating sermon:", error);
+      // console.error("Error updating sermon:", error);
     },
   });
 }

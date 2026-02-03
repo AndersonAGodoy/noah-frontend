@@ -35,7 +35,7 @@ export default function useCreateSermonFirebase() {
       queryClient.invalidateQueries({ queryKey: ["sermonsFirebase"] });
     },
     onError: (error) => {
-      console.error("Error creating sermon:", error);
+      // console.error("Error creating sermon:", error);
     },
   });
 }

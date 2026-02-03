@@ -37,13 +37,13 @@ export function ConsentModal() {
 
       if (!token) {
         // Usuário negou a permissão no popup do navegador
-        console.warn("⚠️ Permissão de notificação negada no navegador");
+        // console.warn("⚠️ Permissão de notificação negada no navegador");
         setShowError(true);
         setIsActivating(false);
         return;
       }
 
-      console.log("🔑 Token FCM obtido:", token);
+      // console.log("🔑 Token FCM obtido:", token);
 
       // Salvar token no Firestore
       await saveFCMToken(token);
@@ -55,10 +55,10 @@ export function ConsentModal() {
         new Date().toISOString(),
       );
 
-      console.log("✅ Notificações ativadas com sucesso!");
+      // console.log("✅ Notificações ativadas com sucesso!");
       setOpened(false);
     } catch (error) {
-      console.error("❌ Erro ao ativar notificações:", error);
+      // console.error("❌ Erro ao ativar notificações:", error);
       setShowError(true);
       setIsActivating(false);
     }

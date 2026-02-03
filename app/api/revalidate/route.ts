@@ -7,22 +7,22 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { type, sermonId } = body;
 
-    console.log("🔄 Manual revalidation triggered:", { type, sermonId });
+    // console.log("🔄 Manual revalidation triggered:", { type, sermonId });
 
     if (type === "sermon-published") {
       // Revalidar a homepage
       revalidatePath("/");
-      console.log("✅ Homepage revalidated");
+      // console.log("✅ Homepage revalidated");
 
       // Se temos um ID específico do sermão, revalidar também a página individual
       if (sermonId) {
         revalidatePath(`/sermons/sermon/${sermonId}`);
-        console.log(`✅ Sermon page revalidated: /sermons/sermon/${sermonId}`);
+        // console.log(`✅ Sermon page revalidated: /sermons/sermon/${sermonId}`);
       }
 
       // Revalidar todas as páginas de sermões (opcional)
       revalidatePath("/sermons/sermon/[id]", "page");
-      console.log("✅ All sermon pages revalidated");
+      // console.log("✅ All sermon pages revalidated");
 
       return NextResponse.json({
         message: "Revalidation successful",
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     if (type === "sermon-unpublished") {
       // Quando um sermão é despublicado, também revalidar
       revalidatePath("/");
-      console.log("✅ Homepage revalidated (sermon unpublished)");
+      // console.log("✅ Homepage revalidated (sermon unpublished)");
 
       return NextResponse.json({
         message: "Revalidation successful (unpublished)",
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   } catch (error) {
-    console.error("❌ Revalidation error:", error);
+    // console.error("❌ Revalidation error:", error);
     return NextResponse.json(
       {
         error: "Revalidation failed",

@@ -77,7 +77,7 @@ export default function EncontroComDeusModal({
       form.reset();
       onClose();
     } catch (error) {
-      console.error("Erro ao criar participante:", error);
+      // console.error("Erro ao criar participante:", error);
 
       const errorMessage =
         error instanceof Error

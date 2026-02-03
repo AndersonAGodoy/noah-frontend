@@ -24,20 +24,20 @@ export function useFCMToken() {
       try {
         // Verificar se o navegador suporta notificações
         if (!("Notification" in window)) {
-          console.log("Browser does not support notifications");
+          // console.log("Browser does not support notifications");
           return;
         }
 
         // 🔒 VERIFICAR CONSENTIMENTO LGPD
         const consent = localStorage.getItem("notification-consent");
         if (consent !== "true") {
-          console.log("User has not given consent for notifications");
+          // console.log("User has not given consent for notifications");
           return;
         }
 
         // Verificar se já tem permissão
         if (Notification.permission === "denied") {
-          console.log("Notification permission denied");
+          // console.log("Notification permission denied");
           return;
         }
 
@@ -51,7 +51,7 @@ export function useFCMToken() {
 
           // Se o token foi atualizado há menos de 24h, apenas usar o cache
           if (timeSinceUpdate < UPDATE_INTERVAL) {
-            console.log("✅ Using cached FCM token (updated recently)");
+            // console.log("✅ Using cached FCM token (updated recently)");
             setToken(cachedToken);
             setIsRegistered(true);
             return;
@@ -78,10 +78,10 @@ export function useFCMToken() {
           localStorage.setItem(LAST_UPDATE_KEY, now.toString());
 
           setIsRegistered(true);
-          console.log("✅ FCM Token registered successfully");
+          // console.log("✅ FCM Token registered successfully");
         }
       } catch (err) {
-        console.error("Error registering FCM token:", err);
+        // console.error("Error registering FCM token:", err);
         setError(err instanceof Error ? err.message : "Unknown error");
         hasRegistered.current = false; // Permitir retry em caso de erro
       }
