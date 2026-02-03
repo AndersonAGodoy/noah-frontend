@@ -5,7 +5,7 @@
  */
 export async function triggerRevalidation(
   type: "sermon-published" | "sermon-unpublished",
-  sermonId?: string
+  sermonId?: string,
 ) {
   try {
     // console.log("🔄 Triggering manual revalidation...", { type, sermonId });
@@ -40,9 +40,9 @@ export function useRevalidation() {
   const revalidateOnPublish = async (sermonId: string) => {
     try {
       await triggerRevalidation("sermon-published", sermonId);
-      // console.log(
-        "🎉 Novo sermão publicado! Cache atualizado automaticamente."
-      );
+      // // console.log(
+      //   "🎉 Novo sermão publicado! Cache atualizado automaticamente."
+      // );
     } catch (error) {
       // console.error("Erro ao atualizar cache:", error);
       // Mesmo se a revalidação falhar, o sermão foi publicado

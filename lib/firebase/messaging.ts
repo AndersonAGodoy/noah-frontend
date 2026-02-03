@@ -86,11 +86,11 @@ export async function requestNotificationPermission(): Promise<string | null> {
 
       // Agora solicitar o token FCM com o service worker registration
       // console.log("🔄 Requesting FCM token...");
-      // console.log("🔍 SW Registration for FCM:", registration);
-      // console.log(
-        "🔍 Messaging Sender ID:",
-        process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-      );
+      // // console.log("🔍 SW Registration for FCM:", registration);
+      // // console.log(
+      //   "🔍 Messaging Sender ID:",
+      //   process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      // );
       // console.log("🔍 App ID:", process.env.NEXT_PUBLIC_FIREBASE_APP_ID);
 
       try {
@@ -109,23 +109,22 @@ export async function requestNotificationPermission(): Promise<string | null> {
           // console.error("  - Name:", tokenError.name);
           // console.error("  - Message:", tokenError.message);
           // console.error("  - Stack:", tokenError.stack);
-
           // Mensagens de erro comuns e suas soluções
-          if (tokenError.message.includes("push service error")) {
-            // console.error("💡 SOLUTION: This usually means:");
-            // console.error(
-              "  1. VAPID key mismatch - Check Firebase Console > Project Settings > Cloud Messaging",
-            );
-            // console.error(
-              "  2. Make sure you're using the Web Push certificate key pair",
-            );
-            // console.error(
-              "  3. Try regenerating the VAPID key in Firebase Console",
-            );
-            // console.error(
-              "  4. Verify the messagingSenderId matches your Firebase project",
-            );
-          }
+          // if (tokenError.message.includes("push service error")) {
+          //   // console.error("💡 SOLUTION: This usually means:");
+          //   // console.error(
+          //     "  1. VAPID key mismatch - Check Firebase Console > Project Settings > Cloud Messaging",
+          //   );
+          //   // console.error(
+          //     "  2. Make sure you're using the Web Push certificate key pair",
+          //   );
+          //   // console.error(
+          //     "  3. Try regenerating the VAPID key in Firebase Console",
+          //   );
+          //   // console.error(
+          //     "  4. Verify the messagingSenderId matches your Firebase project",
+          //   );
+          // }
         }
 
         throw tokenError;

@@ -147,13 +147,13 @@ function initializeFirebaseAdmin() {
           // console.log("✅ Firebase Admin SDK initialized successfully");
           return { type: "admin", db: getFirestore() };
         } catch (parseError) {
-          // console.error(
-            "❌ Error parsing FIREBASE_SERVICE_ACCOUNT_KEY:",
-            parseError,
-          );
-          // console.log(
-            "📝 Make sure FIREBASE_SERVICE_ACCOUNT_KEY is a valid JSON string or base64-encoded JSON",
-          );
+          // // console.error(
+          //   "❌ Error parsing FIREBASE_SERVICE_ACCOUNT_KEY:",
+          //   parseError,
+          // );
+          // // console.log(
+          //   "📝 Make sure FIREBASE_SERVICE_ACCOUNT_KEY is a valid JSON string or base64-encoded JSON",
+          // );
         }
       } else {
         // console.log("⚠️ FIREBASE_SERVICE_ACCOUNT_KEY not found or empty");
@@ -185,9 +185,9 @@ export async function getPublishedSermonsSSG(): Promise<Sermon[]> {
       const sermonsRef = (firebase.db as any).collection("sermons");
       const snapshot = await sermonsRef.where("isPublished", "==", true).get();
 
-      // console.log(
-        `📊 SSG: Found ${snapshot.size} published sermons (Admin SDK)`,
-      );
+      // // console.log(
+      //   `📊 SSG: Found ${snapshot.size} published sermons (Admin SDK)`,
+      // );
 
       if (snapshot.empty) {
         // console.log("📭 SSG: No published sermons found");
@@ -204,9 +204,9 @@ export async function getPublishedSermonsSSG(): Promise<Sermon[]> {
         return getTimestamp(b.createdAt) - getTimestamp(a.createdAt); // Mais recente primeiro
       });
 
-      // console.log(
-        "✅ SSG: Successfully fetched and sorted sermons by creation date (Admin SDK)",
-      );
+      // // console.log(
+      //   "✅ SSG: Successfully fetched and sorted sermons by creation date (Admin SDK)",
+      // );
       return sortedSermons;
     } else {
       // Usar Firebase Client SDK
@@ -217,9 +217,9 @@ export async function getPublishedSermonsSSG(): Promise<Sermon[]> {
 
       const snapshot = await getDocs(q);
 
-      // console.log(
-        `📊 SSG: Found ${snapshot.size} published sermons (Client SDK)`,
-      );
+      // // console.log(
+      //   `📊 SSG: Found ${snapshot.size} published sermons (Client SDK)`,
+      // );
 
       if (snapshot.empty) {
         // console.log("📭 SSG: No published sermons found");
@@ -236,9 +236,9 @@ export async function getPublishedSermonsSSG(): Promise<Sermon[]> {
         return getTimestamp(b.createdAt) - getTimestamp(a.createdAt); // Mais recente primeiro
       });
 
-      // console.log(
-        "✅ SSG: Successfully fetched and sorted sermons by creation date (Client SDK)",
-      );
+      // // console.log(
+      //   "✅ SSG: Successfully fetched and sorted sermons by creation date (Client SDK)",
+      // );
       return sortedSermons;
     }
   } catch (error) {
@@ -268,9 +268,9 @@ export async function getSermonByIdSSG(id: string): Promise<Sermon | null> {
       const data = sermonDoc.data();
       const sermon = createSerializedSermon(sermonDoc.id, data);
 
-      // console.log(
-        `✅ SSG: Successfully fetched sermon: ${sermon.title} (Admin SDK)`,
-      );
+      // // console.log(
+      //   `✅ SSG: Successfully fetched sermon: ${sermon.title} (Admin SDK)`,
+      // );
       return sermon;
     } else {
       // Usar Firebase Client SDK
@@ -284,9 +284,9 @@ export async function getSermonByIdSSG(id: string): Promise<Sermon | null> {
       const data = sermonDoc.data();
       const sermon = createSerializedSermon(sermonDoc.id, data);
 
-      // console.log(
-        `✅ SSG: Successfully fetched sermon: ${sermon.title} (Client SDK)`,
-      );
+      // // console.log(
+      //   `✅ SSG: Successfully fetched sermon: ${sermon.title} (Client SDK)`,
+      // );
       return sermon;
     }
   } catch (error) {
@@ -311,9 +311,9 @@ export async function getAllSermonIdsSSG(): Promise<string[]> {
 
       const ids = snapshot.docs.map((doc: any) => doc.id);
 
-      // console.log(
-        `✅ SSG: Found ${ids.length} published sermon IDs (Admin SDK)`,
-      );
+      // // console.log(
+      //   `✅ SSG: Found ${ids.length} published sermon IDs (Admin SDK)`,
+      // );
       return ids;
     } else {
       // Usar Firebase Client SDK
@@ -325,9 +325,9 @@ export async function getAllSermonIdsSSG(): Promise<string[]> {
       const snapshot = await getDocs(q);
       const ids = snapshot.docs.map((doc: { id: any }) => doc.id);
 
-      // console.log(
-        `✅ SSG: Found ${ids.length} published sermon IDs (Client SDK)`,
-      );
+      // // console.log(
+      //   `✅ SSG: Found ${ids.length} published sermon IDs (Client SDK)`,
+      // );
       return ids;
     }
   } catch (error) {

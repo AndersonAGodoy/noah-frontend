@@ -102,10 +102,10 @@ export function usePublishSermonFirebase() {
       try {
         await triggerRevalidation("sermon-published", sermonId);
       } catch (error) {
-        // console.error(
-          "⚠️ Sermão publicado, mas falha na revalidação do cache:",
-          error,
-        );
+        // // console.error(
+        //   "⚠️ Sermão publicado, mas falha na revalidação do cache:",
+        //   error,
+        // );
         // Não interrompe o fluxo - o sermão foi publicado com sucesso
         // Na próxima visita às páginas, o conteúdo será atualizado
       }
@@ -132,14 +132,14 @@ export function useUnpublishSermonFirebase() {
       // Trigger manual revalidation para SSG
       try {
         await triggerRevalidation("sermon-unpublished", sermonId);
-        // console.log(
-          "📝 Sermão despublicado e cache SSG atualizado automaticamente!",
-        );
+        // // console.log(
+        //   "📝 Sermão despublicado e cache SSG atualizado automaticamente!",
+        // );
       } catch (error) {
-        // console.error(
-          "⚠️ Sermão despublicado, mas falha na revalidação do cache:",
-          error,
-        );
+        // // console.error(
+        //   "⚠️ Sermão despublicado, mas falha na revalidação do cache:",
+        //   error,
+        // );
         // Não interrompe o fluxo - o sermão foi despublicado com sucesso
       }
     },
