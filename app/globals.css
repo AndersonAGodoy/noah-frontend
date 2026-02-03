@@ -5,3 +5,28 @@
   --font-body: "Montserrat", sans-serif;
   --font-heading: "Cormorant Garamond", serif;
 }
+
+/* Fix para modais no iOS */
+body {
+  position: relative;
+}
+
+/* Garantir que overlays e modais apareçam no iOS */
+[data-overlay],
+[data-portal] {
+  position: fixed !important;
+  z-index: 9999 !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fix para backdrop do modal no iOS */
+.mantine-Modal-overlay,
+.mantine-Overlay-root {
+  position: fixed !important;
+  z-index: 9998 !important;
+}
+
+.mantine-Modal-inner {
+  position: fixed !important;
+  z-index: 9999 !important;
+}
