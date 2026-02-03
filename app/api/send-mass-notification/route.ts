@@ -62,41 +62,55 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Verificar autenticação via session cookie
+    // Verificar autenticação via session cookie ou Authorization header
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get("session")?.value;
+    const authHeader = request.headers.get("authorization");
 
-    if (!sessionCookie) {
+    let decodedClaims;
+
+    // Tentar autenticar com session cookie
+    if (sessionCookie) {
+      try {
+        decodedClaims = await admin
+          .auth()
+          .verifySessionCookie(sessionCookie, true);
+      } catch (error) {
+        console.error("Session cookie verification failed:", error);
+      }
+    }
+
+    // Se não tiver session cookie, tentar Authorization header
+    if (!decodedClaims && authHeader?.startsWith("Bearer ")) {
+      const idToken = authHeader.replace("Bearer ", "");
+      try {
+        decodedClaims = await admin.auth().verifyIdToken(idToken);
+      } catch (error) {
+        console.error("ID token verification failed:", error);
+      }
+    }
+
+    // Se não conseguiu autenticar de nenhuma forma
+    if (!decodedClaims) {
       return NextResponse.json(
-        { success: false, error: "No session" },
+        { success: false, error: "No valid authentication" },
         { status: 401 },
       );
     }
 
     // Verificar se o usuário é admin
-    try {
-      const decodedClaims = await admin
-        .auth()
-        .verifySessionCookie(sessionCookie, true);
+    const userDoc = await admin
+      .firestore()
+      .collection("users")
+      .doc(decodedClaims.uid)
+      .get();
 
-      const userDoc = await admin
-        .firestore()
-        .collection("users")
-        .doc(decodedClaims.uid)
-        .get();
+    const userData = userDoc.data();
 
-      const userData = userDoc.data();
-
-      if (!userData || userData.role !== "admin") {
-        return NextResponse.json(
-          { success: false, error: "Unauthorized - admin only" },
-          { status: 403 },
-        );
-      }
-    } catch (error) {
+    if (!userData || userData.role !== "admin") {
       return NextResponse.json(
-        { success: false, error: "Invalid session" },
-        { status: 401 },
+        { success: false, error: "Unauthorized - admin only" },
+        { status: 403 },
       );
     }
 

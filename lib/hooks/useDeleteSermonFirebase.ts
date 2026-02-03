@@ -62,9 +62,22 @@ export function usePublishSermonFirebase() {
               : process.env.NEXT_PUBLIC_BASE_URL || "https://noahrn.com.br";
           const imageUrl = `${baseUrl}/icons/icon-192x192.png`;
 
+          // Obter token do usuário atual
+          const auth = (await import("../firebase/config")).auth;
+          const user = auth.currentUser;
+          const idToken = user ? await user.getIdToken() : null;
+
+          const headers: HeadersInit = {
+            "Content-Type": "application/json",
+          };
+
+          if (idToken) {
+            headers["Authorization"] = `Bearer ${idToken}`;
+          }
+
           const response = await fetch("/api/send-mass-notification", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers,
             credentials: "include", // Enviar cookies de sessão
             body: JSON.stringify({
               title: "Novo Sermão Disponível",
